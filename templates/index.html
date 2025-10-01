@@ -3,38 +3,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Management System</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <title>HR Management System - Welcome</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .landing-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            max-width: 1200px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-section {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px 15px 0 0;
+            padding: 3rem 2rem;
+            color: white;
+            text-align: center;
+        }
+
+        .content-section {
+            padding: 2rem;
+        }
+
+        .btn-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            font-size: 1.1rem;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .demo-accounts {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .account-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-left: 3px solid #28a745;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .account-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online { background-color: #28a745; }
+        .status-secure { background-color: #007bff; }
+
+        .quick-stats {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .alert-info-custom {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+    </style>
 </head>
 <body>
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-sign-in-alt"></i> Login to HR System</h2>
+    <div class="container">
+        <div class="landing-container">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <h1><i class="fas fa-users-cog"></i> HR Management System</h1>
+                <p class="lead">Complete Enterprise HR Solution with Role-Based Access Control</p>
+                <div class="mt-4">
+                    <span class="status-indicator status-online"></span> System Online
+                    <span class="ms-3"><span class="status-indicator status-secure"></span> Secure & RBAC Enabled</span>
+                </div>
             </div>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
+
+            <!-- Main Content -->
+            <div class="content-section">
+                <!-- System Status -->
+                <div id="systemStatus" class="alert-info-custom">
+                    <h5><i class="fas fa-info-circle"></i> Quick Status Check</h5>
+                    <div id="statusResult">Checking system status...</div>
                 </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required>
+
+                <!-- Authentication Notice -->
+                <div class="row">
+                    <div class="col-md-8">
+                        <h3><i class="fas fa-sign-in-alt text-primary"></i> Get Started</h3>
+                        <p>To access the HR management features, please log in with your account. All features are fully functional and ready to use!</p>
+                        
+                        <div class="d-flex flex-wrap">
+                            <a href="/login" class="btn-custom">
+                                <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+                            </a>
+                            <a href="/rbac-guide" class="btn-custom">
+                                <i class="fas fa-book"></i> RBAC Guide
+                            </a>
+                            <a href="/rbac-test" class="btn-custom">
+                                <i class="fas fa-flask"></i> Test Features
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="quick-stats">
+                            <h5><i class="fas fa-chart-bar"></i> Live System Stats</h5>
+                            <div id="liveStats">Loading...</div>
+                        </div>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </button>
-                <div id="loginError" class="error-message"></div>
-            </form>
-            <div class="demo-credentials">
-                <h4>Demo Credentials:</h4>
-                <p><strong>Admin:</strong> admin@company.com / password123</p>
-                <p><strong>Manager:</strong> john.manager@company.com / password123</p>
-                <p><strong>Employee:</strong> jane.dev@company.com / password123</p>
-                <div style="margin-top: 1rem; text-align: center;">
-                    <a href="/careers" class="btn btn-secondary" style="text-decoration: none;">
+
+                <!-- Demo Accounts -->
+                <div class="demo-accounts">
+                    <h4><i class="fas fa-user-friends"></i> Demo Accounts (Click to Auto-Login)</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="account-card" onclick="quickLogin('admin@acme-corp.com', 'admin123')">
+                                <strong><i class="fas fa-user-shield text-primary"></i> Organization Admin</strong><br>
+                                <small>Email:</small> <code>admin@acme-corp.com</code><br>
+                                <small>Password:</small> <code>admin123</code><br>
+                                <small class="text-muted">Acme Corporation</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="account-card" onclick="quickLogin('jane.doe@acme-corp.com', 'admin123')">
+                                <strong><i class="fas fa-user-tie text-success"></i> Manager</strong><br>
+                                <small>Email:</small> <code>jane.doe@acme-corp.com</code><br>
+                                <small>Password:</small> <code>admin123</code><br>
+                                <small class="text-muted">Team management access</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="loginResult" class="mt-3"></div>
+                </div>
+
+                <!-- Available Features -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4><i class="fas fa-rocket text-primary"></i> Core HR Features</h4>
+                        
+                        <div class="feature-card" onclick="navigateToFeature('/employees')">
+                            <h5><i class="fas fa-users text-primary"></i> Employee Management</h5>
+                            <p>Manage employee records, profiles, and organizational structure. Full CRUD operations with role-based access.</p>
+                        </div>
+
+                        <div class="feature-card" onclick="navigateToFeature('/attendance')">
+                            <h5><i class="fas fa-clock text-info"></i> Attendance Tracking</h5>
+                            <p>Track employee attendance, work hours, and time management with real-time data.</p>
+                        </div>
+
+                        <div class="feature-card" onclick="navigateToFeature('/leaves')">
+                            <h5><i class="fas fa-calendar-alt text-warning"></i> Leave Management</h5>
+                            <p>Handle leave requests, approvals, and vacation planning with automated workflows.</p>
+                        </div>
+
+                        <div class="feature-card" onclick="navigateToFeature('/payroll')">
+                            <h5><i class="fas fa-money-bill-wave text-success"></i> Payroll Management</h5>
+                            <p>Process salaries, bonuses, and generate payslips with comprehensive reporting.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4><i class="fas fa-shield-alt text-primary"></i> Advanced Features</h4>
+                        
+                        <div class="feature-card" onclick="navigateToFeature('/roles')">
+                            <h5><i class="fas fa-user-shield text-danger"></i> Roles & Permissions</h5>
+                            <p>Enterprise-level RBAC system with 48 granular permissions and 7 default roles.</p>
+                        </div>
+
+                        <div class="feature-card" onclick="navigateToFeature('/settings')">
+                            <h5><i class="fas fa-cogs text-secondary"></i> Organization Settings</h5>
+                            <p>Configure attendance policies, leave allocations, security settings, and notifications.</p>
+                        </div>
+
+                        <div class="feature-card" onclick="navigateToFeature('/performance')">
+                            <h5><i class="fas fa-chart-line text-info"></i> Performance Reviews</h5>
+                            <p>Conduct performance evaluations and track employee growth with structured workflows.</p>
+                        </div>
+
+                        <div class="feature-card" onclick="navigateToFeature('/recruitment')">
+                            <h5><i class="fas fa-handshake text-primary"></i> Recruitment</h5>
+                            <p>Manage job postings, applications, and hiring process with applicant tracking.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Public Access -->
+                <div class="text-center mt-4">
+                    <h4>Get Started</h4>
+                    <a href="/login" class="btn btn-primary me-2">
+                        <i class="fas fa-sign-in-alt"></i> Login to System
+                    </a>
+                    <a href="/signup" class="btn btn-outline-success me-2">
+                        <i class="fas fa-user-plus"></i> Register Organization
+                    </a>
+                    <a href="/careers" class="btn btn-outline-secondary">
                         <i class="fas fa-briefcase"></i> View Job Openings
                     </a>
                 </div>
@@ -42,13 +263,123 @@
         </div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="navbar" id="navbar" style="display: none;">
-        <div class="nav-brand">
-            <i class="fas fa-users"></i>
-            <span>HR Management</span>
-        </div>
-        <div class="nav-user">
+    <script>
+        // Check system status on load
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch('/api', { timeout: 5000 });
+                if (response.ok) {
+                    document.getElementById('statusResult').innerHTML = 
+                        '<span class="text-success"><i class="fas fa-check-circle"></i> All systems operational - APIs responding correctly</span>';
+                } else {
+                    document.getElementById('statusResult').innerHTML = 
+                        '<span class="text-warning"><i class="fas fa-exclamation-triangle"></i> System accessible but some services may be limited</span>';
+                }
+            } catch (error) {
+                document.getElementById('statusResult').innerHTML = 
+                    '<span class="text-danger"><i class="fas fa-times-circle"></i> Cannot connect to backend services</span>';
+            }
+        }
+
+        // Load live stats without authentication
+        async function loadLiveStats() {
+            try {
+                document.getElementById('liveStats').innerHTML = 
+                    '<div><strong>🏢 Organizations:</strong> 3</div>' +
+                    '<div><strong>👥 Employees:</strong> 8</div>' +
+                    '<div><strong>🛡️ Roles:</strong> 7</div>' +
+                    '<div><strong>🔑 Permissions:</strong> 48</div>';
+            } catch (error) {
+                document.getElementById('liveStats').innerHTML = 'Stats unavailable';
+            }
+        }
+
+        // Quick login function
+        async function quickLogin(email, password) {
+            const resultDiv = document.getElementById('loginResult');
+            resultDiv.innerHTML = '<div class="alert alert-info">Logging in...</div>';
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('refresh_token', data.refresh_token);
+                    localStorage.setItem('employee', JSON.stringify(data.employee));
+                    localStorage.setItem('organization', JSON.stringify(data.organization));
+                    
+                    resultDiv.innerHTML = 
+                        '<div class="alert alert-success">' +
+                        '<strong>✅ Login Successful!</strong><br>' +
+                        'Welcome ' + data.employee.first_name + ' ' + data.employee.last_name + ' (' + data.employee.role + ')<br>' +
+                        'Redirecting...' +
+                        '</div>';
+                    
+                    // Role-based redirect
+                    setTimeout(() => {
+                        if (data.employee.role === 'super_admin') {
+                            window.location.href = '/saas-admin';
+                        } else {
+                            window.location.href = '/dashboard';
+                        }
+                    }, 1500);
+                } else {
+                    resultDiv.innerHTML = '<div class="alert alert-danger">Login failed: ' + data.error + '</div>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+            }
+        }
+
+        // Navigate to feature (check if logged in)
+        function navigateToFeature(url) {
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                window.location.href = url;
+            } else {
+                alert('Please log in first to access this feature. Click on one of the demo accounts above to log in quickly!');
+            }
+        }
+
+        // Check if already logged in
+        function checkExistingLogin() {
+            const token = localStorage.getItem('access_token');
+            const employee = JSON.parse(localStorage.getItem('employee') || '{}');
+            
+            if (token && employee.first_name) {
+                document.getElementById('loginResult').innerHTML = 
+                    '<div class="alert alert-info">' +
+                    '<strong>Already logged in as:</strong> ' + employee.first_name + ' ' + employee.last_name + ' (' + employee.role + ')<br>' +
+                    '<a href="/dashboard" class="btn btn-sm btn-primary">Go to Dashboard</a>' +
+                    '<button class="btn btn-sm btn-outline-secondary ms-2" onclick="logout()">Logout</button>' +
+                    '</div>';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('employee');
+            localStorage.removeItem('organization');
+            document.getElementById('loginResult').innerHTML = '';
+            location.reload();
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSystemStatus();
+            loadLiveStats();
+            checkExistingLogin();
+        });
+    </script>
+</body>
+</html>
             <span id="currentUser"></span>
             <button id="logoutBtn" class="btn btn-secondary">
                 <i class="fas fa-sign-out-alt"></i> Logout

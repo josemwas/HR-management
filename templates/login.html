@@ -115,9 +115,6 @@
                                 <button type="button" class="btn btn-link btn-sm" onclick="clearLoginData()">
                                     Clear Login Data (Debug)
                                 </button>
-                                <button type="button" class="btn btn-link btn-sm" onclick="window.location.href='/'">
-                                    Go to Dashboard (Test)
-                                </button>
                             </div>
                         </div>
 
@@ -236,12 +233,12 @@
                     
                     showAlert('Login successful! Redirecting...', 'success');
                     
-                    // Redirect based on role
+                    // Role-based redirect
                     setTimeout(() => {
                         if (result.employee.role === 'super_admin') {
                             window.location.href = '/saas-admin';
                         } else {
-                            window.location.href = '/';
+                            window.location.href = '/dashboard';
                         }
                     }, 1500);
                 } else {

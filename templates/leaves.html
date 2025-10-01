@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Management - HR System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px 15px 0 0;
+            padding: 1rem 2rem;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .leave-balance-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .balance-item {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .balance-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .balance-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .leave-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .leave-type-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <!-- Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-custom">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/">
+                        <i class="fas fa-calendar-alt me-2"></i>Leave Management
+                    </a>
+                    <div class="navbar-nav ms-auto">
+                        <span class="nav-link" id="userInfo">Loading...</span>
+                        <a class="nav-link" href="/" id="backToDashboard">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a class="nav-link" href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div id="alertContainer"></div>
+                
+                <!-- Header -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2>Leave Management</h2>
+                        <p class="text-muted">Handle leave requests, approvals, and vacation planning</p>
+                    </div>
+                </div>
+
+                <!-- Leave Balance Cards -->
+                <div class="leave-balance-card">
+                    <h5 class="mb-3"><i class="fas fa-chart-pie me-2"></i>Leave Balance</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="balance-item">
+                                <div class="balance-number" id="annualLeave">0</div>
+                                <div class="balance-label">Annual Leave</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="balance-item">
+                                <div class="balance-number" id="sickLeave">0</div>
+                                <div class="balance-label">Sick Leave</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="balance-item">
+                                <div class="balance-number" id="personalLeave">0</div>
+                                <div class="balance-label">Personal Leave</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="balance-item">
+                                <div class="balance-number" id="usedLeave">0</div>
+                                <div class="balance-label">Used This Year</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <button class="btn btn-primary me-2" onclick="requestLeave()">
+                            <i class="fas fa-plus"></i> Request Leave
+                        </button>
+                        <button class="btn btn-outline-primary me-2" onclick="loadLeaveRequests()">
+                            <i class="fas fa-refresh"></i> Refresh
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="exportLeaves()" id="exportBtn" style="display: none;">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <select class="form-select" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="typeFilter">
+                            <option value="">All Types</option>
+                            <option value="annual">Annual Leave</option>
+                            <option value="sick">Sick Leave</option>
+                            <option value="personal">Personal Leave</option>
+                            <option value="maternity">Maternity Leave</option>
+                            <option value="emergency">Emergency Leave</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control" id="dateFrom" placeholder="From Date">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control" id="dateTo" placeholder="To Date">
+                    </div>
+                </div>
+
+                <!-- Leave Requests Table -->
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Leave Type</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Days</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Applied Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaveTableBody">
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Loading leave requests...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leave Request Modal -->
+    <div class="modal fade" id="leaveModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Request Leave</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="leaveForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="leaveType" class="form-label">Leave Type</label>
+                                <select class="form-select" id="leaveType" required>
+                                    <option value="">Select Leave Type</option>
+                                    <option value="annual">Annual Leave</option>
+                                    <option value="sick">Sick Leave</option>
+                                    <option value="personal">Personal Leave</option>
+                                    <option value="maternity">Maternity Leave</option>
+                                    <option value="emergency">Emergency Leave</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="duration" class="form-label">Duration</label>
+                                <select class="form-select" id="duration" required>
+                                    <option value="full_day">Full Day</option>
+                                    <option value="half_day">Half Day</option>
+                                    <option value="multiple_days">Multiple Days</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="startDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDate" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDate" required>
+                            </div>
+                            <div class="col-12 mb-3" id="halfDayOptions" style="display: none;">
+                                <label class="form-label">Half Day Period</label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="halfDayPeriod" id="morning" value="morning">
+                                        <label class="form-check-label" for="morning">Morning</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="halfDayPeriod" id="afternoon" value="afternoon">
+                                        <label class="form-check-label" for="afternoon">Afternoon</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="reason" class="form-label">Reason</label>
+                                <textarea class="form-control" id="reason" rows="3" placeholder="Please provide reason for leave..." required></textarea>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="contactDuring" class="form-label">Contact During Leave</label>
+                                <input type="text" class="form-control" id="contactDuring" placeholder="Phone number or email for emergency contact">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitLeaveRequest()">Submit Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leave Details Modal -->
+    <div class="modal fade" id="leaveDetailsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Leave Request Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="leaveDetailsBody">
+                    <!-- Leave details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <div id="leaveActions">
+                        <!-- Action buttons will be loaded here based on status and role -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentEmployee = null;
+        let currentLeaves = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            loadLeaveBalance();
+            loadLeaveRequests();
+            setupEventListeners();
+        });
+
+        function checkAuthentication() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/login';
+                return false;
+            }
+
+            currentEmployee = JSON.parse(localStorage.getItem('employee') || '{}');
+            const organization = JSON.parse(localStorage.getItem('organization') || '{}');
+            
+            if (currentEmployee.first_name) {
+                document.getElementById('userInfo').textContent = 
+                    `${currentEmployee.first_name} ${currentEmployee.last_name} (${currentEmployee.role}) - ${organization.name || 'Organization'}`;
+            }
+
+            // Show export button for admins
+            if (['admin', 'super_admin'].includes(currentEmployee.role)) {
+                document.getElementById('exportBtn').style.display = 'inline-block';
+            }
+
+            return true;
+        }
+
+        function setupEventListeners() {
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            document.getElementById('duration').addEventListener('change', toggleHalfDayOptions);
+            document.getElementById('startDate').addEventListener('change', updateEndDate);
+            
+            // Filter listeners
+            document.getElementById('statusFilter').addEventListener('change', filterLeaves);
+            document.getElementById('typeFilter').addEventListener('change', filterLeaves);
+            document.getElementById('dateFrom').addEventListener('change', filterLeaves);
+            document.getElementById('dateTo').addEventListener('change', filterLeaves);
+        }
+
+        function toggleHalfDayOptions() {
+            const duration = document.getElementById('duration').value;
+            const halfDayOptions = document.getElementById('halfDayOptions');
+            
+            if (duration === 'half_day') {
+                halfDayOptions.style.display = 'block';
+                document.getElementById('endDate').value = document.getElementById('startDate').value;
+                document.getElementById('endDate').disabled = true;
+            } else {
+                halfDayOptions.style.display = 'none';
+                document.getElementById('endDate').disabled = false;
+            }
+        }
+
+        function updateEndDate() {
+            const duration = document.getElementById('duration').value;
+            if (duration === 'half_day' || duration === 'full_day') {
+                document.getElementById('endDate').value = document.getElementById('startDate').value;
+            }
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            alertContainer.innerHTML = alertHtml;
+        }
+
+        async function loadLeaveBalance() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/leaves/balance', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const balance = await response.json();
+                    document.getElementById('annualLeave').textContent = balance.annual_leave || 20;
+                    document.getElementById('sickLeave').textContent = balance.sick_leave || 10;
+                    document.getElementById('personalLeave').textContent = balance.personal_leave || 5;
+                    document.getElementById('usedLeave').textContent = balance.used_leave || 0;
+                } else {
+                    // Use default values
+                    document.getElementById('annualLeave').textContent = '20';
+                    document.getElementById('sickLeave').textContent = '10';
+                    document.getElementById('personalLeave').textContent = '5';
+                    document.getElementById('usedLeave').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Error loading leave balance:', error);
+            }
+        }
+
+        async function loadLeaveRequests() {
+            try {
+                const token = localStorage.getItem('access_token');
+                let url = '/api/leaves';
+                
+                // Add filters
+                const params = new URLSearchParams();
+                const status = document.getElementById('statusFilter').value;
+                const type = document.getElementById('typeFilter').value;
+                const dateFrom = document.getElementById('dateFrom').value;
+                const dateTo = document.getElementById('dateTo').value;
+                
+                if (status) params.append('status', status);
+                if (type) params.append('type', type);
+                if (dateFrom) params.append('date_from', dateFrom);
+                if (dateTo) params.append('date_to', dateTo);
+                
+                if (params.toString()) {
+                    url += '?' + params.toString();
+                }
+
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentLeaves = data.leaves || [];
+                    renderLeaveTable(currentLeaves);
+                } else {
+                    throw new Error('Failed to load leave requests');
+                }
+            } catch (error) {
+                console.error('Error loading leave requests:', error);
+                showAlert('Error loading leave requests', 'danger');
+            }
+        }
+
+        function renderLeaveTable(leaves) {
+            const tbody = document.getElementById('leaveTableBody');
+            
+            if (leaves.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="fas fa-calendar-times me-2"></i>No leave requests found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = leaves.map(leave => {
+                const startDate = new Date(leave.start_date).toLocaleDateString();
+                const endDate = new Date(leave.end_date).toLocaleDateString();
+                const appliedDate = new Date(leave.created_at).toLocaleDateString();
+                const days = calculateDays(leave.start_date, leave.end_date);
+
+                return `
+                    <tr>
+                        <td><span class="leave-type-badge">${leave.leave_type || 'N/A'}</span></td>
+                        <td>${startDate}</td>
+                        <td>${endDate}</td>
+                        <td>${days}</td>
+                        <td>${leave.reason ? (leave.reason.length > 50 ? leave.reason.substring(0, 50) + '...' : leave.reason) : 'N/A'}</td>
+                        <td><span class="status-badge status-${leave.status || 'pending'}">${(leave.status || 'pending').charAt(0).toUpperCase() + (leave.status || 'pending').slice(1)}</span></td>
+                        <td>${appliedDate}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="viewLeaveDetails(${leave.id})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            ${leave.status === 'pending' ? `
+                                <button class="btn btn-sm btn-outline-danger" onclick="cancelLeave(${leave.id})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            ` : ''}
+                            ${['admin', 'super_admin'].includes(currentEmployee.role) && leave.status === 'pending' ? `
+                                <button class="btn btn-sm btn-outline-success me-1" onclick="approveLeave(${leave.id})">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="rejectLeave(${leave.id})">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function calculateDays(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            return diffDays;
+        }
+
+        function filterLeaves() {
+            loadLeaveRequests(); // Reload with filters
+        }
+
+        function requestLeave() {
+            document.getElementById('leaveForm').reset();
+            document.getElementById('halfDayOptions').style.display = 'none';
+            document.getElementById('endDate').disabled = false;
+            new bootstrap.Modal(document.getElementById('leaveModal')).show();
+        }
+
+        async function submitLeaveRequest() {
+            try {
+                const form = document.getElementById('leaveForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const leaveData = {
+                    leave_type: document.getElementById('leaveType').value,
+                    start_date: document.getElementById('startDate').value,
+                    end_date: document.getElementById('endDate').value,
+                    reason: document.getElementById('reason').value,
+                    contact_during_leave: document.getElementById('contactDuring').value,
+                    duration: document.getElementById('duration').value
+                };
+
+                if (leaveData.duration === 'half_day') {
+                    const halfDayPeriod = document.querySelector('input[name="halfDayPeriod"]:checked');
+                    if (halfDayPeriod) {
+                        leaveData.half_day_period = halfDayPeriod.value;
+                    }
+                }
+
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/leaves', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(leaveData)
+                });
+
+                if (response.ok) {
+                    showAlert('Leave request submitted successfully', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('leaveModal')).hide();
+                    loadLeaveRequests();
+                    loadLeaveBalance();
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to submit leave request');
+                }
+            } catch (error) {
+                console.error('Error submitting leave request:', error);
+                showAlert('Error submitting leave request: ' + error.message, 'danger');
+            }
+        }
+
+        async function viewLeaveDetails(leaveId) {
+            const leave = currentLeaves.find(l => l.id === leaveId);
+            if (!leave) return;
+
+            const detailsBody = document.getElementById('leaveDetailsBody');
+            detailsBody.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6"><strong>Leave Type:</strong></div>
+                    <div class="col-md-6">${leave.leave_type}</div>
+                    <div class="col-md-6"><strong>Start Date:</strong></div>
+                    <div class="col-md-6">${new Date(leave.start_date).toLocaleDateString()}</div>
+                    <div class="col-md-6"><strong>End Date:</strong></div>
+                    <div class="col-md-6">${new Date(leave.end_date).toLocaleDateString()}</div>
+                    <div class="col-md-6"><strong>Duration:</strong></div>
+                    <div class="col-md-6">${calculateDays(leave.start_date, leave.end_date)} days</div>
+                    <div class="col-md-6"><strong>Status:</strong></div>
+                    <div class="col-md-6"><span class="status-badge status-${leave.status}">${leave.status}</span></div>
+                    <div class="col-md-6"><strong>Applied Date:</strong></div>
+                    <div class="col-md-6">${new Date(leave.created_at).toLocaleDateString()}</div>
+                    <div class="col-12 mt-3"><strong>Reason:</strong></div>
+                    <div class="col-12">${leave.reason || 'N/A'}</div>
+                    ${leave.contact_during_leave ? `
+                        <div class="col-12 mt-3"><strong>Contact During Leave:</strong></div>
+                        <div class="col-12">${leave.contact_during_leave}</div>
+                    ` : ''}
+                    ${leave.admin_comments ? `
+                        <div class="col-12 mt-3"><strong>Admin Comments:</strong></div>
+                        <div class="col-12">${leave.admin_comments}</div>
+                    ` : ''}
+                </div>
+            `;
+
+            new bootstrap.Modal(document.getElementById('leaveDetailsModal')).show();
+        }
+
+        async function approveLeave(leaveId) {
+            if (!confirm('Are you sure you want to approve this leave request?')) return;
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/leaves/${leaveId}/approve`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    showAlert('Leave request approved successfully', 'success');
+                    loadLeaveRequests();
+                } else {
+                    throw new Error('Failed to approve leave request');
+                }
+            } catch (error) {
+                console.error('Error approving leave:', error);
+                showAlert('Error approving leave request', 'danger');
+            }
+        }
+
+        async function rejectLeave(leaveId) {
+            const reason = prompt('Please provide a reason for rejection:');
+            if (!reason) return;
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/leaves/${leaveId}/reject`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ rejection_reason: reason })
+                });
+
+                if (response.ok) {
+                    showAlert('Leave request rejected', 'success');
+                    loadLeaveRequests();
+                } else {
+                    throw new Error('Failed to reject leave request');
+                }
+            } catch (error) {
+                console.error('Error rejecting leave:', error);
+                showAlert('Error rejecting leave request', 'danger');
+            }
+        }
+
+        async function cancelLeave(leaveId) {
+            if (!confirm('Are you sure you want to cancel this leave request?')) return;
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/leaves/${leaveId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    showAlert('Leave request cancelled successfully', 'success');
+                    loadLeaveRequests();
+                    loadLeaveBalance();
+                } else {
+                    throw new Error('Failed to cancel leave request');
+                }
+            } catch (error) {
+                console.error('Error cancelling leave:', error);
+                showAlert('Error cancelling leave request', 'danger');
+            }
+        }
+
+        function exportLeaves() {
+            showAlert('Export functionality will be available in the full implementation', 'info');
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('employee');
+            localStorage.removeItem('organization');
+            
+            showAlert('Logged out successfully', 'success');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

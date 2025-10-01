@@ -18,6 +18,7 @@ def is_super_admin():
     if employee and (
         'superadmin' in employee.email.lower() or 
         employee.email.endswith('@saas-admin.com') or
+        employee.email.endswith('@hrms.com') or
         employee.role == 'super_admin'
     ):
         return True

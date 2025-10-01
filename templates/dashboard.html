@@ -132,6 +132,49 @@
             margin-bottom: 1rem;
         }
 
+        .feature-card-active {
+            position: relative;
+            border: 2px solid var(--primary-color);
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+        }
+
+        .feature-card-active:hover {
+            border-color: var(--secondary-color);
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+
+        .feature-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .navbar-toggler {
+            border: none;
+            color: white;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        .dropdown-menu {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .dropdown-item {
+            padding: 0.7rem 1rem;
+            border-radius: 5px;
+            margin: 0.2rem 0.5rem;
+        }
+
+        .dropdown-item:hover {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
         .alert {
             border-radius: 10px;
             border: none;
@@ -147,11 +190,56 @@
                     <a class="navbar-brand" href="#">
                         <i class="fas fa-users"></i> HR Management System
                     </a>
-                    <div class="navbar-nav ms-auto">
-                        <span class="nav-link" id="userInfo">Loading...</span>
-                        <a class="nav-link" href="#" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/rbac-guide">
+                                    <i class="fas fa-rocket"></i> Get Started
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown" id="adminDropdown" style="display: none;">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-cogs"></i> Administration
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/roles">
+                                        <i class="fas fa-user-shield"></i> Roles & Permissions
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="/settings">
+                                        <i class="fas fa-cog"></i> System Settings
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="/organizations">
+                                        <i class="fas fa-sitemap"></i> Organization Management
+                                    </a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown" id="superadminDropdown" style="display: none;">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-crown"></i> Superadmin
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/saas-admin">
+                                        <i class="fas fa-tachometer-alt"></i> SaaS Dashboard
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="/debug-login">
+                                        <i class="fas fa-bug"></i> Debug Login
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="/rbac-guide">
+                                        <i class="fas fa-shield-alt"></i> RBAC Guide
+                                    </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <div class="navbar-nav ms-auto">
+                            <span class="nav-link" id="userInfo">Loading...</span>
+                            <a class="nav-link" href="#" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -209,6 +297,7 @@
 
                 <!-- Feature Grid -->
                 <div class="feature-grid">
+                    <!-- Core HR Features -->
                     <div class="feature-card" onclick="navigateTo('/employees')">
                         <div class="feature-icon">
                             <i class="fas fa-user-tie"></i>
@@ -256,6 +345,134 @@
                         <h5>Recruitment</h5>
                         <p>Manage job postings, applications, and hiring process.</p>
                     </div>
+
+                    <!-- Additional HR Features -->
+                    <div class="feature-card" onclick="navigateTo('/training')">
+                        <div class="feature-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h5>Training & Development</h5>
+                        <p>Manage training programs, courses, and employee development.</p>
+                    </div>
+
+                    <div class="feature-card" onclick="navigateTo('/benefits')">
+                        <div class="feature-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <h5>Benefits Management</h5>
+                        <p>Administer employee benefits, insurance, and compensation packages.</p>
+                    </div>
+
+                    <div class="feature-card" onclick="navigateTo('/onboarding')">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <h5>Employee Onboarding</h5>
+                        <p>Streamline new employee integration and orientation process.</p>
+                    </div>
+
+                    <!-- Communication & Collaboration -->
+                    <div class="feature-card" onclick="navigateTo('/announcements')">
+                        <div class="feature-icon">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h5>Announcements</h5>
+                        <p>Company-wide communications, news, and important updates.</p>
+                    </div>
+
+                    <div class="feature-card" onclick="navigateTo('/documents')">
+                        <div class="feature-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h5>Document Management</h5>
+                        <p>Store, organize, and manage HR documents and policies.</p>
+                    </div>
+
+                    <div class="feature-card" onclick="navigateTo('/calendar')">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <h5>Calendar Management</h5>
+                        <p>Schedule meetings, events, and manage organizational calendar.</p>
+                    </div>
+
+                    <!-- Analytics & Reporting -->
+                    <div class="feature-card" onclick="navigateTo('/analytics')">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h5>Analytics & Reports</h5>
+                        <p>HR metrics, business intelligence, and comprehensive reporting.</p>
+                    </div>
+
+                    <div class="feature-card" onclick="navigateTo('/timesheets')">
+                        <div class="feature-icon">
+                            <i class="fas fa-stopwatch"></i>
+                        </div>
+                        <h5>Time Tracking</h5>
+                        <p>Track work hours, project time, and productivity metrics.</p>
+                    </div>
+
+                    <div class="feature-card" onclick="navigateTo('/surveys')">
+                        <div class="feature-icon">
+                            <i class="fas fa-poll"></i>
+                        </div>
+                        <h5>Employee Surveys</h5>
+                        <p>Collect feedback, conduct surveys, and measure satisfaction.</p>
+                    </div>
+
+                    <!-- Goal & Performance Management -->
+                    <div class="feature-card" onclick="navigateTo('/goals')">
+                        <div class="feature-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <h5>Goal Management</h5>
+                        <p>Set, track, and evaluate employee goals and objectives.</p>
+                    </div>
+
+                    <!-- System Administration -->
+                    <div class="feature-card feature-card-active" onclick="navigateTo('/settings')" id="settingsCard">
+                        <div class="feature-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h5>System Settings</h5>
+                        <p>Configure system preferences and organizational settings.</p>
+                        <div class="feature-status">
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="feature-card feature-card-active" onclick="navigateTo('/roles')" id="rolesCard">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h5>Roles & Permissions</h5>
+                        <p>Manage user roles, permissions, and access control.</p>
+                        <div class="feature-status">
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                    </div>
+
+                    <!-- Organization Management -->
+                    <div class="feature-card feature-card-active" onclick="navigateTo('/organizations')" id="orgManagementCard">
+                        <div class="feature-icon">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <h5>Organization Management</h5>
+                        <p>Manage organization settings, structure, and configuration.</p>
+                        <div class="feature-status">
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                    </div>
+
+                    <!-- SaaS Administration (Super Admin Only) -->
+                    <div class="feature-card" onclick="navigateTo('/saas-admin')" id="saasAdminCard" style="display: none;">
+                        <div class="feature-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <h5>SaaS Administration</h5>
+                        <p>Super admin controls, monitoring, and platform management.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -278,7 +495,7 @@
                 return false;
             }
 
-            // Display user info
+            // Display user info and configure role-based access
             const employee = JSON.parse(localStorage.getItem('employee') || '{}');
             const organization = JSON.parse(localStorage.getItem('organization') || '{}');
             
@@ -286,7 +503,64 @@
                 document.getElementById('userInfo').textContent = 
                     `${employee.first_name} ${employee.last_name} (${employee.role}) - ${organization.name || 'Organization'}`;
             }
+
+            // Configure role-based feature visibility
+            configureFeatureAccess(employee.role);
             return true;
+        }
+
+        function configureFeatureAccess(userRole) {
+            // Show admin dropdown for admin and super_admin roles
+            if (userRole === 'admin' || userRole === 'super_admin') {
+                document.getElementById('adminDropdown').style.display = 'block';
+            }
+
+            // Show superadmin dropdown only for super_admin role
+            if (userRole === 'super_admin') {
+                document.getElementById('superadminDropdown').style.display = 'block';
+            }
+
+            // Features available to all roles
+            const allFeatures = [
+                'employees', 'attendance', 'leaves', 'payroll', 'performance', 
+                'recruitment', 'training', 'benefits', 'onboarding', 'announcements',
+                'documents', 'calendar', 'analytics', 'timesheets', 'surveys', 'goals'
+            ];
+
+            // Admin-only features
+            const adminFeatures = ['settings', 'roles', 'organizations'];
+            
+            // Super admin-only features
+            const superAdminFeatures = ['saas-admin'];
+
+            // Show/hide features based on role
+            if (userRole === 'super_admin') {
+                // Super admin can see everything
+                showFeatures(allFeatures.concat(adminFeatures).concat(superAdminFeatures));
+                document.getElementById('saasAdminCard').style.display = 'block';
+                // Organization management is already visible as active feature card
+            } else if (userRole === 'admin') {
+                // Admin can see most features
+                showFeatures(allFeatures.concat(adminFeatures));
+                // Organization management is already visible as active feature card
+            } else {
+                // Regular employees see basic features
+                const employeeFeatures = [
+                    'employees', 'attendance', 'leaves', 'training', 'announcements',
+                    'documents', 'calendar', 'timesheets', 'surveys', 'goals'
+                ];
+                showFeatures(employeeFeatures);
+                // Hide admin-only feature cards for regular employees
+                document.getElementById('settingsCard').style.display = 'none';
+                document.getElementById('rolesCard').style.display = 'none';
+                document.getElementById('orgManagementCard').style.display = 'none';
+            }
+        }
+
+        function showFeatures(allowedFeatures) {
+            // This function can be used to show/hide specific feature cards
+            // For now, all features are visible but with different navigation behavior
+            console.log('User has access to features:', allowedFeatures);
         }
 
         function setupEventListeners() {
@@ -341,8 +615,53 @@
         }
 
         function navigateTo(url) {
-            // For now, show an alert since the full modules aren't implemented yet
-            showAlert(`Navigation to ${url} - This feature will be available in the full implementation`, 'info');
+            const employee = JSON.parse(localStorage.getItem('employee') || '{}');
+            
+            // Define implemented features
+            const implementedFeatures = [
+                '/employees', '/attendance', '/leaves', '/payroll', 
+                '/performance', '/recruitment', '/training', '/saas-admin',
+                '/debug-login', '/rbac-guide'
+            ];
+
+            // Check if feature is implemented
+            if (implementedFeatures.includes(url)) {
+                // Check role-based access
+                if (['/saas-admin', '/debug-login', '/rbac-guide'].includes(url) && employee.role !== 'super_admin') {
+                    showAlert('Access denied: Super admin privileges required', 'danger');
+                    return;
+                }
+                
+                if (['/settings', '/roles', '/organizations'].includes(url) && 
+                    !['admin', 'super_admin'].includes(employee.role)) {
+                    showAlert('Access denied: Admin privileges required', 'danger');
+                    return;
+                }
+
+                // Navigate to implemented feature
+                window.location.href = url;
+            } else {
+                // Show coming soon message for unimplemented features
+                const featureNames = {
+                    '/benefits': 'Benefits Management',
+                    '/onboarding': 'Employee Onboarding',
+                    '/announcements': 'Announcements',
+                    '/documents': 'Document Management',
+                    '/calendar': 'Calendar Management',
+                    '/analytics': 'Analytics & Reports',
+                    '/timesheets': 'Time Tracking',
+                    '/surveys': 'Employee Surveys',
+                    '/goals': 'Goal Management',
+                    '/settings': 'System Settings',
+                    '/roles': 'Roles & Permissions',
+                    '/organizations': 'Organization Management',
+                    '/debug-login': 'Debug Login Panel',
+                    '/rbac-guide': 'RBAC Guide'
+                };
+
+                const featureName = featureNames[url] || url.replace('/', '').charAt(0).toUpperCase() + url.slice(2);
+                showAlert(`${featureName} - Available in the full implementation. Coming soon!`, 'info');
+            }
         }
 
         function logout() {

@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roles & Permissions - HR System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px 15px 0 0;
+            padding: 1rem 2rem;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .role-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .permission-group {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .permission-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .permission-item:last-child {
+            border-bottom: none;
+        }
+
+        .badge-system {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-custom {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .permission-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .permission-header {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .audit-item {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <!-- Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-custom">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/">
+                        <i class="fas fa-user-shield me-2"></i>Roles & Permissions
+                    </a>
+                    <div class="navbar-nav ms-auto">
+                        <span class="nav-link" id="userInfo">Loading...</span>
+                        <a class="nav-link" href="/" id="backToDashboard">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a class="nav-link" href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div id="alertContainer"></div>
+                
+                <!-- Header -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2>Roles & Permissions Management</h2>
+                        <p class="text-muted">Manage user roles, permissions, and access control</p>
+                    </div>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <ul class="nav nav-tabs mb-4" id="rbacTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="roles-tab" data-bs-toggle="tab" data-bs-target="#roles" type="button" role="tab">
+                            <i class="fas fa-users-cog me-2"></i>Roles
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="permissions-tab" data-bs-toggle="tab" data-bs-target="#permissions" type="button" role="tab">
+                            <i class="fas fa-key me-2"></i>Permissions
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="employee-roles-tab" data-bs-toggle="tab" data-bs-target="#employee-roles" type="button" role="tab">
+                            <i class="fas fa-user-tag me-2"></i>Employee Roles
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab">
+                            <i class="fas fa-history me-2"></i>Audit Log
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="rbacTabContent">
+                    <!-- Roles Tab -->
+                    <div class="tab-pane fade show active" id="roles" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h4>Organization Roles</h4>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <button class="btn btn-primary" onclick="createRole()">
+                                    <i class="fas fa-plus"></i> Create Role
+                                </button>
+                                <button class="btn btn-outline-primary ms-2" onclick="loadRoles()">
+                                    <i class="fas fa-refresh"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="rolesContainer">
+                            <!-- Roles will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Permissions Tab -->
+                    <div class="tab-pane fade" id="permissions" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h4>System Permissions</h4>
+                                <p class="text-muted">Available permissions grouped by module</p>
+                            </div>
+                        </div>
+
+                        <div id="permissionsContainer" class="permissions-grid">
+                            <!-- Permissions will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Employee Roles Tab -->
+                    <div class="tab-pane fade" id="employee-roles" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h4>Employee Role Assignments</h4>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <button class="btn btn-outline-primary" onclick="loadEmployeeRoles()">
+                                    <i class="fas fa-refresh"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Department</th>
+                                            <th>Assigned Roles</th>
+                                            <th>Primary Role</th>
+                                            <th>Last Updated</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="employeeRolesTableBody">
+                                        <tr>
+                                            <td colspan="6" class="text-center py-4">
+                                                <i class="fas fa-spinner fa-spin me-2"></i>Loading employee roles...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Audit Log Tab -->
+                    <div class="tab-pane fade" id="audit" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h4>Audit Log</h4>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <button class="btn btn-outline-primary" onclick="loadAuditLogs()">
+                                    <i class="fas fa-refresh"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filters -->
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <select class="form-select" id="auditActionFilter">
+                                    <option value="">All Actions</option>
+                                    <option value="create">Create</option>
+                                    <option value="update">Update</option>
+                                    <option value="delete">Delete</option>
+                                    <option value="assign">Assign</option>
+                                    <option value="remove">Remove</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="auditResourceFilter">
+                                    <option value="">All Resources</option>
+                                    <option value="role">Roles</option>
+                                    <option value="employee_role">Employee Roles</option>
+                                    <option value="organization_setting">Settings</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="date" class="form-control" id="auditDateFrom">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="date" class="form-control" id="auditDateTo">
+                            </div>
+                        </div>
+
+                        <div id="auditLogsContainer">
+                            <!-- Audit logs will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Modal -->
+    <div class="modal fade" id="roleModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="roleModalTitle">Create Role</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="roleForm">
+                        <input type="hidden" id="roleId" value="">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="roleName" class="form-label">Role Name</label>
+                                <input type="text" class="form-control" id="roleName" required placeholder="e.g. team_lead">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="roleDisplayName" class="form-label">Display Name</label>
+                                <input type="text" class="form-control" id="roleDisplayName" required placeholder="e.g. Team Lead">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="roleDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="roleDescription" rows="2" placeholder="Describe the role and its responsibilities..."></textarea>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="roleIsActive" checked>
+                                    <label class="form-check-label" for="roleIsActive">
+                                        Active
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Permissions</label>
+                                <div id="rolePermissionsContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px; padding: 1rem;">
+                                    <!-- Permissions checkboxes will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveRole()">Save Role</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employee Role Assignment Modal -->
+    <div class="modal fade" id="employeeRoleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Manage Employee Roles</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="selectedEmployee" class="form-label">Employee</label>
+                        <select class="form-select" id="selectedEmployee">
+                            <option value="">Select Employee</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="selectedRole" class="form-label">Role</label>
+                        <select class="form-select" id="selectedRole">
+                            <option value="">Select Role</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="isPrimaryRole">
+                            <label class="form-check-label" for="isPrimaryRole">
+                                Set as Primary Role
+                            </label>
+                        </div>
+                    </div>
+                    <div id="currentEmployeeRoles">
+                        <!-- Current roles will be shown here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="assignEmployeeRole()">Assign Role</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentEmployee = null;
+        let currentRoles = [];
+        let currentPermissions = [];
+        let currentEmployees = [];
+        let editingRoleId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            loadRoles();
+            loadPermissions();
+            loadEmployees();
+            setupEventListeners();
+        });
+
+        function checkAuthentication() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/login';
+                return false;
+            }
+
+            currentEmployee = JSON.parse(localStorage.getItem('employee') || '{}');
+            const organization = JSON.parse(localStorage.getItem('organization') || '{}');
+            
+            if (currentEmployee.first_name) {
+                document.getElementById('userInfo').textContent = 
+                    `${currentEmployee.first_name} ${currentEmployee.last_name} (${currentEmployee.role}) - ${organization.name || 'Organization'}`;
+            }
+
+            // Check if user has permission to access this page
+            if (!['admin', 'super_admin'].includes(currentEmployee.role)) {
+                showAlert('You do not have permission to access this page', 'danger');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+                return false;
+            }
+
+            return true;
+        }
+
+        function setupEventListeners() {
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            
+            // Audit filter listeners
+            document.getElementById('auditActionFilter').addEventListener('change', loadAuditLogs);
+            document.getElementById('auditResourceFilter').addEventListener('change', loadAuditLogs);
+            document.getElementById('auditDateFrom').addEventListener('change', loadAuditLogs);
+            document.getElementById('auditDateTo').addEventListener('change', loadAuditLogs);
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            alertContainer.innerHTML = alertHtml;
+        }
+
+        async function loadRoles() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/rbac/roles', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentRoles = data.roles || [];
+                    renderRoles(currentRoles);
+                } else {
+                    throw new Error('Failed to load roles');
+                }
+            } catch (error) {
+                console.error('Error loading roles:', error);
+                showAlert('Error loading roles', 'danger');
+            }
+        }
+
+        function renderRoles(roles) {
+            const container = document.getElementById('rolesContainer');
+            
+            if (roles.length === 0) {
+                container.innerHTML = `
+                    <div class="role-card text-center">
+                        <i class="fas fa-users-cog fa-3x text-muted mb-3"></i>
+                        <h5>No roles found</h5>
+                        <p class="text-muted">Create your first role to get started</p>
+                        <button class="btn btn-primary" onclick="createRole()">Create Role</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = roles.map(role => `
+                <div class="role-card">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center mb-2">
+                                <h5 class="mb-0 me-2">${role.display_name}</h5>
+                                <span class="badge ${role.is_system_role ? 'badge-system' : 'badge-custom'}">${role.is_system_role ? 'System' : 'Custom'}</span>
+                                <span class="status-badge status-${role.is_active ? 'active' : 'inactive'} ms-2">${role.is_active ? 'Active' : 'Inactive'}</span>
+                            </div>
+                            <p class="text-muted mb-2">${role.description || 'No description'}</p>
+                            <small class="text-muted">
+                                <strong>Role Name:</strong> ${role.name} | 
+                                <strong>Permissions:</strong> ${role.permissions ? role.permissions.length : 0}
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="viewRole(${role.id})">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            ${!role.is_system_role ? `
+                                <button class="btn btn-sm btn-outline-success me-1" onclick="editRole(${role.id})">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteRole(${role.id})">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadPermissions() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/rbac/permissions', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentPermissions = data.permissions || [];
+                    renderPermissions(data.grouped_permissions || {});
+                } else {
+                    throw new Error('Failed to load permissions');
+                }
+            } catch (error) {
+                console.error('Error loading permissions:', error);
+                showAlert('Error loading permissions', 'danger');
+            }
+        }
+
+        function renderPermissions(groupedPermissions) {
+            const container = document.getElementById('permissionsContainer');
+            
+            container.innerHTML = Object.keys(groupedPermissions).map(module => `
+                <div class="permission-card">
+                    <div class="permission-header">
+                        <i class="fas fa-${getModuleIcon(module)} me-2"></i>${module.charAt(0).toUpperCase() + module.slice(1)}
+                    </div>
+                    ${groupedPermissions[module].map(permission => `
+                        <div class="permission-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>${permission.display_name}</strong>
+                                    <div class="small text-muted">${permission.description}</div>
+                                </div>
+                                <span class="badge bg-secondary">${permission.action}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        function getModuleIcon(module) {
+            const icons = {
+                'employees': 'users',
+                'attendance': 'clock',
+                'leaves': 'calendar-alt',
+                'payroll': 'money-bill-wave',
+                'performance': 'chart-line',
+                'recruitment': 'user-plus',
+                'departments': 'building',
+                'roles': 'user-shield',
+                'settings': 'cogs',
+                'reports': 'chart-bar',
+                'system': 'server',
+                'audit': 'history'
+            };
+            return icons[module] || 'cog';
+        }
+
+        async function loadEmployees() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/employees', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentEmployees = data.employees || [];
+                } else {
+                    console.warn('Failed to load employees for role assignment');
+                }
+            } catch (error) {
+                console.error('Error loading employees:', error);
+            }
+        }
+
+        function createRole() {
+            editingRoleId = null;
+            document.getElementById('roleModalTitle').textContent = 'Create Role';
+            document.getElementById('roleForm').reset();
+            document.getElementById('roleId').value = '';
+            loadPermissionsForRole();
+            new bootstrap.Modal(document.getElementById('roleModal')).show();
+        }
+
+        function editRole(roleId) {
+            const role = currentRoles.find(r => r.id === roleId);
+            if (!role) return;
+
+            if (role.is_system_role) {
+                showAlert('System roles cannot be edited', 'warning');
+                return;
+            }
+
+            editingRoleId = roleId;
+            document.getElementById('roleModalTitle').textContent = 'Edit Role';
+            document.getElementById('roleId').value = roleId;
+            document.getElementById('roleName').value = role.name;
+            document.getElementById('roleDisplayName').value = role.display_name;
+            document.getElementById('roleDescription').value = role.description || '';
+            document.getElementById('roleIsActive').checked = role.is_active;
+
+            loadPermissionsForRole(role.permissions || []);
+            new bootstrap.Modal(document.getElementById('roleModal')).show();
+        }
+
+        function loadPermissionsForRole(selectedPermissions = []) {
+            const container = document.getElementById('rolePermissionsContainer');
+            const selectedPermissionIds = selectedPermissions.map(p => p.id);
+
+            // Group permissions by module
+            const groupedPermissions = {};
+            currentPermissions.forEach(permission => {
+                if (!groupedPermissions[permission.module]) {
+                    groupedPermissions[permission.module] = [];
+                }
+                groupedPermissions[permission.module].push(permission);
+            });
+
+            container.innerHTML = Object.keys(groupedPermissions).map(module => `
+                <div class="permission-group">
+                    <h6><i class="fas fa-${getModuleIcon(module)} me-2"></i>${module.charAt(0).toUpperCase() + module.slice(1)}</h6>
+                    ${groupedPermissions[module].map(permission => `
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" 
+                                   id="perm_${permission.id}" 
+                                   value="${permission.id}"
+                                   ${selectedPermissionIds.includes(permission.id) ? 'checked' : ''}>
+                            <label class="form-check-label" for="perm_${permission.id}">
+                                <strong>${permission.display_name}</strong>
+                                <div class="small text-muted">${permission.description}</div>
+                            </label>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        async function saveRole() {
+            try {
+                const form = document.getElementById('roleForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const roleData = {
+                    name: document.getElementById('roleName').value,
+                    display_name: document.getElementById('roleDisplayName').value,
+                    description: document.getElementById('roleDescription').value,
+                    is_active: document.getElementById('roleIsActive').checked,
+                    permission_ids: Array.from(document.querySelectorAll('#rolePermissionsContainer input[type="checkbox"]:checked')).map(cb => parseInt(cb.value))
+                };
+
+                const token = localStorage.getItem('access_token');
+                const url = editingRoleId ? `/api/rbac/roles/${editingRoleId}` : '/api/rbac/roles';
+                const method = editingRoleId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(roleData)
+                });
+
+                if (response.ok) {
+                    showAlert(`Role ${editingRoleId ? 'updated' : 'created'} successfully`, 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('roleModal')).hide();
+                    loadRoles();
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.error || `Failed to ${editingRoleId ? 'update' : 'create'} role`);
+                }
+            } catch (error) {
+                console.error('Error saving role:', error);
+                showAlert('Error saving role: ' + error.message, 'danger');
+            }
+        }
+
+        function viewRole(roleId) {
+            const role = currentRoles.find(r => r.id === roleId);
+            if (!role) return;
+
+            // Show role details in modal or navigate to detailed view
+            showAlert(`Role: ${role.display_name} | Permissions: ${role.permissions ? role.permissions.length : 0}`, 'info');
+        }
+
+        async function deleteRole(roleId) {
+            if (!confirm('Are you sure you want to delete this role?')) return;
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/rbac/roles/${roleId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    showAlert('Role deleted successfully', 'success');
+                    loadRoles();
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to delete role');
+                }
+            } catch (error) {
+                console.error('Error deleting role:', error);
+                showAlert('Error deleting role: ' + error.message, 'danger');
+            }
+        }
+
+        async function loadEmployeeRoles() {
+            try {
+                // This would typically load all employees with their role assignments
+                // For now, show placeholder data
+                const tbody = document.getElementById('employeeRolesTableBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <i class="fas fa-info-circle me-2"></i>Employee role assignments will be displayed here
+                        </td>
+                    </tr>
+                `;
+            } catch (error) {
+                console.error('Error loading employee roles:', error);
+                showAlert('Error loading employee roles', 'danger');
+            }
+        }
+
+        async function loadAuditLogs() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const params = new URLSearchParams();
+                
+                const action = document.getElementById('auditActionFilter').value;
+                const resource = document.getElementById('auditResourceFilter').value;
+                const dateFrom = document.getElementById('auditDateFrom').value;
+                const dateTo = document.getElementById('auditDateTo').value;
+                
+                if (action) params.append('action', action);
+                if (resource) params.append('resource_type', resource);
+                if (dateFrom) params.append('date_from', dateFrom);
+                if (dateTo) params.append('date_to', dateTo);
+                
+                const url = `/api/rbac/audit-logs${params.toString() ? '?' + params.toString() : ''}`;
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    renderAuditLogs(data.audit_logs || []);
+                } else {
+                    throw new Error('Failed to load audit logs');
+                }
+            } catch (error) {
+                console.error('Error loading audit logs:', error);
+                showAlert('Error loading audit logs', 'danger');
+                
+                // Show placeholder audit logs
+                renderAuditLogs([]);
+            }
+        }
+
+        function renderAuditLogs(auditLogs) {
+            const container = document.getElementById('auditLogsContainer');
+            
+            if (auditLogs.length === 0) {
+                container.innerHTML = `
+                    <div class="audit-item text-center">
+                        <i class="fas fa-history fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">No audit logs found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = auditLogs.map(log => `
+                <div class="audit-item">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <strong>${log.action}</strong> on ${log.resource_type}
+                            ${log.user ? `by ${log.user.name}` : ''}
+                            <div class="small text-muted mt-1">
+                                ${new Date(log.timestamp).toLocaleString()}
+                                ${log.ip_address ? ` from ${log.ip_address}` : ''}
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewAuditDetails('${log.id}')">
+                                <i class="fas fa-eye"></i> Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewAuditDetails(logId) {
+            showAlert('Audit log details functionality will be available in the full implementation', 'info');
+        }
+
+        function assignEmployeeRole() {
+            showAlert('Employee role assignment functionality will be available in the full implementation', 'info');
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('employee');
+            localStorage.removeItem('organization');
+            
+            showAlert('Logged out successfully', 'success');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

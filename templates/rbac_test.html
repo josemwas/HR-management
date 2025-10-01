@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RBAC Test - HR System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .test-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            max-width: 800px;
+            padding: 2rem;
+        }
+        .result {
+            margin: 1rem 0;
+            padding: 0.5rem;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="test-container">
+            <h2>🔧 RBAC System Test</h2>
+            <p>This page tests the RBAC functionality step by step.</p>
+            
+            <div id="testResults"></div>
+            
+            <div class="mt-4">
+                <h4>Quick Login Test</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="email" class="form-control mb-2" id="testEmail" value="admin@acme-corp.com" placeholder="Email">
+                        <input type="password" class="form-control mb-2" id="testPassword" value="admin123" placeholder="Password">
+                        <button class="btn btn-primary" onclick="testLogin()">Test Login</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-success" onclick="testRBACAPI()">Test RBAC API</button>
+                        <button class="btn btn-info" onclick="checkTokens()">Check Tokens</button>
+                        <button class="btn btn-warning" onclick="clearTokens()">Clear Tokens</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h4>Navigation Test</h4>
+                <a href="/login" class="btn btn-outline-primary">Go to Login</a>
+                <a href="/roles" class="btn btn-outline-success">Go to Roles</a>
+                <a href="/settings" class="btn btn-outline-info">Go to Settings</a>
+                <a href="/" class="btn btn-outline-secondary">Go to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addResult(message, type = 'info') {
+            const container = document.getElementById('testResults');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong> - ${message}`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function checkTokens() {
+            const token = localStorage.getItem('access_token');
+            const employee = localStorage.getItem('employee');
+            const org = localStorage.getItem('organization');
+            
+            addResult(`Access Token: ${token ? 'EXISTS' : 'MISSING'}`, token ? 'success' : 'error');
+            addResult(`Employee Data: ${employee ? 'EXISTS' : 'MISSING'}`, employee ? 'success' : 'error');
+            addResult(`Organization Data: ${org ? 'EXISTS' : 'MISSING'}`, org ? 'success' : 'error');
+            
+            if (employee) {
+                try {
+                    const emp = JSON.parse(employee);
+                    addResult(`Employee: ${emp.first_name} ${emp.last_name} (${emp.role})`, 'info');
+                } catch (e) {
+                    addResult('Employee data is corrupted', 'error');
+                }
+            }
+        }
+
+        function clearTokens() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('employee');
+            localStorage.removeItem('organization');
+            addResult('All tokens and data cleared', 'info');
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            addResult('Attempting login...', 'info');
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Store authentication data
+                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('refresh_token', data.refresh_token);
+                    localStorage.setItem('employee', JSON.stringify(data.employee));
+                    localStorage.setItem('organization', JSON.stringify(data.organization));
+                    
+                    addResult(`Login successful! Welcome ${data.employee.first_name} ${data.employee.last_name}`, 'success');
+                    addResult(`Role: ${data.employee.role} | Organization: ${data.organization.name}`, 'info');
+                } else {
+                    addResult(`Login failed: ${data.error || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                addResult(`Login error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testRBACAPI() {
+            const token = localStorage.getItem('access_token');
+            
+            if (!token) {
+                addResult('No access token found. Please login first.', 'error');
+                return;
+            }
+
+            addResult('Testing RBAC API endpoints...', 'info');
+
+            // Test permissions
+            try {
+                const response = await fetch('/api/rbac/permissions', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`Permissions API: SUCCESS (${Object.keys(data.grouped_permissions || {}).length} modules)`, 'success');
+                } else {
+                    addResult(`Permissions API: FAILED (${response.status})`, 'error');
+                }
+            } catch (error) {
+                addResult(`Permissions API: ERROR - ${error.message}`, 'error');
+            }
+
+            // Test roles
+            try {
+                const response = await fetch('/api/rbac/roles', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`Roles API: SUCCESS (${data.roles ? data.roles.length : 0} roles)`, 'success');
+                } else {
+                    addResult(`Roles API: FAILED (${response.status})`, 'error');
+                }
+            } catch (error) {
+                addResult(`Roles API: ERROR - ${error.message}`, 'error');
+            }
+
+            // Test settings
+            try {
+                const response = await fetch('/api/rbac/settings', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`Settings API: SUCCESS (${Object.keys(data.grouped_settings || {}).length} categories)`, 'success');
+                } else {
+                    addResult(`Settings API: FAILED (${response.status})`, 'error');
+                }
+            } catch (error) {
+                addResult(`Settings API: ERROR - ${error.message}`, 'error');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            addResult('RBAC Test page loaded', 'info');
+            checkTokens();
+        });
+    </script>
+</body>
+</html>

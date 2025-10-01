@@ -254,6 +254,25 @@
                     <a class="navbar-brand" href="#">
                         <i class="fas fa-crown"></i> Super Admin Dashboard
                     </a>
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-tools"></i> Admin Tools
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/dashboard">
+                                    <i class="fas fa-tachometer-alt"></i> Main Dashboard
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/debug-login">
+                                    <i class="fas fa-bug"></i> Debug Login
+                                </a></li>
+                                <li><a class="dropdown-item" href="/rbac-guide">
+                                    <i class="fas fa-shield-alt"></i> RBAC Guide
+                                </a></li>
+                            </ul>
+                        </li>
+                    </ul>
                     <div class="navbar-nav ms-auto">
                         <a class="nav-link" href="#" id="logoutBtn">
                             <i class="fas fa-sign-out-alt"></i> Logout

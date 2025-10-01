@@ -197,7 +197,7 @@ def init_saas_data():
             print("Admin login: admin@sample-company.com / password123")
         
         # Create super admin if specified
-        super_admin_email = os.getenv('SUPER_ADMIN_EMAIL', 'superadmin@saas-admin.com')
+        super_admin_email = os.getenv('SUPER_ADMIN_EMAIL', 'superadmin@hrms.com')
         super_admin_password = os.getenv('SUPER_ADMIN_PASSWORD', 'superadmin123')
         
         # Check if super admin organization exists

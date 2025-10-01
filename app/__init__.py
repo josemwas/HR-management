@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, jsonify, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -25,7 +25,7 @@ def create_app(config_name='default'):
     CORS(app)
     
     # Register blueprints
-    from app.routes import auth, employees, attendance, leaves, payroll, recruitment, performance, training, organizations, saas_admin, super_admin
+    from app.routes import auth, employees, attendance, leaves, payroll, recruitment, performance, training, organizations, saas_admin, super_admin, rbac
     
     app.register_blueprint(auth.bp)
     app.register_blueprint(employees.bp)
@@ -38,14 +38,19 @@ def create_app(config_name='default'):
     app.register_blueprint(organizations.bp)
     app.register_blueprint(saas_admin.bp)
     app.register_blueprint(super_admin.bp)
+    app.register_blueprint(rbac.rbac_bp)
     
     # Register frontend routes
-    from flask import render_template, jsonify, request, redirect, url_for
     from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
     
     @app.route('/')
     def index():
-        # Simply show the dashboard - let the frontend handle authentication
+        # Redirect to login page as homepage
+        return redirect('/login')
+    
+    @app.route('/dashboard')
+    def dashboard():
+        # The actual dashboard that requires authentication
         return render_template('dashboard.html')
     
     @app.route('/login')
@@ -60,13 +65,119 @@ def create_app(config_name='default'):
     def saas_admin_dashboard():
         return render_template('saas-admin.html')
     
+    def superadmin_required(f):
+        """Decorator to require superadmin access"""
+        from functools import wraps
+        
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            # Return a page that will check authentication client-side
+            # This approach works better with SPA-style authentication
+            return render_template('superadmin_check.html', 
+                                 target_page=f.__name__,
+                                 debug_login_page=(f.__name__ == 'debug_login'),
+                                 rbac_guide_page=(f.__name__ == 'rbac_guide_page'))
+        
+        return decorated_function
+    
     @app.route('/debug-login')
+    @superadmin_required
     def debug_login():
         return render_template('debug-login.html')
     
     @app.route('/careers')
     def careers():
         return render_template('careers.html')
+    
+    # Feature routes - dedicated functional pages
+    @app.route('/employees')
+    def employees_page():
+        return render_template('employees.html')
+    
+    @app.route('/departments')
+    def departments_page():
+        return render_template('dashboard.html')  # Will create dedicated page
+    
+    @app.route('/attendance')
+    def attendance_page():
+        return render_template('attendance.html')
+    
+    @app.route('/leaves')
+    def leaves_page():
+        return render_template('leaves.html')
+    
+    @app.route('/payroll')
+    def payroll_page():
+        return render_template('payroll.html')
+    
+    @app.route('/performance')
+    def performance_page():
+        return render_template('performance.html')
+    
+    @app.route('/recruitment')
+    def recruitment_page():
+        return render_template('recruitment.html')
+    
+    @app.route('/training')
+    def training_page():
+        return render_template('training.html')  # Create dedicated page
+    
+    @app.route('/benefits')
+    def benefits_page():
+        return render_template('benefits.html')
+    
+    @app.route('/onboarding')
+    def onboarding_page():
+        return render_template('onboarding.html')
+    
+    @app.route('/announcements')
+    def announcements_page():
+        return render_template('announcements.html')
+    
+    @app.route('/documents')
+    def documents_page():
+        return render_template('documents.html')
+    
+    @app.route('/calendar')
+    def calendar_page():
+        return render_template('calendar.html')
+    
+    @app.route('/analytics')
+    def analytics_page():
+        return render_template('analytics.html')
+    
+    @app.route('/timesheets')
+    def timesheets_page():
+        return render_template('timesheets.html')
+    
+    @app.route('/surveys')
+    def surveys_page():
+        return render_template('surveys.html')
+    
+    @app.route('/goals')
+    def goals_page():
+        return render_template('goals.html')
+    
+    @app.route('/settings')
+    def settings_page():
+        return render_template('settings.html')
+    
+    @app.route('/roles')
+    def roles_page():
+        return render_template('roles.html')
+    
+    @app.route('/rbac-test')
+    def rbac_test_page():
+        return render_template('rbac_test.html')
+    
+    @app.route('/rbac-guide')
+    @superadmin_required
+    def rbac_guide_page():
+        return render_template('rbac_guide.html')
+    
+    @app.route('/organizations')
+    def organizations_page():
+        return render_template('organizations.html')
     
     @app.route('/api')
     def api_info():

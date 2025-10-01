@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization Management - HR System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px 15px 0 0;
+            padding: 1rem 2rem;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .org-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .feature-section {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .coming-soon {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 10px;
+            padding: 3rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <!-- Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-custom">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/">
+                        <i class="fas fa-sitemap me-2"></i>Organization Management
+                    </a>
+                    <div class="navbar-nav ms-auto">
+                        <span class="nav-link" id="userInfo">Loading...</span>
+                        <a class="nav-link" href="/" id="backToDashboard">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a class="nav-link" href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div id="alertContainer"></div>
+                
+                <!-- Header -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h2>Organization Management</h2>
+                        <p class="text-muted">Manage your organization's structure, settings, and configuration</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-primary" onclick="refreshData()">
+                            <i class="fas fa-refresh"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Current Organization Info -->
+                <div class="org-card">
+                    <h4><i class="fas fa-building me-2"></i>Current Organization</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="orgInfo">
+                                <p><strong>Loading organization information...</strong></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-number" id="totalEmployees">-</div>
+                                    <div>Total Employees</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="totalDepartments">-</div>
+                                    <div>Departments</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="feature-section">
+                            <h5><i class="fas fa-cogs text-primary"></i> Organization Settings</h5>
+                            <p>Configure organization-wide settings, policies, and preferences.</p>
+                            <a href="/settings" class="btn btn-primary btn-sm">
+                                <i class="fas fa-cog"></i> Manage Settings
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-section">
+                            <h5><i class="fas fa-user-shield text-primary"></i> Roles & Permissions</h5>
+                            <p>Manage user roles, permissions, and access control for your organization.</p>
+                            <a href="/roles" class="btn btn-primary btn-sm">
+                                <i class="fas fa-user-shield"></i> Manage Roles
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-section">
+                            <h5><i class="fas fa-users text-primary"></i> Employee Management</h5>
+                            <p>View and manage all employees within your organization.</p>
+                            <a href="/employees" class="btn btn-primary btn-sm">
+                                <i class="fas fa-users"></i> Manage Employees
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Features (Coming Soon) -->
+                <div class="coming-soon">
+                    <i class="fas fa-tools fa-3x text-primary mb-3"></i>
+                    <h3>Advanced Organization Management</h3>
+                    <p class="lead">Advanced features like organizational structure editing, multi-location management, and advanced reporting are coming soon!</p>
+                    <div class="mt-4">
+                        <span class="badge bg-primary me-2">Multi-Location Support</span>
+                        <span class="badge bg-primary me-2">Organizational Charts</span>
+                        <span class="badge bg-primary me-2">Advanced Reporting</span>
+                        <span class="badge bg-primary">Workflow Management</span>
+                    </div>
+                </div>
+
+                <!-- Current Available Features -->
+                <div class="row">
+                    <div class="col-12">
+                        <h4><i class="fas fa-check-circle text-success"></i> Currently Available Features</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-2"></i> Organization Settings Management</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Role-Based Access Control</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Employee Role Assignments</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Permission Management</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-2"></i> Audit Logging</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Security Settings</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Attendance Policies</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Leave Management Policies</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentEmployee = null;
+        let currentOrganization = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            loadOrganizationData();
+            setupEventListeners();
+        });
+
+        function checkAuthentication() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/login';
+                return false;
+            }
+
+            currentEmployee = JSON.parse(localStorage.getItem('employee') || '{}');
+            currentOrganization = JSON.parse(localStorage.getItem('organization') || '{}');
+            
+            if (currentEmployee.first_name) {
+                document.getElementById('userInfo').textContent = 
+                    `${currentEmployee.first_name} ${currentEmployee.last_name} (${currentEmployee.role})`;
+            }
+
+            // Check if user has permission to access this page
+            if (!['admin', 'super_admin'].includes(currentEmployee.role)) {
+                showAlert('You do not have permission to access this page', 'danger');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+                return false;
+            }
+
+            return true;
+        }
+
+        function setupEventListeners() {
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            alertContainer.innerHTML = alertHtml;
+        }
+
+        async function loadOrganizationData() {
+            try {
+                // Display current organization info
+                if (currentOrganization) {
+                    document.getElementById('orgInfo').innerHTML = `
+                        <p><strong>Name:</strong> ${currentOrganization.name || 'N/A'}</p>
+                        <p><strong>Domain:</strong> ${currentOrganization.domain || 'N/A'}</p>
+                        <p><strong>Plan:</strong> ${currentOrganization.subscription_plan || 'Basic'}</p>
+                        <p><strong>Status:</strong> <span class="badge bg-success">Active</span></p>
+                    `;
+                }
+
+                // Load dashboard stats
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/dashboard/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('totalEmployees').textContent = stats.total_employees || 0;
+                    document.getElementById('totalDepartments').textContent = stats.total_departments || 0;
+                } else {
+                    console.warn('Failed to load organization stats');
+                }
+            } catch (error) {
+                console.error('Error loading organization data:', error);
+                showAlert('Error loading organization data', 'warning');
+            }
+        }
+
+        function refreshData() {
+            showAlert('Refreshing organization data...', 'info');
+            loadOrganizationData();
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('employee');
+            localStorage.removeItem('organization');
+            
+            showAlert('Logged out successfully', 'success');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

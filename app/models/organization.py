@@ -63,6 +63,10 @@ class Organization(db.Model):
     subscriptions = db.relationship('Subscription', back_populates='organization', cascade='all, delete-orphan')
     usage_logs = db.relationship('UsageLog', back_populates='organization', cascade='all, delete-orphan')
     
+    # RBAC and Settings relationships
+    roles = db.relationship('Role', back_populates='organization', cascade='all, delete-orphan')
+    settings = db.relationship('OrganizationSetting', back_populates='organization', cascade='all, delete-orphan')
+    
     def to_dict(self):
         return {
             'id': self.id,

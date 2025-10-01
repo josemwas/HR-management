@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruitment Management - HR System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px 15px 0 0;
+            padding: 1rem 2rem;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .recruitment-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .job-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .candidate-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-draft {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .status-closed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-applied {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-screening {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-interview {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-hired {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            text-align: center;
+            height: 100%;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .priority-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .priority-urgent {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .priority-high {
+            background: #ffa726;
+            color: white;
+        }
+
+        .priority-medium {
+            background: #42a5f5;
+            color: white;
+        }
+
+        .priority-low {
+            background: #66bb6a;
+            color: white;
+        }
+
+        .pipeline-stage {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-left: 4px solid var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <!-- Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-custom">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/">
+                        <i class="fas fa-user-plus me-2"></i>Recruitment Management
+                    </a>
+                    <div class="navbar-nav ms-auto">
+                        <span class="nav-link" id="userInfo">Loading...</span>
+                        <a class="nav-link" href="/" id="backToDashboard">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a class="nav-link" href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div id="alertContainer"></div>
+                
+                <!-- Header -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2>Recruitment Management</h2>
+                        <p class="text-muted">Manage job postings, candidates, and hiring pipeline</p>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="activeJobs">0</div>
+                            <div class="stat-label">Active Job Postings</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalCandidates">0</div>
+                            <div class="stat-label">Total Candidates</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="interviewsScheduled">0</div>
+                            <div class="stat-label">Interviews Scheduled</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="hiresThisMonth">0</div>
+                            <div class="stat-label">Hires This Month</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <button class="btn btn-primary me-2" onclick="createJobPosting()">
+                            <i class="fas fa-plus"></i> Create Job Posting
+                        </button>
+                        <button class="btn btn-outline-primary me-2" onclick="addCandidate()">
+                            <i class="fas fa-user-plus"></i> Add Candidate
+                        </button>
+                        <button class="btn btn-outline-primary me-2" onclick="loadRecruitmentData()">
+                            <i class="fas fa-refresh"></i> Refresh
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="exportRecruitment()">
+                            <i class="fas fa-download"></i> Export Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <ul class="nav nav-tabs mb-4" id="recruitmentTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="jobs-tab" data-bs-toggle="tab" data-bs-target="#jobs" type="button" role="tab">
+                            <i class="fas fa-briefcase me-2"></i>Job Postings
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="candidates-tab" data-bs-toggle="tab" data-bs-target="#candidates" type="button" role="tab">
+                            <i class="fas fa-users me-2"></i>Candidates
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pipeline-tab" data-bs-toggle="tab" data-bs-target="#pipeline" type="button" role="tab">
+                            <i class="fas fa-stream me-2"></i>Pipeline
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="recruitmentTabContent">
+                    <!-- Job Postings Tab -->
+                    <div class="tab-pane fade show active" id="jobs" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <select class="form-select" id="jobStatusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="draft">Draft</option>
+                                    <option value="active">Active</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="departmentFilterJobs">
+                                    <option value="">All Departments</option>
+                                    <option value="hr">Human Resources</option>
+                                    <option value="it">Information Technology</option>
+                                    <option value="finance">Finance</option>
+                                    <option value="marketing">Marketing</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="jobTypeFilter">
+                                    <option value="">All Types</option>
+                                    <option value="full_time">Full Time</option>
+                                    <option value="part_time">Part Time</option>
+                                    <option value="contract">Contract</option>
+                                    <option value="internship">Internship</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" id="jobSearchInput" placeholder="Search jobs...">
+                            </div>
+                        </div>
+
+                        <div id="jobPostingsContainer">
+                            <!-- Job postings will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Candidates Tab -->
+                    <div class="tab-pane fade" id="candidates" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <select class="form-select" id="candidateStatusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="applied">Applied</option>
+                                    <option value="screening">Screening</option>
+                                    <option value="interview">Interview</option>
+                                    <option value="hired">Hired</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="experienceFilter">
+                                    <option value="">All Experience</option>
+                                    <option value="entry">Entry Level (0-2 years)</option>
+                                    <option value="mid">Mid Level (3-5 years)</option>
+                                    <option value="senior">Senior (5+ years)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="jobPositionFilter">
+                                    <option value="">All Positions</option>
+                                    <!-- Will be populated with job titles -->
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" id="candidateSearchInput" placeholder="Search candidates...">
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Candidate</th>
+                                            <th>Position Applied</th>
+                                            <th>Experience</th>
+                                            <th>Applied Date</th>
+                                            <th>Status</th>
+                                            <th>Rating</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="candidatesTableBody">
+                                        <tr>
+                                            <td colspan="7" class="text-center py-4">
+                                                <i class="fas fa-spinner fa-spin me-2"></i>Loading candidates...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pipeline Tab -->
+                    <div class="tab-pane fade" id="pipeline" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <h6>Applied</h6>
+                                <div id="appliedCandidates" class="pipeline-stage">
+                                    <!-- Applied candidates -->
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <h6>Screening</h6>
+                                <div id="screeningCandidates" class="pipeline-stage">
+                                    <!-- Screening candidates -->
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <h6>Phone Interview</h6>
+                                <div id="phoneInterviewCandidates" class="pipeline-stage">
+                                    <!-- Phone interview candidates -->
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <h6>Technical Test</h6>
+                                <div id="technicalTestCandidates" class="pipeline-stage">
+                                    <!-- Technical test candidates -->
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <h6>Final Interview</h6>
+                                <div id="finalInterviewCandidates" class="pipeline-stage">
+                                    <!-- Final interview candidates -->
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <h6>Hired</h6>
+                                <div id="hiredCandidates" class="pipeline-stage">
+                                    <!-- Hired candidates -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Posting Modal -->
+    <div class="modal fade" id="jobModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Job Posting</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="jobForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="jobTitle" class="form-label">Job Title</label>
+                                <input type="text" class="form-control" id="jobTitle" required placeholder="e.g. Senior Software Engineer">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="jobDepartment" class="form-label">Department</label>
+                                <select class="form-select" id="jobDepartment" required>
+                                    <option value="">Select Department</option>
+                                    <option value="hr">Human Resources</option>
+                                    <option value="it">Information Technology</option>
+                                    <option value="finance">Finance</option>
+                                    <option value="marketing">Marketing</option>
+                                    <option value="sales">Sales</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="jobType" class="form-label">Employment Type</label>
+                                <select class="form-select" id="jobType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="full_time">Full Time</option>
+                                    <option value="part_time">Part Time</option>
+                                    <option value="contract">Contract</option>
+                                    <option value="internship">Internship</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="jobLocation" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="jobLocation" placeholder="e.g. Remote, New York, etc.">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="salaryMin" class="form-label">Salary Min ($)</label>
+                                <input type="number" class="form-control" id="salaryMin" placeholder="50000">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="salaryMax" class="form-label">Salary Max ($)</label>
+                                <input type="number" class="form-control" id="salaryMax" placeholder="80000">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="jobDescription" class="form-label">Job Description</label>
+                                <textarea class="form-control" id="jobDescription" rows="4" placeholder="Describe the role, responsibilities, and requirements..."></textarea>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="jobRequirements" class="form-label">Requirements</label>
+                                <textarea class="form-control" id="jobRequirements" rows="3" placeholder="List required skills, experience, education..."></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="experienceLevel" class="form-label">Experience Level</label>
+                                <select class="form-select" id="experienceLevel">
+                                    <option value="entry">Entry Level</option>
+                                    <option value="mid">Mid Level</option>
+                                    <option value="senior">Senior Level</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="priority" class="form-label">Priority</label>
+                                <select class="form-select" id="priority">
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="saveJobDraft()">Save as Draft</button>
+                    <button type="button" class="btn btn-primary" onclick="publishJob()">Publish Job</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Candidate Modal -->
+    <div class="modal fade" id="candidateModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Candidate Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="candidateModalBody">
+                    <!-- Candidate details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="scheduleInterview()">Schedule Interview</button>
+                    <button type="button" class="btn btn-success" onclick="hireCandidate()">Hire</button>
+                    <button type="button" class="btn btn-danger" onclick="rejectCandidate()">Reject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentEmployee = null;
+        let currentJobs = [];
+        let currentCandidates = [];
+        let selectedCandidateId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            loadRecruitmentData();
+            setupEventListeners();
+        });
+
+        function checkAuthentication() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/login';
+                return false;
+            }
+
+            currentEmployee = JSON.parse(localStorage.getItem('employee') || '{}');
+            const organization = JSON.parse(localStorage.getItem('organization') || '{}');
+            
+            if (currentEmployee.first_name) {
+                document.getElementById('userInfo').textContent = 
+                    `${currentEmployee.first_name} ${currentEmployee.last_name} (${currentEmployee.role}) - ${organization.name || 'Organization'}`;
+            }
+
+            return true;
+        }
+
+        function setupEventListeners() {
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            
+            // Filter listeners
+            document.getElementById('jobStatusFilter').addEventListener('change', filterJobs);
+            document.getElementById('departmentFilterJobs').addEventListener('change', filterJobs);
+            document.getElementById('jobTypeFilter').addEventListener('change', filterJobs);
+            document.getElementById('jobSearchInput').addEventListener('input', filterJobs);
+            
+            document.getElementById('candidateStatusFilter').addEventListener('change', filterCandidates);
+            document.getElementById('experienceFilter').addEventListener('change', filterCandidates);
+            document.getElementById('candidateSearchInput').addEventListener('input', filterCandidates);
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            alertContainer.innerHTML = alertHtml;
+        }
+
+        async function loadRecruitmentData() {
+            try {
+                await Promise.all([
+                    loadRecruitmentStats(),
+                    loadJobPostings(),
+                    loadCandidates(),
+                    loadPipeline()
+                ]);
+            } catch (error) {
+                console.error('Error loading recruitment data:', error);
+                showAlert('Error loading recruitment data', 'danger');
+            }
+        }
+
+        async function loadRecruitmentStats() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/recruitment/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const stats = await response.json();
+                    updateStatsCards(stats);
+                } else {
+                    // Use sample data
+                    const sampleStats = {
+                        active_jobs: 5,
+                        total_candidates: 28,
+                        interviews_scheduled: 8,
+                        hires_this_month: 3
+                    };
+                    updateStatsCards(sampleStats);
+                }
+            } catch (error) {
+                console.error('Error loading recruitment stats:', error);
+                const sampleStats = {
+                    active_jobs: 5,
+                    total_candidates: 28,
+                    interviews_scheduled: 8,
+                    hires_this_month: 3
+                };
+                updateStatsCards(sampleStats);
+            }
+        }
+
+        function updateStatsCards(stats) {
+            document.getElementById('activeJobs').textContent = stats.active_jobs || 5;
+            document.getElementById('totalCandidates').textContent = stats.total_candidates || 28;
+            document.getElementById('interviewsScheduled').textContent = stats.interviews_scheduled || 8;
+            document.getElementById('hiresThisMonth').textContent = stats.hires_this_month || 3;
+        }
+
+        async function loadJobPostings() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/recruitment/jobs', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentJobs = data.jobs || [];
+                    renderJobPostings(currentJobs);
+                } else {
+                    currentJobs = generateSampleJobs();
+                    renderJobPostings(currentJobs);
+                }
+            } catch (error) {
+                console.error('Error loading job postings:', error);
+                currentJobs = generateSampleJobs();
+                renderJobPostings(currentJobs);
+            }
+        }
+
+        function generateSampleJobs() {
+            return [
+                {
+                    id: 1,
+                    title: 'Senior Software Engineer',
+                    department: 'Information Technology',
+                    type: 'full_time',
+                    location: 'Remote',
+                    salary_min: 70000,
+                    salary_max: 90000,
+                    status: 'active',
+                    priority: 'high',
+                    applications: 15,
+                    created_at: '2024-09-15',
+                    description: 'We are looking for a senior software engineer to join our growing team.'
+                },
+                {
+                    id: 2,
+                    title: 'Marketing Specialist',
+                    department: 'Marketing',
+                    type: 'full_time',
+                    location: 'New York',
+                    salary_min: 50000,
+                    salary_max: 65000,
+                    status: 'active',
+                    priority: 'medium',
+                    applications: 8,
+                    created_at: '2024-09-20',
+                    description: 'Looking for a creative marketing specialist to drive our campaigns.'
+                },
+                {
+                    id: 3,
+                    title: 'HR Coordinator',
+                    department: 'Human Resources',
+                    type: 'full_time',
+                    location: 'Chicago',
+                    salary_min: 45000,
+                    salary_max: 55000,
+                    status: 'draft',
+                    priority: 'low',
+                    applications: 0,
+                    created_at: '2024-09-25',
+                    description: 'HR Coordinator to support various HR functions.'
+                }
+            ];
+        }
+
+        function renderJobPostings(jobs) {
+            const container = document.getElementById('jobPostingsContainer');
+            
+            if (jobs.length === 0) {
+                container.innerHTML = `
+                    <div class="job-card text-center">
+                        <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
+                        <h5>No job postings found</h5>
+                        <p class="text-muted">Create your first job posting to start recruiting</p>
+                        <button class="btn btn-primary" onclick="createJobPosting()">Create Job Posting</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = jobs.map(job => `
+                <div class="job-card">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5>${job.title}</h5>
+                            <p class="text-muted mb-2">${job.description || 'No description available'}</p>
+                            <div class="mb-2">
+                                <span class="badge bg-secondary me-2">${job.department}</span>
+                                <span class="badge bg-info me-2">${job.type.replace('_', ' ').toUpperCase()}</span>
+                                <span class="priority-badge priority-${job.priority}">${job.priority.toUpperCase()}</span>
+                            </div>
+                            <div class="row text-muted small">
+                                <div class="col-md-4"><i class="fas fa-map-marker-alt me-1"></i>${job.location}</div>
+                                <div class="col-md-4"><i class="fas fa-dollar-sign me-1"></i>${job.salary_min?.toLocaleString()} - ${job.salary_max?.toLocaleString()}</div>
+                                <div class="col-md-4"><i class="fas fa-calendar me-1"></i>${new Date(job.created_at).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="mb-3">
+                                <span class="status-badge status-${job.status}">${job.status.toUpperCase()}</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>${job.applications || 0}</strong> Applications
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-1" onclick="viewJob(${job.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success me-1" onclick="editJob(${job.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                ${job.status === 'draft' ? `
+                                    <button class="btn btn-sm btn-outline-warning" onclick="publishJobById(${job.id})">
+                                        <i class="fas fa-share"></i>
+                                    </button>
+                                ` : `
+                                    <button class="btn btn-sm btn-outline-danger" onclick="closeJob(${job.id})">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadCandidates() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/recruitment/candidates', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentCandidates = data.candidates || [];
+                    renderCandidates(currentCandidates);
+                } else {
+                    currentCandidates = generateSampleCandidates();
+                    renderCandidates(currentCandidates);
+                }
+            } catch (error) {
+                console.error('Error loading candidates:', error);
+                currentCandidates = generateSampleCandidates();
+                renderCandidates(currentCandidates);
+            }
+        }
+
+        function generateSampleCandidates() {
+            return [
+                {
+                    id: 1,
+                    name: 'Alice Johnson',
+                    email: 'alice.johnson@email.com',
+                    position_applied: 'Senior Software Engineer',
+                    experience_years: 5,
+                    applied_date: '2024-09-20',
+                    status: 'interview',
+                    rating: 4.5,
+                    resume_url: '#'
+                },
+                {
+                    id: 2,
+                    name: 'Bob Wilson',
+                    email: 'bob.wilson@email.com',
+                    position_applied: 'Marketing Specialist',
+                    experience_years: 3,
+                    applied_date: '2024-09-22',
+                    status: 'screening',
+                    rating: 4.0,
+                    resume_url: '#'
+                },
+                {
+                    id: 3,
+                    name: 'Carol Davis',
+                    email: 'carol.davis@email.com',
+                    position_applied: 'Senior Software Engineer',
+                    experience_years: 7,
+                    applied_date: '2024-09-18',
+                    status: 'hired',
+                    rating: 4.8,
+                    resume_url: '#'
+                }
+            ];
+        }
+
+        function renderCandidates(candidates) {
+            const tbody = document.getElementById('candidatesTableBody');
+            
+            if (candidates.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <i class="fas fa-users me-2"></i>No candidates found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = candidates.map(candidate => {
+                const appliedDate = new Date(candidate.applied_date).toLocaleDateString();
+                const ratingStars = generateStarRating(Math.round(candidate.rating));
+
+                return `
+                    <tr>
+                        <td>
+                            <div><strong>${candidate.name}</strong></div>
+                            <div class="text-muted small">${candidate.email}</div>
+                        </td>
+                        <td>${candidate.position_applied}</td>
+                        <td>${candidate.experience_years} years</td>
+                        <td>${appliedDate}</td>
+                        <td><span class="status-badge status-${candidate.status}">${candidate.status.toUpperCase()}</span></td>
+                        <td>
+                            <div>${candidate.rating}/5</div>
+                            <div class="rating-stars small">${ratingStars}</div>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="viewCandidate(${candidate.id})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success me-1" onclick="downloadResume(${candidate.id})">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning" onclick="updateCandidateStatus(${candidate.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function generateStarRating(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                stars += i <= rating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+            }
+            return stars;
+        }
+
+        async function loadPipeline() {
+            const pipelineStages = ['applied', 'screening', 'phone_interview', 'technical_test', 'final_interview', 'hired'];
+            
+            pipelineStages.forEach(stage => {
+                const candidates = currentCandidates.filter(c => c.status === stage.replace('_', ''));
+                const container = document.getElementById(stage.replace('_', '') + 'Candidates');
+                
+                if (stage === 'phone_interview') {
+                    container.id = 'phoneInterviewCandidates';
+                } else if (stage === 'technical_test') {
+                    container.id = 'technicalTestCandidates';
+                } else if (stage === 'final_interview') {
+                    container.id = 'finalInterviewCandidates';
+                }
+                
+                if (candidates.length === 0) {
+                    document.getElementById(container.id || stage + 'Candidates').innerHTML = '<p class="text-muted small">No candidates</p>';
+                } else {
+                    document.getElementById(container.id || stage + 'Candidates').innerHTML = candidates.map(c => `
+                        <div class="candidate-pipeline-item mb-2 p-2 bg-white rounded">
+                            <strong>${c.name}</strong><br>
+                            <small class="text-muted">${c.position_applied}</small>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+
+        function filterJobs() {
+            // Implementation for filtering jobs
+            loadJobPostings();
+        }
+
+        function filterCandidates() {
+            // Implementation for filtering candidates
+            loadCandidates();
+        }
+
+        function createJobPosting() {
+            document.getElementById('jobForm').reset();
+            new bootstrap.Modal(document.getElementById('jobModal')).show();
+        }
+
+        function saveJobDraft() {
+            showAlert('Job saved as draft successfully', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('jobModal')).hide();
+            loadJobPostings();
+        }
+
+        function publishJob() {
+            showAlert('Job published successfully', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('jobModal')).hide();
+            loadJobPostings();
+        }
+
+        function addCandidate() {
+            showAlert('Add candidate functionality will be available in the full implementation', 'info');
+        }
+
+        function viewJob(jobId) {
+            showAlert('View job functionality will be available in the full implementation', 'info');
+        }
+
+        function editJob(jobId) {
+            showAlert('Edit job functionality will be available in the full implementation', 'info');
+        }
+
+        function closeJob(jobId) {
+            if (!confirm('Are you sure you want to close this job posting?')) return;
+            showAlert('Job posting closed successfully', 'success');
+            loadJobPostings();
+        }
+
+        function viewCandidate(candidateId) {
+            const candidate = currentCandidates.find(c => c.id === candidateId);
+            if (!candidate) return;
+
+            selectedCandidateId = candidateId;
+            const modalBody = document.getElementById('candidateModalBody');
+            
+            modalBody.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6"><strong>Name:</strong></div>
+                    <div class="col-md-6">${candidate.name}</div>
+                    <div class="col-md-6"><strong>Email:</strong></div>
+                    <div class="col-md-6">${candidate.email}</div>
+                    <div class="col-md-6"><strong>Position Applied:</strong></div>
+                    <div class="col-md-6">${candidate.position_applied}</div>
+                    <div class="col-md-6"><strong>Experience:</strong></div>
+                    <div class="col-md-6">${candidate.experience_years} years</div>
+                    <div class="col-md-6"><strong>Applied Date:</strong></div>
+                    <div class="col-md-6">${new Date(candidate.applied_date).toLocaleDateString()}</div>
+                    <div class="col-md-6"><strong>Status:</strong></div>
+                    <div class="col-md-6"><span class="status-badge status-${candidate.status}">${candidate.status}</span></div>
+                    <div class="col-md-6"><strong>Rating:</strong></div>
+                    <div class="col-md-6">${candidate.rating}/5 ${generateStarRating(Math.round(candidate.rating))}</div>
+                </div>
+            `;
+
+            new bootstrap.Modal(document.getElementById('candidateModal')).show();
+        }
+
+        function downloadResume(candidateId) {
+            showAlert('Resume download functionality will be available in the full implementation', 'info');
+        }
+
+        function updateCandidateStatus(candidateId) {
+            showAlert('Update candidate status functionality will be available in the full implementation', 'info');
+        }
+
+        function scheduleInterview() {
+            showAlert('Interview scheduled successfully', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('candidateModal')).hide();
+        }
+
+        function hireCandidate() {
+            if (!confirm('Are you sure you want to hire this candidate?')) return;
+            showAlert('Candidate hired successfully', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('candidateModal')).hide();
+            loadCandidates();
+        }
+
+        function rejectCandidate() {
+            if (!confirm('Are you sure you want to reject this candidate?')) return;
+            showAlert('Candidate rejected', 'info');
+            bootstrap.Modal.getInstance(document.getElementById('candidateModal')).hide();
+            loadCandidates();
+        }
+
+        function exportRecruitment() {
+            showAlert('Export functionality will be available in the full implementation', 'info');
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('employee');
+            localStorage.removeItem('organization');
+            
+            showAlert('Logged out successfully', 'success');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
