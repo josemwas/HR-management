@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Dashboard - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px 15px 0 0;
+            padding: 1rem 2rem;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            border: none;
+            font-weight: 600;
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .stats-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .stats-label {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .feature-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-toggle:hover {
+            border-color: var(--primary-color);
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .feature-info {
+            flex-grow: 1;
+        }
+
+        .feature-name {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin: 0;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+        }
+
+        .btn-danger {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+        }
+
+        .btn-warning {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+        }
+
+        .btn-success {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+        }
+
+        .org-card {
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .org-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .org-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .org-status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .org-status.suspended {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .org-status.trial {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .tab-content {
+            padding-top: 1rem;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--dark-color);
+            border: none;
+            border-radius: 10px 10px 0 0;
+            margin-right: 0.5rem;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+        }
+
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table th {
+            background: var(--light-color);
+            border: none;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .modal-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px 15px 0 0;
+            border: none;
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="dashboard-container">
+            <!-- Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-custom">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">
+                        <i class="fas fa-crown"></i> Super Admin Dashboard
+                    </a>
+                    <div class="navbar-nav ms-auto">
+                        <a class="nav-link" href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Content -->
+            <div class="content-area">
+                <!-- Alert Container -->
+                <div id="alertContainer"></div>
+
+                <!-- Statistics -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card stats-card">
+                            <h3 class="stats-number" id="totalOrgs">-</h3>
+                            <p class="stats-label">Total Organizations</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stats-card">
+                            <h3 class="stats-number" id="activeOrgs">-</h3>
+                            <p class="stats-label">Active Organizations</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stats-card">
+                            <h3 class="stats-number" id="totalEmployees">-</h3>
+                            <p class="stats-label">Total Employees</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stats-card">
+                            <h3 class="stats-number" id="monthlyRevenue">$-</h3>
+                            <p class="stats-label">Monthly Revenue</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="organizations-tab" data-bs-toggle="tab" data-bs-target="#organizations" type="button" role="tab">
+                            <i class="fas fa-building"></i> Organizations
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="features-tab" data-bs-toggle="tab" data-bs-target="#features" type="button" role="tab">
+                            <i class="fas fa-cogs"></i> Feature Management
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="system-tab" data-bs-toggle="tab" data-bs-target="#system" type="button" role="tab">
+                            <i class="fas fa-server"></i> System Info
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="adminTabContent">
+                    <!-- Organizations Tab -->
+                    <div class="tab-pane fade show active" id="organizations" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4>Organization Management</h4>
+                            <button class="btn btn-primary" onclick="loadOrganizations()">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control mb-3" id="searchOrgs" placeholder="Search organizations...">
+                            </div>
+                            <div class="col-md-6">
+                                <select class="form-control mb-3" id="filterStatus">
+                                    <option value="">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="suspended">Suspended</option>
+                                    <option value="trial">Trial</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="organizationsList">
+                            <div class="loading-spinner">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature Management Tab -->
+                    <div class="tab-pane fade" id="features" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-building"></i> Select Organization</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <select class="form-control" id="featureOrgSelect">
+                                            <option value="">Select an organization...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-info-circle"></i> Quick Actions</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <button class="btn btn-success me-2" onclick="enableAllFeatures()">
+                                            <i class="fas fa-check-double"></i> Enable All
+                                        </button>
+                                        <button class="btn btn-warning" onclick="disableAllFeatures()">
+                                            <i class="fas fa-times-circle"></i> Disable All
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5><i class="fas fa-toggle-on"></i> Feature Controls</h5>
+                            </div>
+                            <div class="card-body" id="featureControls">
+                                <p class="text-muted">Select an organization to manage features.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Info Tab -->
+                    <div class="tab-pane fade" id="system" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-database"></i> Database Status</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <tbody id="dbStats">
+                                                    <tr><td colspan="2" class="text-center">Loading...</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-chart-line"></i> System Metrics</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <tbody id="systemMetrics">
+                                                    <tr><td colspan="2" class="text-center">Loading...</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Organization Modal -->
+    <div class="modal fade" id="orgModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Organization Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="orgModalBody">
+                    <!-- Organization details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Organization Modal -->
+    <div class="modal fade" id="editOrgModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Organization</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editOrgForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editOrgName" class="form-label">Organization Name</label>
+                                    <input type="text" class="form-control" id="editOrgName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editOrgEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="editOrgEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editOrgPhone" class="form-label">Phone</label>
+                                    <input type="text" class="form-control" id="editOrgPhone">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editOrgWebsite" class="form-label">Website</label>
+                                    <input type="url" class="form-control" id="editOrgWebsite">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editOrgIndustry" class="form-label">Industry</label>
+                                    <select class="form-control" id="editOrgIndustry">
+                                        <option value="technology">Technology</option>
+                                        <option value="healthcare">Healthcare</option>
+                                        <option value="finance">Finance</option>
+                                        <option value="education">Education</option>
+                                        <option value="manufacturing">Manufacturing</option>
+                                        <option value="retail">Retail</option>
+                                        <option value="consulting">Consulting</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editOrgSize" class="form-label">Company Size</label>
+                                    <select class="form-control" id="editOrgSize">
+                                        <option value="1-10">1-10 employees</option>
+                                        <option value="11-50">11-50 employees</option>
+                                        <option value="51-200">51-200 employees</option>
+                                        <option value="201-1000">201-1000 employees</option>
+                                        <option value="1000+">1000+ employees</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editOrgTimezone" class="form-label">Timezone</label>
+                                    <select class="form-control" id="editOrgTimezone">
+                                        <option value="UTC">UTC</option>
+                                        <option value="America/New_York">Eastern Time</option>
+                                        <option value="America/Chicago">Central Time</option>
+                                        <option value="America/Denver">Mountain Time</option>
+                                        <option value="America/Los_Angeles">Pacific Time</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editOrgCurrency" class="form-label">Currency</label>
+                                    <select class="form-control" id="editOrgCurrency">
+                                        <option value="USD">USD</option>
+                                        <option value="EUR">EUR</option>
+                                        <option value="GBP">GBP</option>
+                                        <option value="CAD">CAD</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editOrgEmployeeLimit" class="form-label">Employee Limit</label>
+                                    <input type="number" class="form-control" id="editOrgEmployeeLimit" min="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editOrgStorageLimit" class="form-label">Storage Limit (GB)</label>
+                                    <input type="number" class="form-control" id="editOrgStorageLimit" min="1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editOrgAddress" class="form-label">Address</label>
+                            <textarea class="form-control" id="editOrgAddress" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveOrganizationChanges()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Plan Modal -->
+    <div class="modal fade" id="changePlanModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Subscription Plan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="newPlan" class="form-label">Select New Plan</label>
+                        <select class="form-control" id="newPlan" required>
+                            <option value="">Select a plan...</option>
+                        </select>
+                    </div>
+                    <div id="planDetails" class="mt-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveOrganizationPlan()">Change Plan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Features Modal -->
+    <div class="modal fade" id="manageFeaturesModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Manage Organization Features</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="featuresGrid" class="row">
+                        <!-- Features will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveOrganizationFeatures()">Save Features</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentOrganizations = [];
+        let selectedOrgForFeatures = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            loadDashboardData();
+            setupEventListeners();
+        });
+
+        function checkAuthentication() {
+            const token = localStorage.getItem('access_token');
+            const employee = JSON.parse(localStorage.getItem('employee') || '{}');
+            
+            if (!token || employee.role !== 'super_admin') {
+                window.location.href = '/login';
+                return;
+            }
+        }
+
+        function setupEventListeners() {
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            document.getElementById('searchOrgs').addEventListener('input', filterOrganizations);
+            document.getElementById('filterStatus').addEventListener('change', filterOrganizations);
+            document.getElementById('featureOrgSelect').addEventListener('change', loadOrgFeatures);
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            alertContainer.innerHTML = alertHtml;
+        }
+
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            const token = localStorage.getItem('access_token');
+            const config = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            };
+
+            if (data) {
+                config.body = JSON.stringify(data);
+            }
+
+            try {
+                const response = await fetch(endpoint, config);
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'API call failed');
+                }
+
+                return result;
+            } catch (error) {
+                showAlert(error.message, 'danger');
+                throw error;
+            }
+        }
+
+        async function loadDashboardData() {
+            try {
+                const stats = await apiCall('/api/super-admin/stats');
+                
+                document.getElementById('totalOrgs').textContent = stats.total_organizations;
+                document.getElementById('activeOrgs').textContent = stats.active_organizations;
+                document.getElementById('totalEmployees').textContent = stats.total_employees;
+                document.getElementById('monthlyRevenue').textContent = `$${stats.monthly_revenue.toLocaleString()}`;
+
+                await loadOrganizations();
+                await loadSystemInfo();
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        async function loadOrganizations() {
+            try {
+                const response = await apiCall('/api/super-admin/organizations');
+                const orgs = response.organizations || [];
+                currentOrganizations = orgs;
+                renderOrganizations(orgs);
+                populateOrgSelect(orgs);
+            } catch (error) {
+                console.error('Error loading organizations:', error);
+            }
+        }
+
+        function renderOrganizations(organizations) {
+            const container = document.getElementById('organizationsList');
+            
+            if (organizations.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted">No organizations found.</p>';
+                return;
+            }
+
+            const html = organizations.map(org => `
+                <div class="org-card">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="mb-1">${org.name}</h5>
+                            <p class="text-muted mb-0">${org.slug}.hrms.com</p>
+                            <small class="text-muted">${org.email}</small>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="org-status ${org.subscription_status === 'active' ? 'active' : org.subscription_status}">${org.subscription_status.charAt(0).toUpperCase() + org.subscription_status.slice(1)}</span>
+                            <br><small class="text-muted">Plan: ${org.plan ? org.plan.name : 'N/A'}</small>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-primary" onclick="viewOrganization(${org.id})">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <button class="btn btn-sm btn-info" onclick="editOrganization(${org.id})">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" onclick="changePlan(${org.id})">
+                                            <i class="fas fa-credit-card"></i> Change Plan
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="manageFeatures(${org.id})">
+                                            <i class="fas fa-sliders-h"></i> Manage Features
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        ${org.subscription_status === 'active' ? 
+                                            `<li><a class="dropdown-item text-warning" href="#" onclick="suspendOrganization(${org.id})">
+                                                <i class="fas fa-pause"></i> Suspend
+                                            </a></li>` :
+                                            `<li><a class="dropdown-item text-success" href="#" onclick="activateOrganization(${org.id})">
+                                                <i class="fas fa-play"></i> Activate
+                                            </a></li>`
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = html;
+        }
+
+        function populateOrgSelect(organizations) {
+            const select = document.getElementById('featureOrgSelect');
+            select.innerHTML = '<option value="">Select an organization...</option>';
+            
+            organizations.forEach(org => {
+                const option = document.createElement('option');
+                option.value = org.id;
+                option.textContent = `${org.name} (${org.slug})`;
+                select.appendChild(option);
+            });
+        }
+
+        function filterOrganizations() {
+            const search = document.getElementById('searchOrgs').value.toLowerCase();
+            const status = document.getElementById('filterStatus').value;
+            
+            let filtered = currentOrganizations.filter(org => {
+                const matchesSearch = org.name.toLowerCase().includes(search) || 
+                                    org.slug.toLowerCase().includes(search) ||
+                                    org.email.toLowerCase().includes(search);
+                const matchesStatus = !status || org.subscription_status === status;
+                
+                return matchesSearch && matchesStatus;
+            });
+            
+            renderOrganizations(filtered);
+        }
+
+        async function viewOrganization(orgId) {
+            try {
+                // Find the organization in the currently loaded data
+                const org = currentOrganizations.find(o => o.id === orgId);
+                if (!org) {
+                    showAlert('Organization not found', 'error');
+                    return;
+                }
+                
+                const modalBody = document.getElementById('orgModalBody');
+                modalBody.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Basic Information</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>Name:</strong></td><td>${org.name}</td></tr>
+                                <tr><td><strong>Slug:</strong></td><td>${org.slug}</td></tr>
+                                <tr><td><strong>Email:</strong></td><td>${org.email}</td></tr>
+                                <tr><td><strong>Website:</strong></td><td>${org.website || 'N/A'}</td></tr>
+                                <tr><td><strong>Industry:</strong></td><td>${org.industry || 'N/A'}</td></tr>
+                                <tr><td><strong>Status:</strong></td><td><span class="org-status ${org.subscription_status === 'active' ? 'active' : org.subscription_status}">${org.subscription_status}</span></td></tr>
+                                <tr><td><strong>Plan:</strong></td><td>${org.plan ? org.plan.name : 'N/A'}</td></tr>
+                                <tr><td><strong>Created:</strong></td><td>${new Date(org.created_at).toLocaleDateString()}</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Statistics</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>Employees:</strong></td><td>${org.employee_count || 0}</td></tr>
+                                <tr><td><strong>Employee Limit:</strong></td><td>${org.employee_limit || 'Unlimited'}</td></tr>
+                                <tr><td><strong>Storage Used:</strong></td><td>${org.current_storage_gb || 0} GB</td></tr>
+                                <tr><td><strong>Storage Limit:</strong></td><td>${org.storage_limit_gb || 'Unlimited'} GB</td></tr>
+                                <tr><td><strong>Admin:</strong></td><td>${org.admin_user ? org.admin_user.first_name + ' ' + org.admin_user.last_name : 'N/A'}</td></tr>
+                            </table>
+                            
+                            <h6 class="mt-3">Subscription Details</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>Trial Start:</strong></td><td>${org.trial_start_date || 'N/A'}</td></tr>
+                                <tr><td><strong>Trial End:</strong></td><td>${org.trial_end_date || 'N/A'}</td></tr>
+                                <tr><td><strong>Subscription Start:</strong></td><td>${org.subscription_start_date || 'N/A'}</td></tr>
+                                <tr><td><strong>Plan Price:</strong></td><td>$${org.plan ? org.plan.price_monthly : 0}/month</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                
+                new bootstrap.Modal(document.getElementById('orgModal')).show();
+            } catch (error) {
+                console.error('Error loading organization details:', error);
+                showAlert('Error loading organization details', 'error');
+            }
+        }
+
+        async function suspendOrganization(orgId) {
+            if (confirm('Are you sure you want to suspend this organization?')) {
+                try {
+                    await apiCall(`/api/super-admin/organizations/${orgId}/suspend`, 'POST');
+                    showAlert('Organization suspended successfully', 'success');
+                    loadOrganizations();
+                } catch (error) {
+                    console.error('Error suspending organization:', error);
+                }
+            }
+        }
+
+        async function activateOrganization(orgId) {
+            try {
+                await apiCall(`/api/super-admin/organizations/${orgId}/activate`, 'POST');
+                showAlert('Organization activated successfully', 'success');
+                loadOrganizations();
+            } catch (error) {
+                console.error('Error activating organization:', error);
+            }
+        }
+
+        async function editOrganization(orgId) {
+            try {
+                const org = currentOrganizations.find(o => o.id === orgId);
+                if (!org) {
+                    showAlert('Organization not found', 'error');
+                    return;
+                }
+
+                // Populate the edit form
+                document.getElementById('editOrgName').value = org.name || '';
+                document.getElementById('editOrgEmail').value = org.email || '';
+                document.getElementById('editOrgPhone').value = org.phone || '';
+                document.getElementById('editOrgWebsite').value = org.website || '';
+                document.getElementById('editOrgIndustry').value = org.industry || '';
+                document.getElementById('editOrgSize').value = org.size || '';
+                document.getElementById('editOrgTimezone').value = org.timezone || 'UTC';
+                document.getElementById('editOrgCurrency').value = org.currency || 'USD';
+                document.getElementById('editOrgEmployeeLimit').value = org.employee_limit || '';
+                document.getElementById('editOrgStorageLimit').value = org.storage_limit_gb || '';
+                document.getElementById('editOrgAddress').value = org.address || '';
+
+                // Store the org ID for saving
+                document.getElementById('editOrgForm').setAttribute('data-org-id', orgId);
+
+                new bootstrap.Modal(document.getElementById('editOrgModal')).show();
+            } catch (error) {
+                console.error('Error loading organization for editing:', error);
+                showAlert('Error loading organization details', 'error');
+            }
+        }
+
+        async function saveOrganizationChanges() {
+            try {
+                const form = document.getElementById('editOrgForm');
+                const orgId = form.getAttribute('data-org-id');
+
+                const formData = {
+                    name: document.getElementById('editOrgName').value,
+                    email: document.getElementById('editOrgEmail').value,
+                    phone: document.getElementById('editOrgPhone').value,
+                    website: document.getElementById('editOrgWebsite').value,
+                    industry: document.getElementById('editOrgIndustry').value,
+                    size: document.getElementById('editOrgSize').value,
+                    timezone: document.getElementById('editOrgTimezone').value,
+                    currency: document.getElementById('editOrgCurrency').value,
+                    employee_limit: parseInt(document.getElementById('editOrgEmployeeLimit').value) || 0,
+                    storage_limit_gb: parseInt(document.getElementById('editOrgStorageLimit').value) || 0,
+                    address: document.getElementById('editOrgAddress').value
+                };
+
+                await apiCall(`/api/super-admin/organizations/${orgId}`, 'PUT', formData);
+                showAlert('Organization updated successfully', 'success');
+                
+                // Close modal and reload organizations
+                bootstrap.Modal.getInstance(document.getElementById('editOrgModal')).hide();
+                loadOrganizations();
+            } catch (error) {
+                console.error('Error updating organization:', error);
+                showAlert('Error updating organization', 'error');
+            }
+        }
+
+        async function changePlan(orgId) {
+            try {
+                const org = currentOrganizations.find(o => o.id === orgId);
+                if (!org) {
+                    showAlert('Organization not found', 'error');
+                    return;
+                }
+
+                // Load available plans
+                const plansResponse = await apiCall('/api/super-admin/plans');
+                const plans = plansResponse.plans;
+
+                const planSelect = document.getElementById('newPlan');
+                planSelect.innerHTML = '<option value="">Select a plan...</option>';
+                
+                plans.forEach(plan => {
+                    const option = document.createElement('option');
+                    option.value = plan.id;
+                    option.textContent = `${plan.name} - $${plan.price_monthly}/month`;
+                    if (org.plan && org.plan.id === plan.id) {
+                        option.selected = true;
+                    }
+                    planSelect.appendChild(option);
+                });
+
+                // Store the org ID for saving
+                document.getElementById('changePlanModal').setAttribute('data-org-id', orgId);
+
+                // Show plan details when selection changes
+                planSelect.addEventListener('change', function() {
+                    const selectedPlan = plans.find(p => p.id == this.value);
+                    if (selectedPlan) {
+                        document.getElementById('planDetails').innerHTML = `
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>${selectedPlan.name}</h6>
+                                    <p>Price: $${selectedPlan.price_monthly}/month</p>
+                                    <p>Employee Limit: ${selectedPlan.employee_limit}</p>
+                                    <p>Storage: ${selectedPlan.storage_limit_gb} GB</p>
+                                    <p>Features: ${Object.keys(selectedPlan.features || {}).join(', ')}</p>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        document.getElementById('planDetails').innerHTML = '';
+                    }
+                });
+
+                new bootstrap.Modal(document.getElementById('changePlanModal')).show();
+            } catch (error) {
+                console.error('Error loading plans:', error);
+                showAlert('Error loading subscription plans', 'error');
+            }
+        }
+
+        async function saveOrganizationPlan() {
+            try {
+                const modal = document.getElementById('changePlanModal');
+                const orgId = modal.getAttribute('data-org-id');
+                const planId = document.getElementById('newPlan').value;
+
+                if (!planId) {
+                    showAlert('Please select a plan', 'warning');
+                    return;
+                }
+
+                await apiCall(`/api/super-admin/organizations/${orgId}/change-plan`, 'POST', {
+                    plan_id: parseInt(planId)
+                });
+
+                showAlert('Organization plan changed successfully', 'success');
+                
+                // Close modal and reload organizations
+                bootstrap.Modal.getInstance(document.getElementById('changePlanModal')).hide();
+                loadOrganizations();
+            } catch (error) {
+                console.error('Error changing organization plan:', error);
+                showAlert('Error changing organization plan', 'error');
+            }
+        }
+
+        async function manageFeatures(orgId) {
+            try {
+                const org = currentOrganizations.find(o => o.id === orgId);
+                if (!org) {
+                    showAlert('Organization not found', 'error');
+                    return;
+                }
+
+                // Load organization features
+                const featuresResponse = await apiCall(`/api/super-admin/organizations/${orgId}/features`);
+                const features = featuresResponse.features;
+
+                // Store the org ID for saving
+                document.getElementById('manageFeaturesModal').setAttribute('data-org-id', orgId);
+
+                // Render features grid
+                const featuresGrid = document.getElementById('featuresGrid');
+                const featureNames = {
+                    'employee_management': 'Employee Management',
+                    'department_management': 'Department Management',
+                    'attendance_tracking': 'Attendance Tracking',
+                    'leave_management': 'Leave Management',
+                    'payroll_management': 'Payroll Management',
+                    'performance_reviews': 'Performance Reviews',
+                    'recruitment_tools': 'Recruitment Tools',
+                    'analytics_reporting': 'Analytics & Reporting',
+                    'api_access': 'API Access',
+                    'mobile_app_access': 'Mobile App Access',
+                    'integrations': 'Integrations',
+                    'custom_fields': 'Custom Fields',
+                    'audit_logs': 'Audit Logs',
+                    'advanced_security': 'Advanced Security',
+                    'backup_restore': 'Backup & Restore',
+                    'bulk_operations': 'Bulk Operations',
+                    'document_management': 'Document Management',
+                    'notification_system': 'Notification System',
+                    'calendar_integration': 'Calendar Integration',
+                    'time_tracking': 'Time Tracking'
+                };
+
+                featuresGrid.innerHTML = Object.keys(featureNames).map(featureKey => `
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="feature_${featureKey}" 
+                                   ${features[featureKey] ? 'checked' : ''}>
+                            <label class="form-check-label" for="feature_${featureKey}">
+                                ${featureNames[featureKey]}
+                            </label>
+                        </div>
+                    </div>
+                `).join('');
+
+                new bootstrap.Modal(document.getElementById('manageFeaturesModal')).show();
+            } catch (error) {
+                console.error('Error loading organization features:', error);
+                showAlert('Error loading organization features', 'error');
+            }
+        }
+
+        async function saveOrganizationFeatures() {
+            try {
+                const modal = document.getElementById('manageFeaturesModal');
+                const orgId = modal.getAttribute('data-org-id');
+
+                const features = {};
+                const checkboxes = document.querySelectorAll('#featuresGrid input[type="checkbox"]');
+                
+                checkboxes.forEach(checkbox => {
+                    const featureKey = checkbox.id.replace('feature_', '');
+                    features[featureKey] = checkbox.checked;
+                });
+
+                await apiCall(`/api/super-admin/organizations/${orgId}/features`, 'PUT', {
+                    features: features
+                });
+
+                showAlert('Organization features updated successfully', 'success');
+                
+                // Close modal and reload organizations
+                bootstrap.Modal.getInstance(document.getElementById('manageFeaturesModal')).hide();
+                loadOrganizations();
+            } catch (error) {
+                console.error('Error updating organization features:', error);
+                showAlert('Error updating organization features', 'error');
+            }
+        }
+
+        async function loadOrgFeatures() {
+            const orgId = document.getElementById('featureOrgSelect').value;
+            selectedOrgForFeatures = orgId;
+            
+            if (!orgId) {
+                document.getElementById('featureControls').innerHTML = '<p class="text-muted">Select an organization to manage features.</p>';
+                return;
+            }
+
+            try {
+                const features = await apiCall(`/api/super-admin/organizations/${orgId}/features`);
+                renderFeatureControls(features);
+            } catch (error) {
+                console.error('Error loading organization features:', error);
+            }
+        }
+
+        function renderFeatureControls(features) {
+            const container = document.getElementById('featureControls');
+            
+            const featureList = [
+                { key: 'employee_management', name: 'Employee Management', description: 'Create, edit, and manage employee records' },
+                { key: 'attendance_tracking', name: 'Attendance Tracking', description: 'Track employee attendance and work hours' },
+                { key: 'leave_management', name: 'Leave Management', description: 'Manage employee leave requests and approvals' },
+                { key: 'payroll_processing', name: 'Payroll Processing', description: 'Process employee salaries and generate payslips' },
+                { key: 'performance_reviews', name: 'Performance Reviews', description: 'Conduct and track employee performance evaluations' },
+                { key: 'recruitment', name: 'Recruitment', description: 'Manage job postings and candidate applications' },
+                { key: 'training_development', name: 'Training & Development', description: 'Track employee training and development programs' },
+                { key: 'analytics_reporting', name: 'Analytics & Reporting', description: 'Generate detailed reports and analytics' }
+            ];
+
+            const html = featureList.map(feature => `
+                <div class="feature-toggle">
+                    <div class="feature-info">
+                        <div class="feature-name">${feature.name}</div>
+                        <div class="feature-description">${feature.description}</div>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="feature_${feature.key}" 
+                               ${features[feature.key] ? 'checked' : ''} 
+                               onchange="toggleFeature('${feature.key}', this.checked)">
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = html;
+        }
+
+        async function toggleFeature(featureKey, enabled) {
+            if (!selectedOrgForFeatures) return;
+
+            try {
+                await apiCall(`/api/super-admin/organizations/${selectedOrgForFeatures}/features`, 'POST', {
+                    feature: featureKey,
+                    enabled: enabled
+                });
+                
+                showAlert(`${featureKey.replace('_', ' ')} ${enabled ? 'enabled' : 'disabled'} successfully`, 'success');
+            } catch (error) {
+                // Revert the checkbox state
+                document.getElementById(`feature_${featureKey}`).checked = !enabled;
+                console.error('Error toggling feature:', error);
+            }
+        }
+
+        async function enableAllFeatures() {
+            if (!selectedOrgForFeatures) {
+                showAlert('Please select an organization first', 'warning');
+                return;
+            }
+
+            try {
+                await apiCall(`/api/super-admin/organizations/${selectedOrgForFeatures}/features/enable-all`, 'POST');
+                showAlert('All features enabled successfully', 'success');
+                loadOrgFeatures();
+            } catch (error) {
+                console.error('Error enabling all features:', error);
+            }
+        }
+
+        async function disableAllFeatures() {
+            if (!selectedOrgForFeatures) {
+                showAlert('Please select an organization first', 'warning');
+                return;
+            }
+
+            if (confirm('Are you sure you want to disable all features for this organization?')) {
+                try {
+                    await apiCall(`/api/super-admin/organizations/${selectedOrgForFeatures}/features/disable-all`, 'POST');
+                    showAlert('All features disabled successfully', 'success');
+                    loadOrgFeatures();
+                } catch (error) {
+                    console.error('Error disabling all features:', error);
+                }
+            }
+        }
+
+        async function loadSystemInfo() {
+            try {
+                const systemInfo = await apiCall('/api/super-admin/system-info');
+                
+                const dbStatsHtml = `
+                    <tr><td><strong>Database Size</strong></td><td>${systemInfo.db_size}</td></tr>
+                    <tr><td><strong>Organizations</strong></td><td>${systemInfo.organization_count}</td></tr>
+                    <tr><td><strong>Employees</strong></td><td>${systemInfo.employee_count}</td></tr>
+                    <tr><td><strong>Last Backup</strong></td><td>${systemInfo.last_backup || 'Never'}</td></tr>
+                `;
+                document.getElementById('dbStats').innerHTML = dbStatsHtml;
+
+                const metricsHtml = `
+                    <tr><td><strong>Server Uptime</strong></td><td>${systemInfo.uptime}</td></tr>
+                    <tr><td><strong>Memory Usage</strong></td><td>${systemInfo.memory_usage}</td></tr>
+                    <tr><td><strong>API Calls Today</strong></td><td>${systemInfo.api_calls_today.toLocaleString()}</td></tr>
+                    <tr><td><strong>Active Sessions</strong></td><td>${systemInfo.active_sessions}</td></tr>
+                `;
+                document.getElementById('systemMetrics').innerHTML = metricsHtml;
+            } catch (error) {
+                console.error('Error loading system info:', error);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('employee');
+            localStorage.removeItem('organization');
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>

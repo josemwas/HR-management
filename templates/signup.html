@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Organization - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        .register-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 500;
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .alert {
+            border-radius: 10px;
+        }
+        .plan-card {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .plan-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .plan-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .step-indicator .step-item {
+            display: flex;
+            align-items: center;
+            margin: 0 1rem;
+        }
+        .step-indicator .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        .step-indicator .step-item.active .step-number {
+            background: #667eea;
+            color: white;
+        }
+        .step-indicator .step-item.completed .step-number {
+            background: #28a745;
+            color: white;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+                <div class="register-container">
+                    <div class="text-center mb-4">
+                        <h2><i class="fas fa-building text-primary"></i> Register Your Organization</h2>
+                        <p class="text-muted">Get started with our HR Management platform</p>
+                    </div>
+
+                    <!-- Step Indicator -->
+                    <div class="step-indicator">
+                        <div class="step-item active" id="step-indicator-1">
+                            <div class="step-number">1</div>
+                            <span>Organization Info</span>
+                        </div>
+                        <div class="step-item" id="step-indicator-2">
+                            <div class="step-number">2</div>
+                            <span>Choose Plan</span>
+                        </div>
+                        <div class="step-item" id="step-indicator-3">
+                            <div class="step-number">3</div>
+                            <span>Admin Account</span>
+                        </div>
+                    </div>
+
+                    <!-- Registration Form -->
+                    <form id="registrationForm">
+                        <!-- Step 1: Organization Information -->
+                        <div class="step active" id="step-1">
+                            <h4 class="mb-3"><i class="fas fa-info-circle"></i> Organization Information</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="org_name" class="form-label">
+                                        <i class="fas fa-building"></i> Organization Name *
+                                    </label>
+                                    <input type="text" class="form-control" id="org_name" name="org_name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="org_slug" class="form-label">
+                                        <i class="fas fa-link"></i> Subdomain *
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="org_slug" name="org_slug" required 
+                                               pattern="[a-z0-9-]+" title="Only lowercase letters, numbers, and hyphens">
+                                        <span class="input-group-text">.hrms.com</span>
+                                    </div>
+                                    <div class="form-text">This will be your organization's unique URL</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="industry" class="form-label">
+                                        <i class="fas fa-industry"></i> Industry
+                                    </label>
+                                    <select class="form-control" id="industry" name="industry">
+                                        <option value="">Select Industry</option>
+                                        <option value="technology">Technology</option>
+                                        <option value="healthcare">Healthcare</option>
+                                        <option value="finance">Finance</option>
+                                        <option value="education">Education</option>
+                                        <option value="manufacturing">Manufacturing</option>
+                                        <option value="retail">Retail</option>
+                                        <option value="consulting">Consulting</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="company_size" class="form-label">
+                                        <i class="fas fa-users"></i> Company Size
+                                    </label>
+                                    <select class="form-control" id="company_size" name="company_size">
+                                        <option value="">Select Size</option>
+                                        <option value="1-10">1-10 employees</option>
+                                        <option value="11-50">11-50 employees</option>
+                                        <option value="51-200">51-200 employees</option>
+                                        <option value="201-1000">201-1000 employees</option>
+                                        <option value="1000+">1000+ employees</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">
+                                    <i class="fas fa-align-left"></i> Description
+                                </label>
+                                <textarea class="form-control" id="description" name="description" rows="3" 
+                                          placeholder="Brief description of your organization"></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-primary" onclick="nextStep(1)">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Choose Plan -->
+                        <div class="step" id="step-2">
+                            <h4 class="mb-3"><i class="fas fa-credit-card"></i> Choose Your Plan</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="plan-card" data-plan="starter">
+                                        <div class="text-center">
+                                            <h5 class="text-primary">Starter</h5>
+                                            <h3>$19<small>/month</small></h3>
+                                            <p class="text-muted">Perfect for small teams</p>
+                                        </div>
+                                        <ul class="feature-list">
+                                            <li><i class="fas fa-check text-success"></i> Up to 25 employees</li>
+                                            <li><i class="fas fa-check text-success"></i> Basic HR features</li>
+                                            <li><i class="fas fa-check text-success"></i> Employee management</li>
+                                            <li><i class="fas fa-check text-success"></i> Leave tracking</li>
+                                            <li><i class="fas fa-check text-success"></i> Email support</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="plan-card" data-plan="professional">
+                                        <div class="text-center">
+                                            <h5 class="text-primary">Professional</h5>
+                                            <h3>$49<small>/month</small></h3>
+                                            <p class="text-muted">Ideal for growing companies</p>
+                                        </div>
+                                        <ul class="feature-list">
+                                            <li><i class="fas fa-check text-success"></i> Up to 100 employees</li>
+                                            <li><i class="fas fa-check text-success"></i> All Starter features</li>
+                                            <li><i class="fas fa-check text-success"></i> Payroll management</li>
+                                            <li><i class="fas fa-check text-success"></i> Performance reviews</li>
+                                            <li><i class="fas fa-check text-success"></i> Advanced reporting</li>
+                                            <li><i class="fas fa-check text-success"></i> Priority support</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="plan-card" data-plan="enterprise">
+                                        <div class="text-center">
+                                            <h5 class="text-primary">Enterprise</h5>
+                                            <h3>$99<small>/month</small></h3>
+                                            <p class="text-muted">For large organizations</p>
+                                        </div>
+                                        <ul class="feature-list">
+                                            <li><i class="fas fa-check text-success"></i> Unlimited employees</li>
+                                            <li><i class="fas fa-check text-success"></i> All Professional features</li>
+                                            <li><i class="fas fa-check text-success"></i> Custom integrations</li>
+                                            <li><i class="fas fa-check text-success"></i> Advanced security</li>
+                                            <li><i class="fas fa-check text-success"></i> Custom reporting</li>
+                                            <li><i class="fas fa-check text-success"></i> 24/7 phone support</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="selected_plan" name="subscription_plan" required>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" onclick="prevStep(2)">
+                                    <i class="fas fa-arrow-left"></i> Previous
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="nextStep(2)">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Admin Account -->
+                        <div class="step" id="step-3">
+                            <h4 class="mb-3"><i class="fas fa-user-shield"></i> Create Admin Account</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="first_name" class="form-label">
+                                        <i class="fas fa-user"></i> First Name *
+                                    </label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="last_name" class="form-label">
+                                        <i class="fas fa-user"></i> Last Name *
+                                    </label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="admin_email" class="form-label">
+                                    <i class="fas fa-envelope"></i> Email Address *
+                                </label>
+                                <input type="email" class="form-control" id="admin_email" name="admin_email" required>
+                                <div class="form-text">This will be your login email</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="password" class="form-label">
+                                        <i class="fas fa-lock"></i> Password *
+                                    </label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="confirm_password" class="form-label">
+                                        <i class="fas fa-lock"></i> Confirm Password *
+                                    </label>
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">
+                                    <i class="fas fa-phone"></i> Phone Number
+                                </label>
+                                <input type="tel" class="form-control" id="phone" name="phone">
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="agree_terms" required>
+                                <label class="form-check-label" for="agree_terms">
+                                    I agree to the <a href="#" target="_blank">Terms of Service</a> and 
+                                    <a href="#" target="_blank">Privacy Policy</a>
+                                </label>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" onclick="prevStep(3)">
+                                    <i class="fas fa-arrow-left"></i> Previous
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-check"></i> Create Organization
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Alert Messages -->
+                    <div id="alertContainer" class="mt-3"></div>
+
+                    <div class="text-center mt-4">
+                        <p class="mb-0">Already have an account? 
+                            <a href="/login" class="text-primary">Sign in here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentStep = 1;
+
+        // Show alert function
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            alertContainer.innerHTML = alertHtml;
+        }
+
+        // Step navigation
+        function nextStep(step) {
+            if (validateStep(step)) {
+                if (step < 3) {
+                    document.getElementById(`step-${step}`).classList.remove('active');
+                    document.getElementById(`step-${step + 1}`).classList.add('active');
+                    
+                    document.getElementById(`step-indicator-${step}`).classList.remove('active');
+                    document.getElementById(`step-indicator-${step}`).classList.add('completed');
+                    document.getElementById(`step-indicator-${step + 1}`).classList.add('active');
+                    
+                    currentStep = step + 1;
+                }
+            }
+        }
+
+        function prevStep(step) {
+            if (step > 1) {
+                document.getElementById(`step-${step}`).classList.remove('active');
+                document.getElementById(`step-${step - 1}`).classList.add('active');
+                
+                document.getElementById(`step-indicator-${step}`).classList.remove('active');
+                document.getElementById(`step-indicator-${step - 1}`).classList.remove('completed');
+                document.getElementById(`step-indicator-${step - 1}`).classList.add('active');
+                
+                currentStep = step - 1;
+            }
+        }
+
+        // Validate step
+        function validateStep(step) {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = '';
+
+            if (step === 1) {
+                const orgName = document.getElementById('org_name').value.trim();
+                const orgSlug = document.getElementById('org_slug').value.trim();
+                
+                if (!orgName) {
+                    showAlert('Organization name is required', 'danger');
+                    return false;
+                }
+                
+                if (!orgSlug) {
+                    showAlert('Subdomain is required', 'danger');
+                    return false;
+                }
+                
+                if (!/^[a-z0-9-]+$/.test(orgSlug)) {
+                    showAlert('Subdomain can only contain lowercase letters, numbers, and hyphens', 'danger');
+                    return false;
+                }
+            } else if (step === 2) {
+                const selectedPlan = document.getElementById('selected_plan').value;
+                if (!selectedPlan) {
+                    showAlert('Please select a subscription plan', 'danger');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        // Plan selection
+        document.querySelectorAll('.plan-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove previous selection
+                document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+                
+                // Select current
+                this.classList.add('selected');
+                
+                // Set hidden input
+                const plan = this.getAttribute('data-plan');
+                document.getElementById('selected_plan').value = plan;
+            });
+        });
+
+        // Auto-generate slug from organization name
+        document.getElementById('org_name').addEventListener('input', function() {
+            const name = this.value.toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .trim();
+            document.getElementById('org_slug').value = name;
+        });
+
+        // Form submission
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Validate passwords match
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match', 'danger');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Remove confirm_password from data
+            delete data.confirm_password;
+            
+            try {
+                const response = await fetch('/api/auth/register-organization', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showAlert('Organization registered successfully! Redirecting to login...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                } else {
+                    showAlert(result.error || 'Registration failed', 'danger');
+                }
+            } catch (error) {
+                showAlert('Connection error. Please try again.', 'danger');
+            }
+        });
+
+        // Check if already logged in
+        if (localStorage.getItem('access_token')) {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

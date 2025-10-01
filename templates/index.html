@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Management System</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-sign-in-alt"></i> Login to HR System</h2>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <div id="loginError" class="error-message"></div>
+            </form>
+            <div class="demo-credentials">
+                <h4>Demo Credentials:</h4>
+                <p><strong>Admin:</strong> admin@company.com / password123</p>
+                <p><strong>Manager:</strong> john.manager@company.com / password123</p>
+                <p><strong>Employee:</strong> jane.dev@company.com / password123</p>
+                <div style="margin-top: 1rem; text-align: center;">
+                    <a href="/careers" class="btn btn-secondary" style="text-decoration: none;">
+                        <i class="fas fa-briefcase"></i> View Job Openings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="display: none;">
+        <div class="nav-brand">
+            <i class="fas fa-users"></i>
+            <span>HR Management</span>
+        </div>
+        <div class="nav-user">
+            <span id="currentUser"></span>
+            <button id="logoutBtn" class="btn btn-secondary">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container" id="mainContainer" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" data-section="employees">
+                    <i class="fas fa-users"></i>
+                    <span>Employees</span>
+                </div>
+                <div class="menu-item" data-section="attendance">
+                    <i class="fas fa-clock"></i>
+                    <span>Attendance</span>
+                </div>
+                <div class="menu-item" data-section="leaves">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Leave Requests</span>
+                </div>
+                <div class="menu-item" data-section="payroll">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Payroll</span>
+                </div>
+                <div class="menu-item" data-section="recruitment">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Recruitment</span>
+                </div>
+                <div class="menu-item" data-section="performance">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Performance</span>
+                </div>
+                <div class="menu-item" data-section="training">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Training</span>
+                </div>
+                <div class="menu-item" data-section="benefits">
+                    <i class="fas fa-heart"></i>
+                    <span>Benefits</span>
+                </div>
+                <div class="menu-item" data-section="documents">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Documents</span>
+                </div>
+                <div class="menu-item" data-section="reports">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+                </div>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="totalEmployees">0</h3>
+                            <p>Total Employees</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="presentToday">0</h3>
+                            <p>Present Today</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="pendingLeaves">0</h3>
+                            <p>Pending Leaves</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="openJobs">0</h3>
+                            <p>Open Positions</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Employees Section -->
+            <section id="employees" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-users"></i> Employees</h1>
+                    <button class="btn btn-primary" onclick="showAddEmployeeModal()">
+                        <i class="fas fa-plus"></i> Add Employee
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table id="employeesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Position</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeesTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Attendance Section -->
+            <section id="attendance" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-clock"></i> Attendance</h1>
+                </div>
+                <div class="table-container">
+                    <table id="attendanceTable">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Date</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Leave Requests Section -->
+            <section id="leaves" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-calendar-alt"></i> Leave Requests</h1>
+                </div>
+                <div class="table-container">
+                    <table id="leavesTable">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Type</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Days</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leavesTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Payroll Section -->
+            <section id="payroll" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-money-bill-wave"></i> Payroll</h1>
+                </div>
+                <div class="table-container">
+                    <table id="payrollTable">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Month/Year</th>
+                                <th>Basic Salary</th>
+                                <th>Allowances</th>
+                                <th>Deductions</th>
+                                <th>Net Salary</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payrollTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Recruitment Section -->
+            <section id="recruitment" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-user-plus"></i> Recruitment</h1>
+                    <button class="btn btn-primary" onclick="showAddJobModal()">
+                        <i class="fas fa-plus"></i> Post Job
+                    </button>
+                </div>
+                <div class="recruitment-tabs">
+                    <button class="tab-btn active" onclick="showJobPostings()">Job Postings</button>
+                    <button class="tab-btn" onclick="showApplicants()">Applicants</button>
+                </div>
+                <div id="jobPostings" class="tab-content">
+                    <div class="table-container">
+                        <table id="jobsTable">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Department</th>
+                                    <th>Posted Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="jobsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="applicants" class="tab-content" style="display: none;">
+                    <div class="table-container">
+                        <table id="applicantsTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Position</th>
+                                    <th>Applied Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="applicantsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Performance Section -->
+            <section id="performance" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-chart-line"></i> Performance Reviews</h1>
+                </div>
+                <div class="table-container">
+                    <table id="performanceTable">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Reviewer</th>
+                                <th>Period</th>
+                                <th>Rating</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="performanceTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Training Section -->
+            <section id="training" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-graduation-cap"></i> Training & Development</h1>
+                    <button class="btn btn-primary" onclick="showAddTrainingModal()">
+                        <i class="fas fa-plus"></i> Add Training Program
+                    </button>
+                </div>
+                <div class="training-tabs">
+                    <button class="tab-btn active" onclick="showTrainingPrograms()">Training Programs</button>
+                    <button class="tab-btn" onclick="showTrainingEnrollments()">Enrollments</button>
+                </div>
+                <div id="trainingPrograms" class="tab-content">
+                    <div class="table-container">
+                        <table id="trainingTable">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Trainer</th>
+                                    <th>Start Date</th>
+                                    <th>Duration</th>
+                                    <th>Participants</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trainingTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="trainingEnrollments" class="tab-content" style="display: none;">
+                    <div class="table-container">
+                        <table id="enrollmentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Program</th>
+                                    <th>Enrollment Date</th>
+                                    <th>Status</th>
+                                    <th>Score</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="enrollmentsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Benefits Section -->
+            <section id="benefits" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-heart"></i> Employee Benefits</h1>
+                    <button class="btn btn-primary" onclick="showAddBenefitModal()">
+                        <i class="fas fa-plus"></i> Add Benefit
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table id="benefitsTable">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Benefit Type</th>
+                                <th>Benefit Name</th>
+                                <th>Provider</th>
+                                <th>Premium</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="benefitsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Documents Section -->
+            <section id="documents" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-file-alt"></i> Document Management</h1>
+                    <button class="btn btn-primary" onclick="showAddDocumentModal()">
+                        <i class="fas fa-plus"></i> Upload Document
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table id="documentsTable">
+                        <thead>
+                            <tr>
+                                <th>Document Name</th>
+                                <th>Employee</th>
+                                <th>Type</th>
+                                <th>Upload Date</th>
+                                <th>Size</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="documentsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-chart-bar"></i> Reports & Analytics</h1>
+                    <button class="btn btn-primary" onclick="exportReports()">
+                        <i class="fas fa-download"></i> Export Reports
+                    </button>
+                </div>
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3><i class="fas fa-users"></i> Employee Report</h3>
+                            <button class="btn btn-secondary" onclick="generateEmployeeReport()">Generate</button>
+                        </div>
+                        <p>Complete employee directory with status and department information</p>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3><i class="fas fa-clock"></i> Attendance Report</h3>
+                            <button class="btn btn-secondary" onclick="generateAttendanceReport()">Generate</button>
+                        </div>
+                        <p>Detailed attendance tracking with hours and patterns</p>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3><i class="fas fa-calendar-alt"></i> Leave Report</h3>
+                            <button class="btn btn-secondary" onclick="generateLeaveReport()">Generate</button>
+                        </div>
+                        <p>Leave balance and usage patterns by employee</p>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3><i class="fas fa-money-bill-wave"></i> Payroll Report</h3>
+                            <button class="btn btn-secondary" onclick="generatePayrollReport()">Generate</button>
+                        </div>
+                        <p>Comprehensive payroll summary with deductions</p>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3><i class="fas fa-chart-line"></i> Performance Report</h3>
+                            <button class="btn btn-secondary" onclick="generatePerformanceReport()">Generate</button>
+                        </div>
+                        <p>Performance review analytics and trends</p>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3><i class="fas fa-graduation-cap"></i> Training Report</h3>
+                            <button class="btn btn-secondary" onclick="generateTrainingReport()">Generate</button>
+                        </div>
+                        <p>Training completion rates and effectiveness</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Add Employee Modal -->
+    <div id="addEmployeeModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Add New Employee</h2>
+                <button class="close-btn" onclick="hideAddEmployeeModal()">&times;</button>
+            </div>
+            <form id="addEmployeeForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="empId">Employee ID *</label>
+                        <input type="text" id="empId" name="employee_id" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empEmail">Email *</label>
+                        <input type="email" id="empEmail" name="email" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="empFirstName">First Name *</label>
+                        <input type="text" id="empFirstName" name="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empLastName">Last Name *</label>
+                        <input type="text" id="empLastName" name="last_name" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="empPosition">Position *</label>
+                        <input type="text" id="empPosition" name="position" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empDepartment">Department</label>
+                        <select id="empDepartment" name="department_id">
+                            <option value="">Select Department</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="empSalary">Salary</label>
+                        <input type="number" id="empSalary" name="salary" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="empHireDate">Hire Date *</label>
+                        <input type="date" id="empHireDate" name="hire_date" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="empPhone">Phone</label>
+                        <input type="tel" id="empPhone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="empRole">Role</label>
+                        <select id="empRole" name="role">
+                            <option value="employee">Employee</option>
+                            <option value="manager">Manager</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="empPassword">Temporary Password *</label>
+                    <input type="password" id="empPassword" name="password" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Add Employee
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="hideAddEmployeeModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+                <div id="addEmployeeError" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Job Modal -->
+    <div id="addJobModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-briefcase"></i> Post New Job</h2>
+                <button class="close-btn" onclick="hideAddJobModal()">&times;</button>
+            </div>
+            <form id="addJobForm">
+                <div class="form-group">
+                    <label for="jobTitle">Job Title *</label>
+                    <input type="text" id="jobTitle" name="title" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="jobDepartment">Department</label>
+                        <select id="jobDepartment" name="department_id">
+                            <option value="">Select Department</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobLocation">Location</label>
+                        <input type="text" id="jobLocation" name="location">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="jobType">Employment Type</label>
+                        <select id="jobType" name="employment_type">
+                            <option value="full-time">Full-time</option>
+                            <option value="part-time">Part-time</option>
+                            <option value="contract">Contract</option>
+                            <option value="internship">Internship</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobSalary">Salary Range</label>
+                        <input type="text" id="jobSalary" name="salary_range" placeholder="e.g., $50,000 - $70,000">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="jobDescription">Job Description *</label>
+                    <textarea id="jobDescription" name="description" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="jobRequirements">Requirements</label>
+                    <textarea id="jobRequirements" name="requirements" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="jobPostedDate">Posted Date *</label>
+                        <input type="date" id="jobPostedDate" name="posted_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobClosingDate">Closing Date</label>
+                        <input type="date" id="jobClosingDate" name="closing_date">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Post Job
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="hideAddJobModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+                <div id="addJobError" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Employee Modal -->
+    <div id="viewEmployeeModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-user"></i> Employee Details</h2>
+                <button class="close-btn" onclick="hideViewEmployeeModal()">&times;</button>
+            </div>
+            <div id="employeeDetails" class="employee-details">
+                <!-- Employee details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Training Program Modal -->
+    <div id="addTrainingModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-graduation-cap"></i> Add Training Program</h2>
+                <button class="close-btn" onclick="hideAddTrainingModal()">&times;</button>
+            </div>
+            <form id="addTrainingForm">
+                <div class="form-group">
+                    <label for="trainingTitle">Program Title *</label>
+                    <input type="text" id="trainingTitle" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="trainingDescription">Description</label>
+                    <textarea id="trainingDescription" name="description" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="trainingTrainer">Trainer</label>
+                        <input type="text" id="trainingTrainer" name="trainer">
+                    </div>
+                    <div class="form-group">
+                        <label for="trainingType">Training Type</label>
+                        <select id="trainingType" name="training_type">
+                            <option value="internal">Internal</option>
+                            <option value="external">External</option>
+                            <option value="online">Online</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="trainingStartDate">Start Date *</label>
+                        <input type="date" id="trainingStartDate" name="start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trainingEndDate">End Date</label>
+                        <input type="date" id="trainingEndDate" name="end_date">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="trainingDuration">Duration (hours)</label>
+                        <input type="number" id="trainingDuration" name="duration_hours" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="trainingParticipants">Max Participants</label>
+                        <input type="number" id="trainingParticipants" name="max_participants" value="20" min="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="trainingLocation">Location</label>
+                    <input type="text" id="trainingLocation" name="location">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Add Program
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="hideAddTrainingModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+                <div id="addTrainingError" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Benefit Modal -->
+    <div id="addBenefitModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-heart"></i> Add Employee Benefit</h2>
+                <button class="close-btn" onclick="hideAddBenefitModal()">&times;</button>
+            </div>
+            <form id="addBenefitForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="benefitEmployee">Employee *</label>
+                        <select id="benefitEmployee" name="employee_id" required>
+                            <option value="">Select Employee</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="benefitType">Benefit Type *</label>
+                        <select id="benefitType" name="benefit_type" required>
+                            <option value="">Select Type</option>
+                            <option value="health">Health Insurance</option>
+                            <option value="dental">Dental Insurance</option>
+                            <option value="vision">Vision Insurance</option>
+                            <option value="life">Life Insurance</option>
+                            <option value="retirement">Retirement Plan</option>
+                            <option value="disability">Disability Insurance</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="benefitName">Benefit Name *</label>
+                    <input type="text" id="benefitName" name="benefit_name" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="benefitProvider">Provider</label>
+                        <input type="text" id="benefitProvider" name="provider">
+                    </div>
+                    <div class="form-group">
+                        <label for="benefitPolicy">Policy Number</label>
+                        <input type="text" id="benefitPolicy" name="policy_number">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="benefitStartDate">Start Date *</label>
+                        <input type="date" id="benefitStartDate" name="start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="benefitEndDate">End Date</label>
+                        <input type="date" id="benefitEndDate" name="end_date">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="benefitPremium">Premium Amount</label>
+                        <input type="number" id="benefitPremium" name="premium_amount" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="benefitEmployerContrib">Employer Contribution</label>
+                        <input type="number" id="benefitEmployerContrib" name="employer_contribution" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="benefitCoverage">Coverage Details</label>
+                    <textarea id="benefitCoverage" name="coverage_details" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Add Benefit
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="hideAddBenefitModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+                <div id="addBenefitError" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Document Modal -->
+    <div id="addDocumentModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-alt"></i> Upload Document</h2>
+                <button class="close-btn" onclick="hideAddDocumentModal()">&times;</button>
+            </div>
+            <form id="addDocumentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="docEmployee">Employee *</label>
+                        <select id="docEmployee" name="employee_id" required>
+                            <option value="">Select Employee</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="docType">Document Type *</label>
+                        <select id="docType" name="document_type" required>
+                            <option value="">Select Type</option>
+                            <option value="resume">Resume</option>
+                            <option value="contract">Contract</option>
+                            <option value="id_copy">ID Copy</option>
+                            <option value="certificate">Certificate</option>
+                            <option value="performance">Performance Review</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="docName">Document Name *</label>
+                    <input type="text" id="docName" name="document_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="docPath">File Path *</label>
+                    <input type="text" id="docPath" name="file_path" required placeholder="/path/to/document.pdf">
+                    <small>Note: In production, this would be a file upload field</small>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="docExpiry">Expiry Date</label>
+                        <input type="date" id="docExpiry" name="expiry_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="docConfidential">
+                            <input type="checkbox" id="docConfidential" name="is_confidential">
+                            Confidential Document
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="docNotes">Notes</label>
+                    <textarea id="docNotes" name="notes" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Upload Document
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="hideAddDocumentModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+                <div id="addDocumentError" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

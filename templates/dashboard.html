@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Management Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px 15px 0 0;
+            padding: 1rem 2rem;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            border: none;
+            font-weight: 600;
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 2rem 1rem;
+            cursor: pointer;
+        }
+
+        .stats-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .stats-label {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 500;
+        }
+
+        .welcome-section {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="dashboard-container">
+            <!-- Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-custom">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">
+                        <i class="fas fa-users"></i> HR Management System
+                    </a>
+                    <div class="navbar-nav ms-auto">
+                        <span class="nav-link" id="userInfo">Loading...</span>
+                        <a class="nav-link" href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Content -->
+            <div class="content-area">
+                <!-- Alert Container -->
+                <div id="alertContainer"></div>
+
+                <!-- Welcome Section -->
+                <div class="welcome-section">
+                    <h2><i class="fas fa-home"></i> Welcome to Your HR Dashboard</h2>
+                    <p class="mb-0">Manage your organization's human resources efficiently with our comprehensive platform.</p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card stats-card" onclick="navigateTo('/employees')">
+                            <div class="feature-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3 class="stats-number" id="employeeCount">-</h3>
+                            <p class="stats-label">Employees</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stats-card" onclick="navigateTo('/departments')">
+                            <div class="feature-icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <h3 class="stats-number" id="departmentCount">-</h3>
+                            <p class="stats-label">Departments</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stats-card" onclick="navigateTo('/attendance')">
+                            <div class="feature-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3 class="stats-number" id="attendanceToday">-</h3>
+                            <p class="stats-label">Present Today</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stats-card" onclick="navigateTo('/leaves')">
+                            <div class="feature-icon">
+                                <i class="fas fa-calendar-times"></i>
+                            </div>
+                            <h3 class="stats-number" id="pendingLeaves">-</h3>
+                            <p class="stats-label">Pending Leaves</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature Grid -->
+                <div class="feature-grid">
+                    <div class="feature-card" onclick="navigateTo('/employees')">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h5>Employee Management</h5>
+                        <p>Manage employee records, profiles, and organizational structure.</p>
+                    </div>
+
+                    <div class="feature-card" onclick="navigateTo('/attendance')">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                        <h5>Attendance Tracking</h5>
+                        <p>Track employee attendance, work hours, and time management.</p>
+                    </div>
+
+                    <div class="feature-card" onclick="navigateTo('/leaves')">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h5>Leave Management</h5>
+                        <p>Handle leave requests, approvals, and vacation planning.</p>
+                    </div>
+
+                    <div class="feature-card" onclick="navigateTo('/payroll')">
+                        <div class="feature-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <h5>Payroll Management</h5>
+                        <p>Process salaries, bonuses, and generate payslips efficiently.</p>
+                    </div>
+
+                    <div class="feature-card" onclick="navigateTo('/performance')">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h5>Performance Reviews</h5>
+                        <p>Conduct performance evaluations and track employee growth.</p>
+                    </div>
+
+                    <div class="feature-card" onclick="navigateTo('/recruitment')">
+                        <div class="feature-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h5>Recruitment</h5>
+                        <p>Manage job postings, applications, and hiring process.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            loadDashboardData();
+            setupEventListeners();
+        });
+
+        function checkAuthentication() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                // No token, redirect to login
+                window.location.href = '/login';
+                return false;
+            }
+
+            // Display user info
+            const employee = JSON.parse(localStorage.getItem('employee') || '{}');
+            const organization = JSON.parse(localStorage.getItem('organization') || '{}');
+            
+            if (employee.first_name) {
+                document.getElementById('userInfo').textContent = 
+                    `${employee.first_name} ${employee.last_name} (${employee.role}) - ${organization.name || 'Organization'}`;
+            }
+            return true;
+        }
+
+        function setupEventListeners() {
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            alertContainer.innerHTML = alertHtml;
+        }
+
+        async function loadDashboardData() {
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) return;
+
+                // Load dashboard statistics
+                const response = await fetch('/api/employees/dashboard-stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const stats = await response.json();
+                    
+                    document.getElementById('employeeCount').textContent = stats.employee_count || 0;
+                    document.getElementById('departmentCount').textContent = stats.department_count || 0;
+                    document.getElementById('attendanceToday').textContent = stats.attendance_today || 0;
+                    document.getElementById('pendingLeaves').textContent = stats.pending_leaves || 0;
+                } else {
+                    // Use default values if API fails
+                    document.getElementById('employeeCount').textContent = '0';
+                    document.getElementById('departmentCount').textContent = '0';
+                    document.getElementById('attendanceToday').textContent = '0';
+                    document.getElementById('pendingLeaves').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                // Use default values on error
+                document.getElementById('employeeCount').textContent = '0';
+                document.getElementById('departmentCount').textContent = '0';
+                document.getElementById('attendanceToday').textContent = '0';
+                document.getElementById('pendingLeaves').textContent = '0';
+            }
+        }
+
+        function navigateTo(url) {
+            // For now, show an alert since the full modules aren't implemented yet
+            showAlert(`Navigation to ${url} - This feature will be available in the full implementation`, 'info');
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('employee');
+            localStorage.removeItem('organization');
+            
+            showAlert('Logged out successfully', 'success');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

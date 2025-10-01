@@ -6,8 +6,9 @@ class Employee(db.Model):
     __tablename__ = 'employees'
     
     id = db.Column(db.Integer, primary_key=True)
-    employee_id = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    organization_id = db.Column(db.Integer, db.ForeignKey('organizations.id'), nullable=True)  # Nullable for super admins
+    employee_id = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
     password_hash = db.Column(db.String(255))
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
@@ -24,7 +25,16 @@ class Employee(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
+    # Password reset fields
+    password_reset_token = db.Column(db.String(64))
+    password_reset_expires = db.Column(db.DateTime)
+    
+    # Add unique constraint for employee_id within organization
+    __table_args__ = (db.UniqueConstraint('organization_id', 'employee_id', name='uq_org_employee_id'),
+                      db.UniqueConstraint('organization_id', 'email', name='uq_org_email'))
+    
     # Relationships
+    organization = db.relationship('Organization', back_populates='employees')
     department = db.relationship('Department', back_populates='employees')
     attendances = db.relationship('Attendance', back_populates='employee', cascade='all, delete-orphan')
     leaves = db.relationship('Leave', back_populates='employee', cascade='all, delete-orphan')
@@ -40,6 +50,7 @@ class Employee(db.Model):
     def to_dict(self):
         return {
             'id': self.id,
+            'organization_id': self.organization_id,
             'employee_id': self.employee_id,
             'email': self.email,
             'first_name': self.first_name,

@@ -5,6 +5,8 @@ from .leave import Leave
 from .payroll import Payroll
 from .recruitment import JobPosting, Applicant
 from .performance import PerformanceReview
+from .training import TrainingProgram, TrainingEnrollment, EmployeeDocument, EmployeeBenefit
+from .organization import Organization, SubscriptionPlan, Subscription, Invoice, UsageLog
 
 __all__ = [
     'Employee',
@@ -14,5 +16,14 @@ __all__ = [
     'Payroll',
     'JobPosting',
     'Applicant',
-    'PerformanceReview'
+    'PerformanceReview',
+    'TrainingProgram',
+    'TrainingEnrollment',
+    'EmployeeDocument',
+    'EmployeeBenefit',
+    'Organization',
+    'SubscriptionPlan',
+    'Subscription',
+    'Invoice',
+    'UsageLog'
 ]

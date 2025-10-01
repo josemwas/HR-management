@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Management - Job Application</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .public-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .public-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .public-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+        
+        .public-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .public-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .job-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .job-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .job-title {
+            color: #667eea;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .job-details {
+            margin-bottom: 1.5rem;
+        }
+        
+        .job-detail {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+        
+        .apply-form {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-top: 2rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="public-page">
+        <div class="public-container">
+            <div class="public-header">
+                <h1><i class="fas fa-briefcase"></i> Career Opportunities</h1>
+                <p>Join our team and build your career with us</p>
+                <a href="/" class="btn btn-secondary" style="margin-top: 1rem;">
+                    <i class="fas fa-sign-in-alt"></i> Employee Login
+                </a>
+            </div>
+            
+            <div id="jobsGrid" class="jobs-grid">
+                <!-- Jobs will be loaded here -->
+            </div>
+            
+            <div class="apply-form" id="applyForm" style="display: none;">
+                <h2><i class="fas fa-user-plus"></i> Apply for Position</h2>
+                <form id="applicationForm">
+                    <input type="hidden" id="jobId" name="jobId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="coverLetter">Cover Letter</label>
+                        <textarea id="coverLetter" name="coverLetter" rows="4" 
+                                  placeholder="Tell us why you're interested in this position..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Submit Application
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="hideApplyForm()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </form>
+                <div id="applicationStatus" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const baseURL = 'http://127.0.0.1:5000';
+        
+        // Load jobs on page load
+        document.addEventListener('DOMContentLoaded', loadJobs);
+        
+        // Application form submission
+        document.getElementById('applicationForm').addEventListener('submit', submitApplication);
+        
+        async function loadJobs() {
+            try {
+                const response = await fetch(`${baseURL}/api/recruitment/jobs`);
+                if (response.ok) {
+                    const jobs = await response.json();
+                    renderJobs(jobs);
+                }
+            } catch (error) {
+                console.error('Error loading jobs:', error);
+            }
+        }
+        
+        function renderJobs(jobs) {
+            const jobsGrid = document.getElementById('jobsGrid');
+            jobsGrid.innerHTML = '';
+            
+            if (jobs.length === 0) {
+                jobsGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; color: white;">
+                        <h3>No open positions at the moment</h3>
+                        <p>Check back soon for new opportunities!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            jobs.forEach(job => {
+                const jobCard = document.createElement('div');
+                jobCard.className = 'job-card';
+                jobCard.innerHTML = `
+                    <div class="job-title">${job.title}</div>
+                    <div class="job-details">
+                        <div class="job-detail">
+                            <i class="fas fa-building"></i>
+                            <span>${job.department_name || 'Various Departments'}</span>
+                        </div>
+                        <div class="job-detail">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${job.location || 'Office Location'}</span>
+                        </div>
+                        <div class="job-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>${job.employment_type || 'Full-time'}</span>
+                        </div>
+                        <div class="job-detail">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span>${job.salary_range || 'Competitive'}</span>
+                        </div>
+                        <div class="job-detail">
+                            <i class="fas fa-calendar"></i>
+                            <span>Posted: ${job.posted_date}</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Description:</strong>
+                        <p style="margin-top: 0.5rem; line-height: 1.5;">${job.description}</p>
+                    </div>
+                    ${job.requirements ? `
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Requirements:</strong>
+                            <p style="margin-top: 0.5rem; line-height: 1.5;">${job.requirements}</p>
+                        </div>
+                    ` : ''}
+                    <button class="btn btn-primary" onclick="showApplyForm(${job.id}, '${job.title}')">
+                        <i class="fas fa-user-plus"></i> Apply Now
+                    </button>
+                `;
+                jobsGrid.appendChild(jobCard);
+            });
+        }
+        
+        function showApplyForm(jobId, jobTitle) {
+            document.getElementById('jobId').value = jobId;
+            document.getElementById('applyForm').style.display = 'block';
+            document.getElementById('applyForm').scrollIntoView({ behavior: 'smooth' });
+            
+            // Update form title
+            document.querySelector('#applyForm h2').innerHTML = 
+                `<i class="fas fa-user-plus"></i> Apply for: ${jobTitle}`;
+        }
+        
+        function hideApplyForm() {
+            document.getElementById('applyForm').style.display = 'none';
+            document.getElementById('applicationForm').reset();
+        }
+        
+        async function submitApplication(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const applicationData = {
+                job_posting_id: parseInt(formData.get('jobId')),
+                first_name: formData.get('firstName'),
+                last_name: formData.get('lastName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                cover_letter: formData.get('coverLetter'),
+                applied_date: new Date().toISOString().split('T')[0]
+            };
+            
+            const statusDiv = document.getElementById('applicationStatus');
+            
+            try {
+                const response = await fetch(`${baseURL}/api/recruitment/apply`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(applicationData)
+                });
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = '✅ Application submitted successfully! We will review your application and get back to you soon.';
+                    statusDiv.style.display = 'block';
+                    statusDiv.style.background = '#d4edda';
+                    statusDiv.style.color = '#155724';
+                    statusDiv.style.borderColor = '#c3e6cb';
+                    
+                    // Reset form after successful submission
+                    setTimeout(() => {
+                        hideApplyForm();
+                        statusDiv.style.display = 'none';
+                    }, 3000);
+                } else {
+                    const errorData = await response.json();
+                    statusDiv.innerHTML = `❌ Error: ${errorData.error || 'Failed to submit application'}`;
+                    statusDiv.style.display = 'block';
+                    statusDiv.style.background = '#f8d7da';
+                    statusDiv.style.color = '#721c24';
+                    statusDiv.style.borderColor = '#f5c6cb';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '❌ Network error. Please try again.';
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#f8d7da';
+                statusDiv.style.color = '#721c24';
+                statusDiv.style.borderColor = '#f5c6cb';
+            }
+        }
+    </script>
+</body>
+</html>

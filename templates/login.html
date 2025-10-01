@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        .nav-tabs .nav-link {
+            border-radius: 25px 25px 0 0;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 500;
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .alert {
+            border-radius: 10px;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="login-container">
+                    <div class="text-center mb-4">
+                        <h2><i class="fas fa-users text-primary"></i> HR Management</h2>
+                        <p class="text-muted">Welcome back! Please sign in to your account.</p>
+                    </div>
+
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs mb-4" id="authTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="forgot-tab" data-bs-toggle="tab" data-bs-target="#forgot" type="button" role="tab">
+                                <i class="fas fa-key"></i> Reset Password
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="authTabContent">
+                        <!-- Login Tab -->
+                        <div class="tab-pane fade show active" id="login" role="tabpanel">
+                            <form id="loginForm">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">
+                                        <i class="fas fa-envelope"></i> Email Address
+                                    </label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">
+                                        <i class="fas fa-lock"></i> Password
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="password" name="password" required>
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="organization_slug" class="form-label">
+                                        <i class="fas fa-building"></i> Organization (Optional)
+                                    </label>
+                                    <input type="text" class="form-control" id="organization_slug" name="organization_slug" 
+                                           placeholder="Leave empty for auto-detection">
+                                    <div class="form-text">Enter your organization's subdomain or leave empty.</div>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-sign-in-alt"></i> Sign In
+                                    </button>
+                                </div>
+                            </form>
+                            <div class="text-center mt-4">
+                                <p class="mb-0">Don't have an organization? 
+                                    <a href="/signup" class="text-primary">Register here</a>
+                                </p>
+                                <button type="button" class="btn btn-link btn-sm" onclick="clearLoginData()">
+                                    Clear Login Data (Debug)
+                                </button>
+                                <button type="button" class="btn btn-link btn-sm" onclick="window.location.href='/'">
+                                    Go to Dashboard (Test)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Forgot Password Tab -->
+                        <div class="tab-pane fade" id="forgot" role="tabpanel">
+                            <form id="forgotForm">
+                                <div class="mb-3">
+                                    <label for="forgot_email" class="form-label">
+                                        <i class="fas fa-envelope"></i> Email Address
+                                    </label>
+                                    <input type="email" class="form-control" id="forgot_email" name="email" required>
+                                    <div class="form-text">Enter your email to receive password reset instructions.</div>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane"></i> Send Reset Link
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <!-- Reset Form (shown after receiving token) -->
+                            <form id="resetForm" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="reset_token" class="form-label">
+                                        <i class="fas fa-key"></i> Reset Token
+                                    </label>
+                                    <input type="text" class="form-control" id="reset_token" name="reset_token" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="new_password" class="form-label">
+                                        <i class="fas fa-lock"></i> New Password
+                                    </label>
+                                    <input type="password" class="form-control" id="new_password" name="new_password" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="confirm_password" class="form-label">
+                                        <i class="fas fa-lock"></i> Confirm Password
+                                    </label>
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-check"></i> Reset Password
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Alert Messages -->
+                    <div id="alertContainer" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordField = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+        // Show alert function
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            alertContainer.innerHTML = alertHtml;
+        }
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Remove empty organization_slug
+            if (!data.organization_slug.trim()) {
+                delete data.organization_slug;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Store tokens
+                    localStorage.setItem('access_token', result.access_token);
+                    localStorage.setItem('refresh_token', result.refresh_token);
+                    localStorage.setItem('employee', JSON.stringify(result.employee));
+                    localStorage.setItem('organization', JSON.stringify(result.organization));
+                    
+                    showAlert('Login successful! Redirecting...', 'success');
+                    
+                    // Redirect based on role
+                    setTimeout(() => {
+                        if (result.employee.role === 'super_admin') {
+                            window.location.href = '/saas-admin';
+                        } else {
+                            window.location.href = '/';
+                        }
+                    }, 1500);
+                } else {
+                    showAlert(result.error || 'Login failed', 'danger');
+                }
+            } catch (error) {
+                showAlert('Connection error. Please try again.', 'danger');
+            }
+        });
+
+        // Forgot password form handler
+        document.getElementById('forgotForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('/api/auth/forgot-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showAlert(result.message, 'success');
+                    // Show reset token in demo mode
+                    if (result.reset_token) {
+                        showAlert(`Demo mode - Your reset token: ${result.reset_token}`, 'info');
+                        document.getElementById('reset_token').value = result.reset_token;
+                        document.getElementById('forgot_email').value = data.email;
+                        document.getElementById('forgotForm').style.display = 'none';
+                        document.getElementById('resetForm').style.display = 'block';
+                    }
+                } else {
+                    showAlert(result.error || 'Request failed', 'danger');
+                }
+            } catch (error) {
+                showAlert('Connection error. Please try again.', 'danger');
+            }
+        });
+
+        // Reset password form handler
+        document.getElementById('resetForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Validate password confirmation
+            if (data.new_password !== data.confirm_password) {
+                showAlert('Passwords do not match', 'danger');
+                return;
+            }
+            
+            // Add email from forgot form
+            data.email = document.getElementById('forgot_email').value;
+            
+            try {
+                const response = await fetch('/api/auth/reset-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showAlert('Password reset successfully! You can now login.', 'success');
+                    // Switch back to login tab
+                    setTimeout(() => {
+                        document.getElementById('login-tab').click();
+                        document.getElementById('email').value = data.email;
+                        document.getElementById('resetForm').style.display = 'none';
+                        document.getElementById('forgotForm').style.display = 'block';
+                        document.getElementById('forgotForm').reset();
+                        document.getElementById('resetForm').reset();
+                    }, 2000);
+                } else {
+                    showAlert(result.error || 'Reset failed', 'danger');
+                }
+            } catch (error) {
+                showAlert('Connection error. Please try again.', 'danger');
+            }
+        });
+
+        // Debug function to clear login data
+        function clearLoginData() {
+            console.log('Clearing all login data...');
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('employee');
+            localStorage.removeItem('organization');
+            showAlert('Login data cleared successfully', 'success');
+        }
+
+        // REMOVED AUTOMATIC TOKEN CHECK TO PREVENT REFRESH LOOP
+        // User must manually login - no automatic redirects
+    </script>
+</body>
+</html>
