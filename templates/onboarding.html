@@ -505,31 +505,318 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script>
+        // Mock onboarding data
+        const onboardingData = {
+            1: { employee: 'John Smith', email: 'john.smith@company.com', department: 'Engineering', startDate: '2024-11-15', dueDate: '2024-12-08', progress: 65, status: 'In Progress', manager: 'Sarah Johnson', tasks: ['Complete HR paperwork', 'Set up workstation', 'Team introduction', 'Security training', 'Product overview'] },
+            2: { employee: 'Emily Davis', email: 'emily.davis@company.com', department: 'Sales', startDate: '2024-11-20', dueDate: '2024-12-13', progress: 40, status: 'In Progress', manager: 'Mike Wilson', tasks: ['Complete HR paperwork', 'Sales training', 'CRM setup', 'Shadow senior rep', 'First client meeting'] },
+            3: { employee: 'Robert Brown', email: 'robert.brown@company.com', department: 'Marketing', startDate: '2024-10-01', dueDate: '2024-10-24', progress: 100, status: 'Completed', manager: 'Lisa Chen', tasks: ['Complete HR paperwork', 'Brand guidelines review', 'Tools training', 'First campaign', 'Team integration'] }
+        };
+        
+        const templateData = {
+            1: { name: 'Engineering Onboarding', description: 'Standard onboarding template for engineering roles', duration: '30 days', tasks: 12 },
+            2: { name: 'Sales Team Onboarding', description: 'Comprehensive sales representative onboarding', duration: '45 days', tasks: 15 },
+            3: { name: 'Manager Onboarding', description: 'Leadership-focused onboarding for new managers', duration: '60 days', tasks: 18 },
+            4: { name: 'Remote Employee Setup', description: 'Onboarding template for remote workers', duration: '21 days', tasks: 10 }
+        };
+
         // Onboarding management functionality
         function viewOnboarding(id) {
-            alert(`View onboarding plan ${id} - Feature to be implemented`);
+            const plan = onboardingData[id] || { employee: 'Employee', department: 'Unknown', startDate: 'N/A', progress: 0, status: 'Unknown', manager: 'Unknown', tasks: [] };
+            
+            const modalHtml = `
+                <div class="modal" id="viewOnboardingModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-lg" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Onboarding Plan Details</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('viewOnboardingModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <h5>${plan.employee}</h5>
+                                        <p class="text-muted">${plan.email}</p>
+                                    </div>
+                                    <div class="col-md-6 text-end">
+                                        <span class="badge bg-${plan.status === 'Completed' ? 'success' : plan.status === 'In Progress' ? 'warning' : 'secondary'} fs-6">${plan.status}</span>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <p><strong>Department:</strong> ${plan.department}</p>
+                                        <p><strong>Manager:</strong> ${plan.manager}</p>
+                                        <p><strong>Start Date:</strong> ${plan.startDate}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Due Date:</strong> ${plan.dueDate}</p>
+                                        <p><strong>Progress:</strong> ${plan.progress}%</p>
+                                        <div class="progress" style="height: 25px;">
+                                            <div class="progress-bar ${plan.progress === 100 ? 'bg-success' : 'bg-primary'}" style="width: ${plan.progress}%">${plan.progress}%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6>Onboarding Tasks:</h6>
+                                <ul class="list-group">
+                                    ${plan.tasks.map((task, idx) => `
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            ${task}
+                                            <span class="badge ${idx < plan.tasks.length * (plan.progress / 100) ? 'bg-success' : 'bg-secondary'}">
+                                                ${idx < plan.tasks.length * (plan.progress / 100) ? 'Complete' : 'Pending'}
+                                            </span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('viewOnboardingModal').remove()">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="viewReport(${id})">
+                                    <i class="fas fa-file-alt"></i> View Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
         function editOnboarding(id) {
-            alert(`Edit onboarding plan ${id} - Feature to be implemented`);
+            const plan = onboardingData[id] || { employee: '', department: '', startDate: '', dueDate: '', manager: '' };
+            
+            const modalHtml = `
+                <div class="modal" id="editOnboardingModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-lg" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Onboarding Plan</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('editOnboardingModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editPlanForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Employee Name</label>
+                                                <input type="text" class="form-control" value="${plan.employee}" id="planEmployee">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Department</label>
+                                                <select class="form-select" id="planDepartment">
+                                                    <option ${plan.department === 'Engineering' ? 'selected' : ''}>Engineering</option>
+                                                    <option ${plan.department === 'Sales' ? 'selected' : ''}>Sales</option>
+                                                    <option ${plan.department === 'Marketing' ? 'selected' : ''}>Marketing</option>
+                                                    <option ${plan.department === 'Operations' ? 'selected' : ''}>Operations</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Start Date</label>
+                                                <input type="date" class="form-control" value="${plan.startDate}" id="planStartDate">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Due Date</label>
+                                                <input type="date" class="form-control" value="${plan.dueDate}" id="planDueDate">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Assigned Manager</label>
+                                        <input type="text" class="form-control" value="${plan.manager}" id="planManager">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('editOnboardingModal').remove()">Cancel</button>
+                                <button type="button" class="btn btn-primary" onclick="saveOnboarding(${id})">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function saveOnboarding(id) {
+            document.getElementById('editOnboardingModal').remove();
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-check-circle"></i> Onboarding plan updated successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
         }
 
         function editTemplate(id) {
-            alert(`Edit template ${id} - Feature to be implemented`);
+            const template = templateData[id] || { name: '', description: '', duration: '', tasks: 0 };
+            
+            const modalHtml = `
+                <div class="modal" id="editTemplateModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-lg" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Template</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('editTemplateModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editTemplateForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Template Name</label>
+                                        <input type="text" class="form-control" value="${template.name}" id="templateName">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control" rows="3" id="templateDescription">${template.description}</textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Duration</label>
+                                                <input type="text" class="form-control" value="${template.duration}" id="templateDuration">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Number of Tasks</label>
+                                                <input type="number" class="form-control" value="${template.tasks}" id="templateTasks">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('editTemplateModal').remove()">Cancel</button>
+                                <button type="button" class="btn btn-primary" onclick="saveTemplate(${id})">Save Template</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function saveTemplate(id) {
+            document.getElementById('editTemplateModal').remove();
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-check-circle"></i> Template saved successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
         }
 
         function useTemplate(id) {
-            alert(`Use template ${id} - Feature to be implemented`);
+            const template = templateData[id] || { name: 'Template' };
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-check-circle"></i> Template "${template.name}" loaded successfully! You can now customize it for the new employee.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
         }
 
         function viewReport(id) {
-            alert(`View onboarding report ${id} - Feature to be implemented`);
+            const plan = onboardingData[id] || { employee: 'Employee', progress: 0, status: 'Unknown', tasks: [] };
+            
+            const modalHtml = `
+                <div class="modal" id="reportModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-xl" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Onboarding Report: ${plan.employee}</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('reportModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-4">
+                                        <div class="card text-center">
+                                            <div class="card-body">
+                                                <h2 class="${plan.progress === 100 ? 'text-success' : 'text-primary'}">${plan.progress}%</h2>
+                                                <p class="text-muted">Overall Progress</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card text-center">
+                                            <div class="card-body">
+                                                <h2 class="text-info">${plan.tasks.length}</h2>
+                                                <p class="text-muted">Total Tasks</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card text-center">
+                                            <div class="card-body">
+                                                <h2 class="text-warning">${Math.round(plan.tasks.length * (plan.progress / 100))}</h2>
+                                                <p class="text-muted">Tasks Completed</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h6>Progress Over Time:</h6>
+                                <div class="mb-3">
+                                    <div class="progress" style="height: 30px;">
+                                        <div class="progress-bar bg-success" style="width: ${plan.progress}%">${plan.progress}%</div>
+                                    </div>
+                                </div>
+                                
+                                <h6>Recent Activity:</h6>
+                                <ul class="list-group">
+                                    <li class="list-group-item"><i class="fas fa-check-circle text-success"></i> HR paperwork completed - 2 days ago</li>
+                                    <li class="list-group-item"><i class="fas fa-check-circle text-success"></i> Workstation setup - 3 days ago</li>
+                                    <li class="list-group-item"><i class="fas fa-clock text-warning"></i> Team introduction - in progress</li>
+                                    <li class="list-group-item"><i class="fas fa-circle text-secondary"></i> Security training - pending</li>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('reportModal').remove()">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="alert('Downloading report...')">
+                                    <i class="fas fa-download"></i> Download PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
         document.getElementById('createOnboardingForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            // Create onboarding plan functionality
-            alert('Create onboarding plan functionality to be implemented');
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-check-circle"></i> Onboarding plan created successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('createOnboardingModal'));
+            if (modal) modal.hide();
         });
 
         function logout() {

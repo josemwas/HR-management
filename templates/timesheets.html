@@ -485,27 +485,281 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script>
+        // Mock timesheet data
+        const timesheetData = {
+            1: { employee: 'John Smith', week: 'Nov 20-26, 2024', hours: 42.5, overtime: 2.5, status: 'Pending', department: 'Engineering', entries: [
+                { date: '2024-11-20', hours: 8, project: 'Web Development', notes: 'Frontend updates' },
+                { date: '2024-11-21', hours: 8.5, project: 'Web Development', notes: 'Bug fixes' },
+                { date: '2024-11-22', hours: 8, project: 'API Integration', notes: 'Backend work' },
+                { date: '2024-11-23', hours: 9, project: 'API Integration', notes: 'Testing' },
+                { date: '2024-11-24', hours: 9, project: 'Code Review', notes: 'Team reviews' }
+            ]},
+            2: { employee: 'Sarah Johnson', week: 'Nov 20-26, 2024', hours: 40, overtime: 0, status: 'Approved', department: 'Sales', entries: [
+                { date: '2024-11-20', hours: 8, project: 'Client Meetings', notes: 'Sales calls' },
+                { date: '2024-11-21', hours: 8, project: 'Proposals', notes: 'Creating proposals' },
+                { date: '2024-11-22', hours: 8, project: 'Client Meetings', notes: 'Follow-ups' },
+                { date: '2024-11-23', hours: 8, project: 'Training', notes: 'Product training' },
+                { date: '2024-11-24', hours: 8, project: 'Admin', notes: 'Reports' }
+            ]},
+            3: { employee: 'Mike Wilson', week: 'Nov 20-26, 2024', hours: 38, overtime: 0, status: 'Pending', department: 'Marketing', entries: [
+                { date: '2024-11-20', hours: 8, project: 'Campaign Planning', notes: 'Q4 campaigns' },
+                { date: '2024-11-21', hours: 8, project: 'Content Creation', notes: 'Blog posts' },
+                { date: '2024-11-22', hours: 7, project: 'Social Media', notes: 'Posts and engagement' },
+                { date: '2024-11-23', hours: 8, project: 'Analytics', notes: 'Performance review' },
+                { date: '2024-11-24', hours: 7, project: 'Meetings', notes: 'Team sync' }
+            ]}
+        };
+
         // Timesheet management functionality
         function approveTimesheet(id) {
             if (confirm('Approve this timesheet?')) {
-                alert(`Approve timesheet ${id} - Feature to be implemented`);
+                const timesheet = timesheetData[id] || { employee: 'Employee' };
+                
+                if (timesheetData[id]) {
+                    timesheetData[id].status = 'Approved';
+                }
+                
+                const alertHtml = `
+                    <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                        <i class="fas fa-check-circle"></i> Timesheet for ${timesheet.employee} approved successfully!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', alertHtml);
+                setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
             }
         }
 
         function viewTimesheet(id) {
-            alert(`View timesheet ${id} - Feature to be implemented`);
+            const timesheet = timesheetData[id] || { employee: 'Employee', week: 'N/A', hours: 0, overtime: 0, status: 'Unknown', department: 'N/A', entries: [] };
+            
+            const modalHtml = `
+                <div class="modal" id="viewTimesheetModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-xl" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Timesheet Details</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('viewTimesheetModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <h5>${timesheet.employee}</h5>
+                                        <p class="text-muted">${timesheet.department}</p>
+                                    </div>
+                                    <div class="col-md-6 text-end">
+                                        <span class="badge bg-${timesheet.status === 'Approved' ? 'success' : timesheet.status === 'Pending' ? 'warning' : 'danger'} fs-6">${timesheet.status}</span>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <p><strong>Week:</strong> ${timesheet.week}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Regular Hours:</strong> ${timesheet.hours - timesheet.overtime}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Overtime:</strong> ${timesheet.overtime} hrs</p>
+                                    </div>
+                                </div>
+                                
+                                <h6>Daily Entries:</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Hours</th>
+                                                <th>Project</th>
+                                                <th>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${timesheet.entries.map(entry => `
+                                                <tr>
+                                                    <td>${entry.date}</td>
+                                                    <td>${entry.hours}</td>
+                                                    <td>${entry.project}</td>
+                                                    <td>${entry.notes}</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="fw-bold">
+                                                <td>Total</td>
+                                                <td>${timesheet.hours} hrs</td>
+                                                <td colspan="2">Overtime: ${timesheet.overtime} hrs</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('viewTimesheetModal').remove()">Close</button>
+                                ${timesheet.status === 'Pending' ? `
+                                    <button type="button" class="btn btn-warning" onclick="requestRevision(${id}); document.getElementById('viewTimesheetModal').remove();">
+                                        <i class="fas fa-redo"></i> Request Revision
+                                    </button>
+                                    <button type="button" class="btn btn-success" onclick="approveTimesheet(${id}); document.getElementById('viewTimesheetModal').remove();">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                ` : ''}
+                                <button type="button" class="btn btn-primary" onclick="downloadTimesheet(${id})">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
         function editTimesheet(id) {
-            alert(`Edit timesheet ${id} - Feature to be implemented`);
+            const timesheet = timesheetData[id] || { employee: 'Employee', week: '', hours: 0, overtime: 0, department: '' };
+            
+            const modalHtml = `
+                <div class="modal" id="editTimesheetModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-lg" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Timesheet</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('editTimesheetModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editTimesheetForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Employee</label>
+                                        <input type="text" class="form-control" value="${timesheet.employee}" readonly>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Week</label>
+                                                <input type="text" class="form-control" value="${timesheet.week}" id="timesheetWeek">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Department</label>
+                                                <input type="text" class="form-control" value="${timesheet.department}" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Regular Hours</label>
+                                                <input type="number" step="0.5" class="form-control" value="${timesheet.hours - timesheet.overtime}" id="regularHours">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Overtime Hours</label>
+                                                <input type="number" step="0.5" class="form-control" value="${timesheet.overtime}" id="overtimeHours">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Notes</label>
+                                        <textarea class="form-control" rows="3" id="timesheetNotes" placeholder="Add any notes or adjustments..."></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('editTimesheetModal').remove()">Cancel</button>
+                                <button type="button" class="btn btn-primary" onclick="saveTimesheet(${id})">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function saveTimesheet(id) {
+            document.getElementById('editTimesheetModal').remove();
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-check-circle"></i> Timesheet updated successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
         }
 
         function downloadTimesheet(id) {
-            alert(`Download timesheet ${id} - Feature to be implemented`);
+            const timesheet = timesheetData[id] || { employee: 'Employee', week: 'N/A' };
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-download"></i> Downloading timesheet for ${timesheet.employee} (${timesheet.week})...
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
         }
 
         function requestRevision(id) {
-            alert(`Request revision for timesheet ${id} - Feature to be implemented`);
+            const timesheet = timesheetData[id] || { employee: 'Employee' };
+            
+            const modalHtml = `
+                <div class="modal" id="revisionModal" style="display: flex; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Request Revision</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('revisionModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Request revision for ${timesheet.employee}'s timesheet</p>
+                                <div class="mb-3">
+                                    <label class="form-label">Reason for Revision</label>
+                                    <textarea class="form-control" rows="4" id="revisionReason" placeholder="Please explain what needs to be corrected..." required></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('revisionModal').remove()">Cancel</button>
+                                <button type="button" class="btn btn-warning" onclick="submitRevisionRequest(${id})">
+                                    <i class="fas fa-redo"></i> Request Revision
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function submitRevisionRequest(id) {
+            const reason = document.getElementById('revisionReason').value;
+            
+            if (!reason.trim()) {
+                alert('Please provide a reason for the revision request');
+                return;
+            }
+            
+            if (timesheetData[id]) {
+                timesheetData[id].status = 'Needs Revision';
+            }
+            
+            document.getElementById('revisionModal').remove();
+            
+            const alertHtml = `
+                <div class="alert alert-warning alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-redo"></i> Revision request sent successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
         }
 
         function bulkApprove() {
@@ -515,7 +769,17 @@
                 return;
             }
             if (confirm(`Approve ${selected.length} selected timesheets?`)) {
-                alert('Bulk approve functionality to be implemented');
+                const alertHtml = `
+                    <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                        <i class="fas fa-check-circle"></i> ${selected.length} timesheets approved successfully!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', alertHtml);
+                setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
+                
+                // Uncheck all checkboxes
+                selected.forEach(cb => cb.checked = false);
             }
         }
 

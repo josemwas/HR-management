@@ -622,27 +622,312 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script>
+        // Mock goals data
+        const goalsData = {
+            1: { title: 'Increase Sales by 25%', description: 'Achieve 25% growth in quarterly sales revenue through improved customer engagement and new market expansion.', deadline: 'Dec 31, 2024', status: 'In Progress', progress: 65, owner: 'John Smith', department: 'Sales', priority: 'High' },
+            2: { title: 'Complete React Migration Project', description: 'Migrate legacy frontend to React for better performance and maintainability.', deadline: 'Jan 15, 2025', status: 'In Progress', progress: 80, owner: 'Sarah Johnson', department: 'Engineering', priority: 'High' },
+            3: { title: 'Launch New Product Line', description: 'Research, develop, and launch new product line targeting enterprise customers.', deadline: 'Mar 1, 2025', status: 'Not Started', progress: 10, owner: 'Mike Wilson', department: 'Product', priority: 'Medium' },
+            4: { title: 'Improve Customer Satisfaction', description: 'Increase NPS score from 45 to 70 through enhanced support and product improvements.', deadline: 'Jun 30, 2025', status: 'In Progress', progress: 45, owner: 'Emily Davis', department: 'Customer Success', priority: 'High' },
+            5: { title: 'Complete ISO Certification', description: 'Obtain ISO 9001:2015 certification for quality management.', deadline: 'Feb 28, 2025', status: 'Completed', progress: 100, owner: 'Robert Brown', department: 'Operations', priority: 'Medium' }
+        };
+
         // Goals management functionality
         function viewGoal(id) {
-            alert(`View goal ${id} - Feature to be implemented`);
+            const goal = goalsData[id] || { title: 'Goal', description: 'Goal details not available', deadline: 'N/A', status: 'Unknown', progress: 0, owner: 'Unknown', department: 'N/A', priority: 'N/A' };
+            
+            const modalHtml = `
+                <div class="modal" id="viewGoalModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-lg" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Goal Details</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('viewGoalModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h4>${goal.title}</h4>
+                                <p class="text-muted">${goal.description}</p>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Owner:</strong> ${goal.owner}</p>
+                                        <p><strong>Department:</strong> ${goal.department}</p>
+                                        <p><strong>Priority:</strong> <span class="badge bg-${goal.priority === 'High' ? 'danger' : goal.priority === 'Medium' ? 'warning' : 'info'}">${goal.priority}</span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Deadline:</strong> ${goal.deadline}</p>
+                                        <p><strong>Status:</strong> <span class="badge bg-${goal.status === 'Completed' ? 'success' : goal.status === 'In Progress' ? 'warning' : 'secondary'}">${goal.status}</span></p>
+                                        <p><strong>Progress:</strong> ${goal.progress}%</p>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <label class="form-label"><strong>Progress</strong></label>
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar ${goal.progress === 100 ? 'bg-success' : 'bg-primary'}" style="width: ${goal.progress}%">${goal.progress}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('viewGoalModal').remove()">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="editGoal(${id}); document.getElementById('viewGoalModal').remove();">Edit Goal</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
         function editGoal(id) {
-            alert(`Edit goal ${id} - Feature to be implemented`);
+            const goal = goalsData[id] || { title: '', description: '', deadline: '', status: 'Not Started', progress: 0, owner: '', department: '', priority: 'Medium' };
+            
+            const modalHtml = `
+                <div class="modal" id="editGoalModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-lg" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Goal</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('editGoalModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editGoalForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Goal Title</label>
+                                        <input type="text" class="form-control" value="${goal.title}" id="goalTitle">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control" rows="3" id="goalDescription">${goal.description}</textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Owner</label>
+                                                <input type="text" class="form-control" value="${goal.owner}" id="goalOwner">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Department</label>
+                                                <select class="form-select" id="goalDepartment">
+                                                    <option ${goal.department === 'Sales' ? 'selected' : ''}>Sales</option>
+                                                    <option ${goal.department === 'Engineering' ? 'selected' : ''}>Engineering</option>
+                                                    <option ${goal.department === 'Product' ? 'selected' : ''}>Product</option>
+                                                    <option ${goal.department === 'Customer Success' ? 'selected' : ''}>Customer Success</option>
+                                                    <option ${goal.department === 'Operations' ? 'selected' : ''}>Operations</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Deadline</label>
+                                                <input type="date" class="form-control" value="${goal.deadline}" id="goalDeadline">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Priority</label>
+                                                <select class="form-select" id="goalPriority">
+                                                    <option ${goal.priority === 'High' ? 'selected' : ''}>High</option>
+                                                    <option ${goal.priority === 'Medium' ? 'selected' : ''}>Medium</option>
+                                                    <option ${goal.priority === 'Low' ? 'selected' : ''}>Low</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Status</label>
+                                                <select class="form-select" id="goalStatus">
+                                                    <option ${goal.status === 'Not Started' ? 'selected' : ''}>Not Started</option>
+                                                    <option ${goal.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                                    <option ${goal.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Progress (%)</label>
+                                        <input type="range" class="form-range" min="0" max="100" value="${goal.progress}" id="goalProgress" oninput="document.getElementById('progressValue').innerText = this.value + '%'">
+                                        <div class="text-center"><span id="progressValue">${goal.progress}%</span></div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('editGoalModal').remove()">Cancel</button>
+                                <button type="button" class="btn btn-primary" onclick="saveGoal(${id})">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function saveGoal(id) {
+            const title = document.getElementById('goalTitle').value;
+            const description = document.getElementById('goalDescription').value;
+            const progress = document.getElementById('goalProgress').value;
+            
+            // Update mock data
+            if (goalsData[id]) {
+                goalsData[id].title = title;
+                goalsData[id].description = description;
+                goalsData[id].progress = parseInt(progress);
+                goalsData[id].owner = document.getElementById('goalOwner').value;
+                goalsData[id].department = document.getElementById('goalDepartment').value;
+                goalsData[id].deadline = document.getElementById('goalDeadline').value;
+                goalsData[id].priority = document.getElementById('goalPriority').value;
+                goalsData[id].status = document.getElementById('goalStatus').value;
+            }
+            
+            document.getElementById('editGoalModal').remove();
+            
+            // Show success message
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-check-circle"></i> Goal updated successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
         }
 
         function markComplete(id) {
             if (confirm('Mark this goal as complete?')) {
-                alert(`Mark goal ${id} complete - Feature to be implemented`);
+                if (goalsData[id]) {
+                    goalsData[id].status = 'Completed';
+                    goalsData[id].progress = 100;
+                }
+                
+                const alertHtml = `
+                    <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                        <i class="fas fa-check-circle"></i> Goal marked as complete!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', alertHtml);
+                setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
             }
         }
 
         function updateProgress(id) {
-            alert(`Update progress for goal ${id} - Feature to be implemented`);
+            const goal = goalsData[id] || { progress: 0 };
+            
+            const modalHtml = `
+                <div class="modal" id="updateProgressModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Update Progress</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('updateProgressModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Progress (%)</label>
+                                    <input type="range" class="form-range" min="0" max="100" value="${goal.progress}" id="progressSlider" oninput="document.getElementById('currentProgress').innerText = this.value + '%'">
+                                    <div class="text-center mt-2"><h4><span id="currentProgress">${goal.progress}%</span></h4></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Update Notes (Optional)</label>
+                                    <textarea class="form-control" rows="3" id="progressNotes" placeholder="Add notes about this progress update..."></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('updateProgressModal').remove()">Cancel</button>
+                                <button type="button" class="btn btn-primary" onclick="confirmProgressUpdate(${id})">Update Progress</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function confirmProgressUpdate(id) {
+            const newProgress = document.getElementById('progressSlider').value;
+            
+            if (goalsData[id]) {
+                goalsData[id].progress = parseInt(newProgress);
+                if (newProgress == 100) {
+                    goalsData[id].status = 'Completed';
+                } else if (newProgress > 0) {
+                    goalsData[id].status = 'In Progress';
+                }
+            }
+            
+            document.getElementById('updateProgressModal').remove();
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-check-circle"></i> Progress updated to ${newProgress}%!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
         }
 
         function viewTeamGoals(team) {
-            alert(`View ${team} team goals - Feature to be implemented`);
+            const modalHtml = `
+                <div class="modal" id="teamGoalsModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-xl" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">${team} Team Goals</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('teamGoalsModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> Showing all goals for ${team} team
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Goal</th>
+                                                <th>Owner</th>
+                                                <th>Progress</th>
+                                                <th>Deadline</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="teamGoalsBody">
+                                            ${Object.entries(goalsData)
+                                                .filter(([_, goal]) => goal.department === team)
+                                                .map(([id, goal]) => `
+                                                    <tr>
+                                                        <td>
+                                                            <div class="fw-bold">${goal.title}</div>
+                                                            <small class="text-muted">${goal.description.substring(0, 50)}...</small>
+                                                        </td>
+                                                        <td>${goal.owner}</td>
+                                                        <td>
+                                                            <div class="progress" style="height: 20px;">
+                                                                <div class="progress-bar ${goal.progress === 100 ? 'bg-success' : 'bg-primary'}" style="width: ${goal.progress}%">${goal.progress}%</div>
+                                                            </div>
+                                                        </td>
+                                                        <td>${goal.deadline}</td>
+                                                        <td><span class="badge bg-${goal.status === 'Completed' ? 'success' : goal.status === 'In Progress' ? 'warning' : 'secondary'}">${goal.status}</span></td>
+                                                    </tr>
+                                                `).join('') || '<tr><td colspan="5" class="text-center">No goals found for this team</td></tr>'}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('teamGoalsModal').remove()">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
         function clearFilters() {

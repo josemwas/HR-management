@@ -489,27 +489,205 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script>
+        // Mock documents data
+        const documentsData = {
+            1: { name: 'Employee Handbook 2024.pdf', type: 'PDF', category: 'Policies', size: '2.4 MB', modified: '2024-10-15', author: 'HR Department', description: 'Complete employee handbook with policies, procedures, and guidelines.' },
+            2: { name: 'Benefits Overview.pdf', type: 'PDF', category: 'Benefits', size: '1.8 MB', modified: '2024-11-01', author: 'Benefits Team', description: 'Overview of all employee benefits including health insurance, retirement plans, and perks.' },
+            3: { name: 'Code of Conduct.pdf', type: 'PDF', category: 'Policies', size: '890 KB', modified: '2024-09-20', author: 'Legal Department', description: 'Company code of conduct and ethical guidelines.' },
+            4: { name: 'Payroll Schedule 2024.xlsx', type: 'Excel', category: 'Payroll', size: '125 KB', modified: '2024-11-10', author: 'Payroll Team', description: 'Complete payroll schedule for 2024 fiscal year.' },
+            5: { name: 'Training Resources.docx', type: 'Word', category: 'Training', size: '450 KB', modified: '2024-10-28', author: 'Training Team', description: 'Comprehensive training resources and materials for employees.' }
+        };
+        
+        const foldersData = {
+            1: { name: 'Company Policies', docCount: 15, type: 'Policies', description: 'All company policies and procedures' },
+            2: { name: 'Employee Benefits', docCount: 8, type: 'Benefits', description: 'Benefits information and enrollment forms' },
+            3: { name: 'Training Materials', docCount: 23, type: 'Training', description: 'Training guides and educational resources' },
+            4: { name: 'Payroll Documents', docCount: 12, type: 'Payroll', description: 'Payroll schedules and tax forms' },
+            5: { name: 'Performance Reviews', docCount: 45, type: 'Performance', description: 'Performance review templates and archives' }
+        };
+
         // Document management functionality
         function openFolder(folderId) {
-            alert(`Open folder ${folderId} - Feature to be implemented`);
+            const folder = foldersData[folderId] || { name: 'Folder', docCount: 0, type: 'General', description: 'Folder description' };
+            
+            const modalHtml = `
+                <div class="modal" id="folderModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-xl" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title"><i class="fas fa-folder-open text-warning"></i> ${folder.name}</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('folderModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-muted">${folder.description}</p>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> This folder contains ${folder.docCount} documents
+                                </div>
+                                
+                                <h6 class="mt-3">Documents in this folder:</h6>
+                                <div class="list-group">
+                                    ${Object.entries(documentsData)
+                                        .filter(([_, doc]) => doc.category === folder.type)
+                                        .map(([id, doc]) => `
+                                            <div class="list-group-item list-group-item-action" onclick="previewDocument(${id})">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1">
+                                                        <i class="fas fa-file-${doc.type === 'PDF' ? 'pdf text-danger' : doc.type === 'Excel' ? 'excel text-success' : 'word text-primary'}"></i>
+                                                        ${doc.name}
+                                                    </h6>
+                                                    <small>${doc.size}</small>
+                                                </div>
+                                                <p class="mb-1"><small class="text-muted">${doc.description}</small></p>
+                                                <small>Modified: ${doc.modified} by ${doc.author}</small>
+                                            </div>
+                                        `).join('') || '<div class="text-center text-muted p-3">No documents in this category yet</div>'}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('folderModal').remove()">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
         function previewDocument(docId) {
-            alert(`Preview document ${docId} - Feature to be implemented`);
+            const doc = documentsData[docId] || { name: 'Document', type: 'PDF', category: 'General', size: '0 KB', modified: 'Unknown', author: 'Unknown', description: 'No description available' };
+            
+            const modalHtml = `
+                <div class="modal" id="previewModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-xl" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-file-${doc.type === 'PDF' ? 'pdf text-danger' : doc.type === 'Excel' ? 'excel text-success' : 'word text-primary'}"></i>
+                                    ${doc.name}
+                                </h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('previewModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <p><strong>Type:</strong> ${doc.type}</p>
+                                        <p><strong>Category:</strong> ${doc.category}</p>
+                                        <p><strong>Size:</strong> ${doc.size}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Modified:</strong> ${doc.modified}</p>
+                                        <p><strong>Author:</strong> ${doc.author}</p>
+                                    </div>
+                                </div>
+                                <p><strong>Description:</strong></p>
+                                <p class="text-muted">${doc.description}</p>
+                                <hr>
+                                <div class="text-center p-5 bg-light rounded">
+                                    <i class="fas fa-file-${doc.type === 'PDF' ? 'pdf' : doc.type === 'Excel' ? 'excel' : 'word'} fa-5x mb-3 text-${doc.type === 'PDF' ? 'danger' : doc.type === 'Excel' ? 'success' : 'primary'}"></i>
+                                    <p class="text-muted">Document preview would appear here</p>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('previewModal').remove()">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="downloadDocument(${docId}, event); document.getElementById('previewModal').remove();">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                                <button type="button" class="btn btn-info" onclick="shareDocument(${docId}, event)">
+                                    <i class="fas fa-share"></i> Share
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
         function downloadDocument(docId, event) {
-            event.stopPropagation();
-            alert(`Download document ${docId} - Feature to be implemented`);
+            if (event) event.stopPropagation();
+            
+            const doc = documentsData[docId] || { name: 'Document' };
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-download"></i> Downloading "${doc.name}"...
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
         }
 
         function shareDocument(docId, event) {
-            event.stopPropagation();
-            alert(`Share document ${docId} - Feature to be implemented`);
+            if (event) event.stopPropagation();
+            
+            const doc = documentsData[docId] || { name: 'Document' };
+            
+            const modalHtml = `
+                <div class="modal" id="shareModal" style="display: flex; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Share Document</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('shareModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Share "${doc.name}" with:</p>
+                                <div class="mb-3">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" placeholder="colleague@company.com" id="shareEmail">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Permissions</label>
+                                    <select class="form-select" id="sharePermissions">
+                                        <option value="view">View Only</option>
+                                        <option value="edit">Can Edit</option>
+                                        <option value="admin">Full Access</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Message (Optional)</label>
+                                    <textarea class="form-control" rows="2" placeholder="Add a message..." id="shareMessage"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('shareModal').remove()">Cancel</button>
+                                <button type="button" class="btn btn-primary" onclick="confirmShare(${docId})">
+                                    <i class="fas fa-share"></i> Share
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function confirmShare(docId) {
+            const email = document.getElementById('shareEmail').value;
+            
+            if (!email) {
+                alert('Please enter an email address');
+                return;
+            }
+            
+            document.getElementById('shareModal').remove();
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-check-circle"></i> Document shared successfully with ${email}!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
         }
 
         function navigateToFolder(folderId) {
-            alert(`Navigate to folder ${folderId} - Feature to be implemented`);
+            openFolder(folderId);
         }
 
         function clearFilters() {
