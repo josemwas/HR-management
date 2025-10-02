@@ -1489,24 +1489,28 @@ function hideAddTrainingModal() {
     document.getElementById('addTrainingError').style.display = 'none';
 }
 
-function showTrainingPrograms() {
+function showTrainingPrograms(event) {
     document.getElementById('trainingPrograms').style.display = 'block';
     document.getElementById('trainingEnrollments').style.display = 'none';
     
     // Update tab buttons
     document.querySelectorAll('.training-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
     
     app.loadTrainingPrograms();
 }
 
-function showTrainingEnrollments() {
+function showTrainingEnrollments(event) {
     document.getElementById('trainingPrograms').style.display = 'none';
     document.getElementById('trainingEnrollments').style.display = 'block';
     
     // Update tab buttons
     document.querySelectorAll('.training-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
     
     app.loadTrainingEnrollments();
 }
@@ -1750,6 +1754,189 @@ async function viewReview(id) {
 async function editReview(id) {
     alert('Edit review feature - Redirect to performance review edit page');
     // This would typically open an edit form or redirect to edit page
+}
+
+// Training Management Functions
+async function viewTraining(id) {
+    try {
+        const response = await fetch(`${window.hrApp.baseURL}/api/training/programs/${id}`, {
+            headers: window.hrApp.getHeaders()
+        });
+        
+        if (response.ok) {
+            const program = await response.json();
+            
+            const modalHtml = `
+                <div class="modal" id="viewTrainingModal" style="display: flex;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Training Program Details</h2>
+                            <span class="close" onclick="document.getElementById('viewTrainingModal').remove()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <h3>${program.title}</h3>
+                            <p><strong>Trainer:</strong> ${program.trainer || 'N/A'}</p>
+                            <p><strong>Start Date:</strong> ${program.start_date}</p>
+                            <p><strong>End Date:</strong> ${program.end_date || 'N/A'}</p>
+                            <p><strong>Duration:</strong> ${program.duration_hours || 'N/A'} hours</p>
+                            <p><strong>Location:</strong> ${program.location || 'N/A'}</p>
+                            <p><strong>Max Participants:</strong> ${program.max_participants}</p>
+                            <p><strong>Current Participants:</strong> ${program.current_participants}</p>
+                            <p><strong>Status:</strong> <span class="status-badge status-${program.status}">${program.status}</span></p>
+                            <div class="mt-3">
+                                <h4>Description</h4>
+                                <p>${program.description || 'No description available'}</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-secondary" onclick="document.getElementById('viewTrainingModal').remove()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+    } catch (error) {
+        console.error('Error loading training:', error);
+        alert('Failed to load training details');
+    }
+}
+
+async function editTraining(id) {
+    alert('Edit training feature - Would open edit modal with training details');
+    // This would typically open an edit form similar to add training
+}
+
+async function viewBenefit(id) {
+    try {
+        const response = await fetch(`${window.hrApp.baseURL}/api/training/benefits/${id}`, {
+            headers: window.hrApp.getHeaders()
+        });
+        
+        if (response.ok) {
+            const benefit = await response.json();
+            
+            const modalHtml = `
+                <div class="modal" id="viewBenefitModal" style="display: flex;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Benefit Details</h2>
+                            <span class="close" onclick="document.getElementById('viewBenefitModal').remove()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <h3>${benefit.benefit_type}</h3>
+                            <p><strong>Employee:</strong> ${benefit.employee_name || 'N/A'}</p>
+                            <p><strong>Provider:</strong> ${benefit.provider || 'N/A'}</p>
+                            <p><strong>Start Date:</strong> ${benefit.start_date}</p>
+                            <p><strong>End Date:</strong> ${benefit.end_date || 'N/A'}</p>
+                            <p><strong>Coverage Amount:</strong> ${benefit.coverage_amount || 'N/A'}</p>
+                            <p><strong>Employee Contribution:</strong> ${benefit.employee_contribution || 'N/A'}</p>
+                            <p><strong>Status:</strong> <span class="status-badge status-${benefit.status}">${benefit.status}</span></p>
+                            <div class="mt-3">
+                                <h4>Description</h4>
+                                <p>${benefit.description || 'No description available'}</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-secondary" onclick="document.getElementById('viewBenefitModal').remove()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+    } catch (error) {
+        console.error('Error loading benefit:', error);
+        alert('Failed to load benefit details');
+    }
+}
+
+async function editBenefit(id) {
+    alert('Edit benefit feature - Would open edit modal with benefit details');
+    // This would typically open an edit form similar to add benefit
+}
+
+async function viewDocument(id) {
+    try {
+        const response = await fetch(`${window.hrApp.baseURL}/api/training/documents/${id}`, {
+            headers: window.hrApp.getHeaders()
+        });
+        
+        if (response.ok) {
+            const doc = await response.json();
+            
+            const modalHtml = `
+                <div class="modal" id="viewDocumentModal" style="display: flex;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Document Details</h2>
+                            <span class="close" onclick="document.getElementById('viewDocumentModal').remove()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <h3>${doc.document_name}</h3>
+                            <p><strong>Employee:</strong> ${doc.employee_name || 'N/A'}</p>
+                            <p><strong>Document Type:</strong> ${doc.document_type}</p>
+                            <p><strong>Upload Date:</strong> ${doc.upload_date}</p>
+                            <p><strong>File Path:</strong> ${doc.file_path || 'N/A'}</p>
+                            <div class="mt-3">
+                                <h4>Description</h4>
+                                <p>${doc.description || 'No description available'}</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-secondary" onclick="document.getElementById('viewDocumentModal').remove()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+    } catch (error) {
+        console.error('Error loading document:', error);
+        alert('Failed to load document details');
+    }
+}
+
+async function deleteDocument(id) {
+    if (confirm('Are you sure you want to delete this document?')) {
+        try {
+            const response = await fetch(`${window.hrApp.baseURL}/api/training/documents/${id}`, {
+                method: 'DELETE',
+                headers: window.hrApp.getHeaders()
+            });
+            
+            if (response.ok) {
+                alert('Document deleted successfully');
+                window.hrApp.loadDocuments();
+            } else {
+                alert('Failed to delete document');
+            }
+        } catch (error) {
+            console.error('Error deleting document:', error);
+            alert('Failed to delete document');
+        }
+    }
+}
+
+async function completeTraining(enrollmentId) {
+    if (confirm('Mark this training as completed?')) {
+        try {
+            const response = await fetch(`${window.hrApp.baseURL}/api/training/enrollments/${enrollmentId}/complete`, {
+                method: 'PUT',
+                headers: window.hrApp.getHeaders()
+            });
+            
+            if (response.ok) {
+                alert('Training marked as completed');
+                window.hrApp.loadTrainingEnrollments();
+            } else {
+                alert('Failed to complete training');
+            }
+        } catch (error) {
+            console.error('Error completing training:', error);
+            alert('Failed to complete training');
+        }
+    }
 }
 
 // AI Assistant Functions
