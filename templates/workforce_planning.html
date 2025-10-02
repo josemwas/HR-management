@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workforce Planning - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --info-color: #17a2b8;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+            --purple: #9b59b6;
+            --orange: #e67e22;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-text);
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .main-content {
+            margin-top: 2rem;
+            padding: 0 1rem;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--success-color));
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-trend {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .trend-up { color: var(--success-color); }
+        .trend-down { color: var(--accent-color); }
+        .trend-stable { color: var(--warning-color); }
+
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            overflow: hidden;
+        }
+
+        .content-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        .nav-tabs {
+            border: none;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            background: transparent;
+            color: var(--dark-text);
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            margin: 0 0.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--secondary-color);
+            color: white;
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .tab-content {
+            padding: 2rem;
+        }
+
+        .table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .table thead th {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            border-color: #f1f3f4;
+            vertical-align: middle;
+        }
+
+        .badge-priority {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .priority-critical { background: #ffebee; color: #d32f2f; }
+        .priority-high { background: #fff3e0; color: #f57c00; }
+        .priority-medium { background: #e3f2fd; color: #1976d2; }
+        .priority-low { background: #e8f5e8; color: #388e3c; }
+
+        .btn-custom {
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .forecast-widget {
+            background: linear-gradient(135deg, var(--purple), var(--secondary-color));
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .capacity-meter {
+            position: relative;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .capacity-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-color), var(--warning-color));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .capacity-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .department-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .skill-tag {
+            display: inline-block;
+            background: var(--light-bg);
+            color: var(--dark-text);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin: 0.2rem;
+            border: 1px solid #dee2e6;
+        }
+
+        .skill-gap {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--secondary-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.25rem;
+            top: 1.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--secondary-color);
+        }
+
+        .growth-chart {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 5px;
+            margin: 1rem 0;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .risk-alert {
+            background: linear-gradient(135deg, var(--accent-color), #c0392b);
+            color: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .scenario-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 1rem;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .scenario-card:hover {
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .scenario-card.selected {
+            border-color: var(--success-color);
+            background: #f8fff8;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 0.5rem;
+            }
+            
+            .tab-content {
+                padding: 1rem;
+            }
+            
+            .stats-number {
+                font-size: 2rem;
+            }
+
+            .heatmap {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-users-cog me-2"></i>HR Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/workforce-planning">
+                            <i class="fas fa-chart-line me-1"></i>Workforce Planning
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/login">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid main-content">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="content-card">
+                    <div class="content-header">
+                        <h1 class="mb-0">
+                            <i class="fas fa-chart-line me-3"></i>Strategic Workforce Planning
+                        </h1>
+                        <p class="mb-0 mt-2 opacity-75">Strategic workforce planning, demand forecasting, and capacity management</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-primary" id="currentHeadcount">450</div>
+                    <div class="stats-label">Current Headcount</div>
+                    <div class="stats-trend trend-up">
+                        <i class="fas fa-arrow-up me-1"></i>+12 from last month
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-warning" id="skillGaps">23</div>
+                    <div class="stats-label">Critical Skill Gaps</div>
+                    <div class="stats-trend trend-down">
+                        <i class="fas fa-arrow-down me-1"></i>-5 from last quarter
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-success" id="forecastAccuracy">94.2%</div>
+                    <div class="stats-label">Forecast Accuracy</div>
+                    <div class="stats-trend trend-up">
+                        <i class="fas fa-arrow-up me-1"></i>+2.1% improvement
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-info" id="budgetUtilization">87.5%</div>
+                    <div class="stats-label">Budget Utilization</div>
+                    <div class="stats-trend trend-stable">
+                        <i class="fas fa-minus me-1"></i>Within target range
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forecast Widget -->
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <div class="forecast-widget">
+                    <h4><i class="fas fa-crystal-ball me-2"></i>Workforce Demand Forecast</h4>
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <h3>525</h3>
+                                <small>Projected Headcount (Q1 2026)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <h3>+16.7%</h3>
+                                <small>Growth Rate</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <h3>75</h3>
+                                <small>New Hires Needed</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="stats-card">
+                    <h6>Capacity Utilization</h6>
+                    <div class="capacity-meter">
+                        <div class="capacity-fill" style="width: 87%"></div>
+                        <div class="capacity-label">87% Utilized</div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <small class="text-success">Optimal Range: 80-90%</small>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-warning">Peak Season: 95%</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Tabs -->
+        <div class="row">
+            <div class="col-12">
+                <div class="content-card">
+                    <ul class="nav nav-tabs" id="workforceTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="demand-tab" data-bs-toggle="tab" data-bs-target="#demand" type="button" role="tab">
+                                <i class="fas fa-chart-line me-2"></i>Demand Forecasting
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="capacity-tab" data-bs-toggle="tab" data-bs-target="#capacity" type="button" role="tab">
+                                <i class="fas fa-users me-2"></i>Capacity Planning
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button" role="tab">
+                                <i class="fas fa-cogs me-2"></i>Skills Analysis
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="scenarios-tab" data-bs-toggle="tab" data-bs-target="#scenarios" type="button" role="tab">
+                                <i class="fas fa-sitemap me-2"></i>Scenario Planning
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="insights-tab" data-bs-toggle="tab" data-bs-target="#insights" type="button" role="tab">
+                                <i class="fas fa-lightbulb me-2"></i>Strategic Insights
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="workforceTabContent">
+                        <!-- Demand Forecasting Tab -->
+                        <div class="tab-pane fade show active" id="demand" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-chart-line text-primary me-2"></i>Workforce Demand Forecasting</h4>
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-primary btn-sm">3 Months</button>
+                                    <button class="btn btn-outline-primary btn-sm active">6 Months</button>
+                                    <button class="btn btn-outline-primary btn-sm">1 Year</button>
+                                    <button class="btn btn-outline-primary btn-sm">2 Years</button>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-lg-8">
+                                    <div class="growth-chart">
+                                        <h6>Workforce Growth Projection</h6>
+                                        <canvas id="demandChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="risk-alert">
+                                        <h6><i class="fas fa-exclamation-triangle me-2"></i>High Priority Risks</h6>
+                                        <ul class="mb-0">
+                                            <li>Skills shortage in AI/ML (Q2 2026)</li>
+                                            <li>Retirement wave in Finance (Q3 2026)</li>
+                                            <li>Market expansion demand surge</li>
+                                        </ul>
+                                    </div>
+                                    <div class="stats-card">
+                                        <h6>Forecast Confidence</h6>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="progress mb-2" style="height: 25px;">
+                                                    <div class="progress-bar bg-success" style="width: 94%;">94.2%</div>
+                                                </div>
+                                                <small class="text-muted">Based on historical data and market trends</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table" id="demandTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Department</th>
+                                            <th>Current Count</th>
+                                            <th>Q1 2026</th>
+                                            <th>Q2 2026</th>
+                                            <th>Q3 2026</th>
+                                            <th>Q4 2026</th>
+                                            <th>Growth %</th>
+                                            <th>Priority</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Capacity Planning Tab -->
+                        <div class="tab-pane fade" id="capacity" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-users text-info me-2"></i>Workforce Capacity Planning</h4>
+                                <button class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#capacityModal">
+                                    <i class="fas fa-plus me-2"></i>New Capacity Plan
+                                </button>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-lg-6">
+                                    <div class="department-card">
+                                        <h6>Department Capacity Overview</h6>
+                                        <canvas id="capacityChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="department-card">
+                                        <h6>Resource Allocation Heatmap</h6>
+                                        <div class="heatmap" id="resourceHeatmap">
+                                            <!-- Heatmap cells will be generated by JavaScript -->
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-2">
+                                            <small class="text-muted">Low Utilization</small>
+                                            <small class="text-muted">High Utilization</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="department-card">
+                                        <h6>Department Capacity Details</h6>
+                                        <div class="table-responsive">
+                                            <table class="table" id="capacityTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Department</th>
+                                                        <th>Current Staff</th>
+                                                        <th>Optimal Capacity</th>
+                                                        <th>Utilization %</th>
+                                                        <th>Workload Trend</th>
+                                                        <th>Recommended Action</th>
+                                                        <th>Timeline</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Data will be populated by JavaScript -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Skills Analysis Tab -->
+                        <div class="tab-pane fade" id="skills" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-cogs text-warning me-2"></i>Skills Gap Analysis</h4>
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-primary btn-sm">Current Skills</button>
+                                    <button class="btn btn-outline-warning btn-sm">Skill Gaps</button>
+                                    <button class="btn btn-outline-success btn-sm">Development Plans</button>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-lg-4">
+                                    <div class="stats-card">
+                                        <h6>Critical Skills Summary</h6>
+                                        <div class="mt-3">
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Technical Skills</span>
+                                                    <span class="text-danger">23 gaps</span>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar bg-danger" style="width: 35%;"></div>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Leadership</span>
+                                                    <span class="text-warning">12 gaps</span>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar bg-warning" style="width: 60%;"></div>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Digital Literacy</span>
+                                                    <span class="text-info">8 gaps</span>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar bg-info" style="width: 75%;"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-8">
+                                    <div class="department-card">
+                                        <h6>Skills Matrix by Department</h6>
+                                        <canvas id="skillsChart" height="200"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="department-card">
+                                        <h6>Detailed Skills Gap Analysis</h6>
+                                        <div class="table-responsive">
+                                            <table class="table" id="skillsTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Skill Category</th>
+                                                        <th>Required Level</th>
+                                                        <th>Current Level</th>
+                                                        <th>Gap Severity</th>
+                                                        <th>Affected Roles</th>
+                                                        <th>Training Plan</th>
+                                                        <th>Timeline</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Data will be populated by JavaScript -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Scenario Planning Tab -->
+                        <div class="tab-pane fade" id="scenarios" role="tabpanel">
+                            <h4><i class="fas fa-sitemap text-purple me-2"></i>Workforce Scenario Planning</h4>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="scenario-card" onclick="selectScenario('conservative')">
+                                        <h6><i class="fas fa-chart-line text-success me-2"></i>Conservative Growth</h6>
+                                        <p class="text-muted mb-2">5% annual growth, focus on efficiency</p>
+                                        <div class="row">
+                                            <div class="col-6"><strong>+23</strong><br><small>New Hires</small></div>
+                                            <div class="col-6"><strong>$1.2M</strong><br><small>Budget</small></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="scenario-card selected" onclick="selectScenario('moderate')">
+                                        <h6><i class="fas fa-chart-line text-warning me-2"></i>Moderate Expansion</h6>
+                                        <p class="text-muted mb-2">12% annual growth, balanced approach</p>
+                                        <div class="row">
+                                            <div class="col-6"><strong>+54</strong><br><small>New Hires</small></div>
+                                            <div class="col-6"><strong>$2.8M</strong><br><small>Budget</small></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="scenario-card" onclick="selectScenario('aggressive')">
+                                        <h6><i class="fas fa-chart-line text-danger me-2"></i>Aggressive Growth</h6>
+                                        <p class="text-muted mb-2">25% annual growth, rapid scaling</p>
+                                        <div class="row">
+                                            <div class="col-6"><strong>+113</strong><br><small>New Hires</small></div>
+                                            <div class="col-6"><strong>$5.8M</strong><br><small>Budget</small></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="department-card">
+                                        <h6>Scenario Impact Analysis</h6>
+                                        <canvas id="scenarioChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="timeline">
+                                        <div class="timeline-item">
+                                            <h6>Q1 2026</h6>
+                                            <p class="mb-1">Hire 15 Software Engineers</p>
+                                            <small class="text-muted">AI/ML team expansion</small>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <h6>Q2 2026</h6>
+                                            <p class="mb-1">Launch Leadership Program</p>
+                                            <small class="text-muted">Succession planning initiative</small>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <h6>Q3 2026</h6>
+                                            <p class="mb-1">Open Regional Office</p>
+                                            <small class="text-muted">25 new positions</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Strategic Insights Tab -->
+                        <div class="tab-pane fade" id="insights" role="tabpanel">
+                            <h4><i class="fas fa-lightbulb text-success me-2"></i>Strategic Workforce Insights</h4>
+                            
+                            <div class="row mb-4">
+                                <div class="col-lg-6">
+                                    <div class="department-card">
+                                        <h6>Key Recommendations</h6>
+                                        <div class="list-group list-group-flush">
+                                            <div class="list-group-item border-0 px-0">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-exclamation-circle text-danger me-3"></i>
+                                                    <div>
+                                                        <strong>Critical: AI/ML Skills Gap</strong>
+                                                        <p class="mb-0 text-muted">Immediate hiring required for Q1 product launch</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="list-group-item border-0 px-0">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-users text-warning me-3"></i>
+                                                    <div>
+                                                        <strong>Leadership Development</strong>
+                                                        <p class="mb-0 text-muted">Prepare for upcoming retirements in Finance</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="list-group-item border-0 px-0">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-chart-line text-info me-3"></i>
+                                                    <div>
+                                                        <strong>Capacity Optimization</strong>
+                                                        <p class="mb-0 text-muted">Redistribute workload in Operations department</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="department-card">
+                                        <h6>ROI Analysis</h6>
+                                        <canvas id="roiChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-success">$2.8M</div>
+                                        <div class="stats-label">Projected Cost Savings</div>
+                                        <small class="text-muted">Through optimized planning</small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-info">18</div>
+                                        <div class="stats-label">Months to Full Capacity</div>
+                                        <small class="text-muted">At current hiring rate</small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-warning">3.2x</div>
+                                        <div class="stats-label">ROI on Training Investment</div>
+                                        <small class="text-muted">Skills development programs</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sample data
+        const demandData = [
+            {
+                department: "Information Technology",
+                current: 85,
+                q1_2026: 95,
+                q2_2026: 102,
+                q3_2026: 110,
+                q4_2026: 118,
+                growth: 38.8,
+                priority: "critical"
+            },
+            {
+                department: "Marketing",
+                current: 32,
+                q1_2026: 36,
+                q2_2026: 40,
+                q3_2026: 42,
+                q4_2026: 45,
+                growth: 40.6,
+                priority: "high"
+            },
+            {
+                department: "Finance",
+                current: 28,
+                q1_2026: 30,
+                q2_2026: 31,
+                q3_2026: 32,
+                q4_2026: 33,
+                growth: 17.9,
+                priority: "medium"
+            },
+            {
+                department: "Operations",
+                current: 65,
+                q1_2026: 70,
+                q2_2026: 75,
+                q3_2026: 78,
+                q4_2026: 82,
+                growth: 26.2,
+                priority: "high"
+            }
+        ];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDemandData();
+            loadCapacityData();
+            loadSkillsData();
+            initializeCharts();
+            generateHeatmap();
+        });
+
+        function loadDemandData() {
+            const tbody = document.querySelector('#demandTable tbody');
+            tbody.innerHTML = '';
+
+            demandData.forEach(dept => {
+                const priorityClass = getPriorityClass(dept.priority);
+                const row = `
+                    <tr>
+                        <td><strong>${dept.department}</strong></td>
+                        <td>${dept.current}</td>
+                        <td>${dept.q1_2026}</td>
+                        <td>${dept.q2_2026}</td>
+                        <td>${dept.q3_2026}</td>
+                        <td>${dept.q4_2026}</td>
+                        <td class="text-success">+${dept.growth}%</td>
+                        <td><span class="badge-priority ${priorityClass}">${dept.priority.toUpperCase()}</span></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadCapacityData() {
+            const tbody = document.querySelector('#capacityTable tbody');
+            tbody.innerHTML = '';
+
+            const capacityData = [
+                {
+                    department: "Information Technology",
+                    current: 85,
+                    optimal: 95,
+                    utilization: 89.5,
+                    trend: "increasing",
+                    action: "Hire 10 engineers",
+                    timeline: "Q1 2026"
+                },
+                {
+                    department: "Marketing",
+                    current: 32,
+                    optimal: 35,
+                    utilization: 91.4,
+                    trend: "stable",
+                    action: "Add 3 specialists",
+                    timeline: "Q2 2026"
+                },
+                {
+                    department: "Finance",
+                    current: 28,
+                    optimal: 30,
+                    utilization: 93.3,
+                    trend: "stable",
+                    action: "Succession planning",
+                    timeline: "Q3 2026"
+                }
+            ];
+
+            capacityData.forEach(dept => {
+                const trendIcon = dept.trend === 'increasing' ? 'fa-arrow-up text-warning' : 
+                                 dept.trend === 'decreasing' ? 'fa-arrow-down text-success' : 'fa-minus text-info';
+                const row = `
+                    <tr>
+                        <td><strong>${dept.department}</strong></td>
+                        <td>${dept.current}</td>
+                        <td>${dept.optimal}</td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar ${getUtilizationColor(dept.utilization)}" style="width: ${dept.utilization}%;">
+                                    ${dept.utilization}%
+                                </div>
+                            </div>
+                        </td>
+                        <td><i class="fas ${trendIcon} me-1"></i>${dept.trend}</td>
+                        <td>${dept.action}</td>
+                        <td>${dept.timeline}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadSkillsData() {
+            const tbody = document.querySelector('#skillsTable tbody');
+            tbody.innerHTML = '';
+
+            const skillsData = [
+                {
+                    category: "Artificial Intelligence/ML",
+                    required: "Advanced",
+                    current: "Intermediate",
+                    severity: "critical",
+                    roles: "15 engineers",
+                    plan: "External hiring + training",
+                    timeline: "6 months"
+                },
+                {
+                    category: "Cloud Architecture",
+                    required: "Expert",
+                    current: "Advanced",
+                    severity: "high",
+                    roles: "8 architects",
+                    plan: "Certification program",
+                    timeline: "4 months"
+                },
+                {
+                    category: "Digital Marketing",
+                    required: "Advanced",
+                    current: "Intermediate",
+                    severity: "medium",
+                    roles: "12 marketers",
+                    plan: "Skills workshops",
+                    timeline: "3 months"
+                }
+            ];
+
+            skillsData.forEach(skill => {
+                const severityClass = getPriorityClass(skill.severity);
+                const row = `
+                    <tr>
+                        <td><strong>${skill.category}</strong></td>
+                        <td>${skill.required}</td>
+                        <td>${skill.current}</td>
+                        <td><span class="badge-priority ${severityClass}">${skill.severity.toUpperCase()}</span></td>
+                        <td>${skill.roles}</td>
+                        <td>${skill.plan}</td>
+                        <td>${skill.timeline}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function initializeCharts() {
+            // Demand Chart
+            const demandCtx = document.getElementById('demandChart').getContext('2d');
+            new Chart(demandCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Current', 'Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026'],
+                    datasets: [
+                        {
+                            label: 'IT',
+                            data: [85, 95, 102, 110, 118],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            fill: true
+                        },
+                        {
+                            label: 'Marketing',
+                            data: [32, 36, 40, 42, 45],
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            fill: true
+                        },
+                        {
+                            label: 'Operations',
+                            data: [65, 70, 75, 78, 82],
+                            borderColor: '#f39c12',
+                            backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Capacity Chart
+            const capacityCtx = document.getElementById('capacityChart').getContext('2d');
+            new Chart(capacityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Optimal', 'Over-utilized', 'Under-utilized'],
+                    datasets: [{
+                        data: [70, 20, 10],
+                        backgroundColor: ['#27ae60', '#e74c3c', '#f39c12']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Skills Chart
+            const skillsCtx = document.getElementById('skillsChart').getContext('2d');
+            new Chart(skillsCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Technical', 'Leadership', 'Communication', 'Analytical', 'Creative', 'Digital'],
+                    datasets: [
+                        {
+                            label: 'Current Level',
+                            data: [65, 70, 80, 75, 60, 55],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)'
+                        },
+                        {
+                            label: 'Required Level',
+                            data: [85, 80, 85, 90, 75, 80],
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.2)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Scenario Chart
+            const scenarioCtx = document.getElementById('scenarioChart').getContext('2d');
+            new Chart(scenarioCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [
+                        {
+                            label: 'Conservative',
+                            data: [460, 468, 475, 483],
+                            backgroundColor: '#27ae60'
+                        },
+                        {
+                            label: 'Moderate',
+                            data: [465, 485, 510, 525],
+                            backgroundColor: '#f39c12'
+                        },
+                        {
+                            label: 'Aggressive',
+                            data: [475, 515, 565, 610],
+                            backgroundColor: '#e74c3c'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // ROI Chart
+            const roiCtx = document.getElementById('roiChart').getContext('2d');
+            new Chart(roiCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Baseline', '6 months', '12 months', '18 months', '24 months'],
+                    datasets: [{
+                        label: 'ROI %',
+                        data: [0, 50, 150, 250, 320],
+                        borderColor: '#27ae60',
+                        backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateHeatmap() {
+            const heatmap = document.getElementById('resourceHeatmap');
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            
+            months.forEach(month => {
+                const utilization = Math.floor(Math.random() * 40) + 60; // 60-100%
+                const cell = document.createElement('div');
+                cell.className = 'heatmap-cell';
+                cell.textContent = month;
+                cell.style.backgroundColor = getHeatmapColor(utilization);
+                cell.title = `${month}: ${utilization}% utilization`;
+                heatmap.appendChild(cell);
+            });
+        }
+
+        // Utility functions
+        function getPriorityClass(priority) {
+            switch(priority.toLowerCase()) {
+                case 'critical': return 'priority-critical';
+                case 'high': return 'priority-high';
+                case 'medium': return 'priority-medium';
+                case 'low': return 'priority-low';
+                default: return 'priority-medium';
+            }
+        }
+
+        function getUtilizationColor(utilization) {
+            if (utilization >= 95) return 'bg-danger';
+            if (utilization >= 85) return 'bg-warning';
+            if (utilization >= 75) return 'bg-success';
+            return 'bg-info';
+        }
+
+        function getHeatmapColor(utilization) {
+            const intensity = (utilization - 60) / 40; // Normalize to 0-1
+            const red = Math.floor(255 * intensity);
+            const green = Math.floor(255 * (1 - intensity));
+            return `rgb(${red}, ${green}, 0)`;
+        }
+
+        function selectScenario(scenario) {
+            // Remove selected class from all scenarios
+            document.querySelectorAll('.scenario-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked scenario
+            event.currentTarget.classList.add('selected');
+            
+            // Update scenario-specific data (mock implementation)
+            console.log('Selected scenario:', scenario);
+        }
+    </script>
+</body>
+</html>

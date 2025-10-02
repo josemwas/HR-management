@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Relations & Disciplinary - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-text);
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .main-content {
+            margin-top: 2rem;
+            padding: 0 1rem;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            overflow: hidden;
+        }
+
+        .content-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        .nav-tabs {
+            border: none;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            background: transparent;
+            color: var(--dark-text);
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            margin: 0 0.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--secondary-color);
+            color: white;
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .tab-content {
+            padding: 2rem;
+        }
+
+        .table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .table thead th {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            border-color: #f1f3f4;
+            vertical-align: middle;
+        }
+
+        .badge-severity {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .severity-low { background: #e8f5e8; color: #388e3c; }
+        .severity-medium { background: #fff3e0; color: #f57c00; }
+        .severity-high { background: #ffebee; color: #d32f2f; }
+        .severity-critical { background: #1a1a1a; color: #ffffff; }
+
+        .status-open { background: #e3f2fd; color: #1976d2; }
+        .status-investigating { background: #fff3e0; color: #f57c00; }
+        .status-resolved { background: #e8f5e8; color: #388e3c; }
+        .status-closed { background: #f5f5f5; color: #666; }
+
+        .btn-custom {
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline:before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--secondary-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: -1.75rem;
+            top: 1.5rem;
+            width: 1rem;
+            height: 1rem;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--secondary-color);
+        }
+
+        .alert-custom {
+            border: none;
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm-custom {
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+            border-radius: 15px;
+        }
+
+        .case-priority-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .priority-low { background-color: #4caf50; }
+        .priority-medium { background-color: #ff9800; }
+        .priority-high { background-color: #f44336; }
+        .priority-critical { background-color: #9c27b0; }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 0.5rem;
+            }
+            
+            .tab-content {
+                padding: 1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-users-cog me-2"></i>HR Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/employee-relations">
+                            <i class="fas fa-balance-scale me-1"></i>Employee Relations
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/login">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid main-content">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="content-card">
+                    <div class="content-header">
+                        <h1 class="mb-0">
+                            <i class="fas fa-balance-scale me-3"></i>Employee Relations & Disciplinary
+                        </h1>
+                        <p class="mb-0 mt-2 opacity-75">Manage employee relations, disciplinary actions, and workplace conflict resolution</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Overview -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-warning" id="openCases">8</div>
+                    <div class="stats-label">Open Cases</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-danger" id="highPriorityCases">3</div>
+                    <div class="stats-label">High Priority</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-success" id="resolvedThisMonth">15</div>
+                    <div class="stats-label">Resolved This Month</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-info" id="avgResolutionTime">12</div>
+                    <div class="stats-label">Avg Resolution (Days)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Tabs -->
+        <div class="row">
+            <div class="col-12">
+                <div class="content-card">
+                    <ul class="nav nav-tabs" id="erTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="cases-tab" data-bs-toggle="tab" data-bs-target="#cases" type="button" role="tab">
+                                <i class="fas fa-folder-open me-2"></i>Active Cases
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="disciplinary-tab" data-bs-toggle="tab" data-bs-target="#disciplinary" type="button" role="tab">
+                                <i class="fas fa-gavel me-2"></i>Disciplinary Actions
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="grievances-tab" data-bs-toggle="tab" data-bs-target="#grievances" type="button" role="tab">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Grievances
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="mediation-tab" data-bs-toggle="tab" data-bs-target="#mediation" type="button" role="tab">
+                                <i class="fas fa-handshake me-2"></i>Mediation
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="policies-tab" data-bs-toggle="tab" data-bs-target="#policies" type="button" role="tab">
+                                <i class="fas fa-book me-2"></i>Policies
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="erTabContent">
+                        <!-- Active Cases Tab -->
+                        <div class="tab-pane fade show active" id="cases" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-folder-open text-primary me-2"></i>Active Employee Relations Cases</h4>
+                                <button class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#newCaseModal">
+                                    <i class="fas fa-plus me-2"></i>New Case
+                                </button>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table" id="activeCasesTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Case ID</th>
+                                            <th>Employee(s)</th>
+                                            <th>Issue Type</th>
+                                            <th>Priority</th>
+                                            <th>Status</th>
+                                            <th>Assigned To</th>
+                                            <th>Due Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Disciplinary Actions Tab -->
+                        <div class="tab-pane fade" id="disciplinary" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-gavel text-warning me-2"></i>Disciplinary Actions</h4>
+                                <button class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#newDisciplinaryModal">
+                                    <i class="fas fa-plus me-2"></i>New Disciplinary Action
+                                </button>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table" id="disciplinaryTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Action Type</th>
+                                            <th>Violation</th>
+                                            <th>Severity</th>
+                                            <th>Date Issued</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Grievances Tab -->
+                        <div class="tab-pane fade" id="grievances" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-exclamation-triangle text-danger me-2"></i>Employee Grievances</h4>
+                                <button class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#newGrievanceModal">
+                                    <i class="fas fa-plus me-2"></i>File Grievance
+                                </button>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="table-responsive">
+                                        <table class="table" id="grievancesTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Grievance ID</th>
+                                                    <th>Employee</th>
+                                                    <th>Type</th>
+                                                    <th>Filed Date</th>
+                                                    <th>Status</th>
+                                                    <th>Assigned Investigator</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Data will be populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="alert alert-custom alert-info">
+                                        <h6><i class="fas fa-info-circle me-2"></i>Grievance Process</h6>
+                                        <ol class="mb-0">
+                                            <li>Initial filing and acknowledgment</li>
+                                            <li>Investigation assignment</li>
+                                            <li>Evidence collection and interviews</li>
+                                            <li>Review and decision</li>
+                                            <li>Resolution implementation</li>
+                                            <li>Follow-up and closure</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mediation Tab -->
+                        <div class="tab-pane fade" id="mediation" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-handshake text-success me-2"></i>Mediation Sessions</h4>
+                                <button class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#scheduleMediationModal">
+                                    <i class="fas fa-calendar-plus me-2"></i>Schedule Mediation
+                                </button>
+                            </div>
+
+                            <div class="timeline" id="mediationTimeline">
+                                <!-- Timeline items will be populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Policies Tab -->
+                        <div class="tab-pane fade" id="policies" role="tabpanel">
+                            <h4><i class="fas fa-book text-info me-2"></i>HR Policies & Procedures</h4>
+                            
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="stats-card">
+                                                <h6><i class="fas fa-shield-alt text-primary me-2"></i>Code of Conduct</h6>
+                                                <p class="small text-muted mb-2">Guidelines for professional behavior and ethical standards</p>
+                                                <button class="btn btn-outline-primary btn-sm">View Policy</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="stats-card">
+                                                <h6><i class="fas fa-ban text-warning me-2"></i>Anti-Harassment Policy</h6>
+                                                <p class="small text-muted mb-2">Zero tolerance policy for workplace harassment</p>
+                                                <button class="btn btn-outline-warning btn-sm">View Policy</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="stats-card">
+                                                <h6><i class="fas fa-exclamation-circle text-danger me-2"></i>Disciplinary Procedures</h6>
+                                                <p class="small text-muted mb-2">Progressive discipline and corrective action guidelines</p>
+                                                <button class="btn btn-outline-danger btn-sm">View Policy</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="stats-card">
+                                                <h6><i class="fas fa-balance-scale text-success me-2"></i>Grievance Process</h6>
+                                                <p class="small text-muted mb-2">Formal process for addressing workplace concerns</p>
+                                                <button class="btn btn-outline-success btn-sm">View Policy</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="stats-card">
+                                        <h6>Policy Updates</h6>
+                                        <div class="timeline">
+                                            <div class="timeline-item">
+                                                <small class="text-muted">Oct 1, 2025</small>
+                                                <p class="mb-0">Anti-Harassment Policy updated</p>
+                                            </div>
+                                            <div class="timeline-item">
+                                                <small class="text-muted">Sep 15, 2025</small>
+                                                <p class="mb-0">Code of Conduct revised</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Case Modal -->
+    <div class="modal fade" id="newCaseModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus me-2"></i>New Employee Relations Case</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newCaseForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Involved Employee(s)</label>
+                                <select class="form-select" multiple required>
+                                    <option value="1">John Smith - IT</option>
+                                    <option value="2">Sarah Johnson - Marketing</option>
+                                    <option value="3">Mike Davis - Finance</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Issue Type</label>
+                                <select class="form-select" required>
+                                    <option value="">Select Issue Type</option>
+                                    <option value="conflict">Interpersonal Conflict</option>
+                                    <option value="harassment">Harassment Complaint</option>
+                                    <option value="discrimination">Discrimination</option>
+                                    <option value="performance">Performance Issue</option>
+                                    <option value="policy_violation">Policy Violation</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Priority Level</label>
+                                <select class="form-select" required>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Assign To</label>
+                                <select class="form-select" required>
+                                    <option value="">Select Investigator</option>
+                                    <option value="1">HR Manager</option>
+                                    <option value="2">Senior HR Specialist</option>
+                                    <option value="3">External Investigator</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Case Description</label>
+                                <textarea class="form-control" rows="4" placeholder="Provide detailed description of the issue..." required></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Incident Date</label>
+                                <input type="date" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Reported By</label>
+                                <input type="text" class="form-control" placeholder="Reporter name" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary-custom" onclick="createCase()">Create Case</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sample data for active cases
+        const activeCases = [
+            {
+                id: "ER-2025-001",
+                employees: ["John Smith", "Sarah Johnson"],
+                issueType: "Interpersonal Conflict",
+                priority: "high",
+                status: "investigating",
+                assignedTo: "HR Manager",
+                dueDate: "2025-10-15",
+                created: "2025-10-01"
+            },
+            {
+                id: "ER-2025-002",
+                employees: ["Mike Davis"],
+                issueType: "Performance Issue",
+                priority: "medium",
+                status: "open",
+                assignedTo: "Senior HR Specialist",
+                dueDate: "2025-10-20",
+                created: "2025-10-03"
+            },
+            {
+                id: "ER-2025-003",
+                employees: ["Alice Brown"],
+                issueType: "Harassment Complaint",
+                priority: "critical",
+                status: "investigating",
+                assignedTo: "External Investigator",
+                dueDate: "2025-10-12",
+                created: "2025-09-28"
+            }
+        ];
+
+        // Sample disciplinary actions
+        const disciplinaryActions = [
+            {
+                id: 1,
+                employee: "Robert Wilson",
+                actionType: "Written Warning",
+                violation: "Tardiness",
+                severity: "low",
+                dateIssued: "2025-09-15",
+                status: "active"
+            },
+            {
+                id: 2,
+                employee: "Lisa Brown",
+                actionType: "Suspension",
+                violation: "Policy Violation",
+                severity: "high",
+                dateIssued: "2025-09-10",
+                status: "completed"
+            },
+            {
+                id: 3,
+                employee: "Tom Anderson",
+                actionType: "Final Warning",
+                violation: "Inappropriate Behavior",
+                severity: "high",
+                dateIssued: "2025-09-20",
+                status: "active"
+            }
+        ];
+
+        // Sample grievances
+        const grievances = [
+            {
+                id: "GR-2025-001",
+                employee: "Jennifer Davis",
+                type: "Workplace Discrimination",
+                filedDate: "2025-09-25",
+                status: "investigating",
+                investigator: "HR Manager"
+            },
+            {
+                id: "GR-2025-002",
+                employee: "David Miller",
+                type: "Unfair Treatment",
+                filedDate: "2025-09-20",
+                status: "resolved",
+                investigator: "Senior HR Specialist"
+            }
+        ];
+
+        // Sample mediation sessions
+        const mediationSessions = [
+            {
+                id: 1,
+                participants: ["John Smith", "Sarah Johnson"],
+                mediator: "HR Manager",
+                scheduledDate: "2025-10-10 14:00",
+                status: "scheduled",
+                issue: "Workplace communication conflict"
+            },
+            {
+                id: 2,
+                participants: ["Mike Davis", "Team Lead"],
+                mediator: "External Mediator",
+                scheduledDate: "2025-10-05 10:00",
+                status: "completed",
+                issue: "Performance expectations disagreement",
+                outcome: "Mutual agreement reached on performance goals"
+            }
+        ];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadActiveCases();
+            loadDisciplinaryActions();
+            loadGrievances();
+            loadMediationSessions();
+        });
+
+        function loadActiveCases() {
+            const tbody = document.querySelector('#activeCasesTable tbody');
+            tbody.innerHTML = '';
+
+            activeCases.forEach(case_ => {
+                const priorityClass = `priority-${case_.priority}`;
+                const statusClass = getStatusClass(case_.status);
+                
+                const row = `
+                    <tr>
+                        <td><strong>${case_.id}</strong></td>
+                        <td>
+                            ${case_.employees.map(emp => `<span class="badge bg-light text-dark me-1">${emp}</span>`).join('')}
+                        </td>
+                        <td>${case_.issueType}</td>
+                        <td>
+                            <span class="case-priority-indicator ${priorityClass}"></span>
+                            ${case_.priority.toUpperCase()}
+                        </td>
+                        <td><span class="badge-severity ${statusClass}">${case_.status.replace('_', ' ').toUpperCase()}</span></td>
+                        <td>${case_.assignedTo}</td>
+                        <td>${formatDate(case_.dueDate)}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-outline-primary btn-sm-custom" onclick="viewCase('${case_.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm-custom" onclick="editCase('${case_.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadDisciplinaryActions() {
+            const tbody = document.querySelector('#disciplinaryTable tbody');
+            tbody.innerHTML = '';
+
+            disciplinaryActions.forEach(action => {
+                const severityClass = `severity-${action.severity}`;
+                const statusClass = getStatusClass(action.status);
+                
+                const row = `
+                    <tr>
+                        <td><strong>${action.employee}</strong></td>
+                        <td>${action.actionType}</td>
+                        <td>${action.violation}</td>
+                        <td><span class="badge-severity ${severityClass}">${action.severity.toUpperCase()}</span></td>
+                        <td>${formatDate(action.dateIssued)}</td>
+                        <td><span class="badge-severity ${statusClass}">${action.status.toUpperCase()}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-outline-primary btn-sm-custom" onclick="viewDisciplinary(${action.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm-custom" onclick="editDisciplinary(${action.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadGrievances() {
+            const tbody = document.querySelector('#grievancesTable tbody');
+            tbody.innerHTML = '';
+
+            grievances.forEach(grievance => {
+                const statusClass = getStatusClass(grievance.status);
+                
+                const row = `
+                    <tr>
+                        <td><strong>${grievance.id}</strong></td>
+                        <td>${grievance.employee}</td>
+                        <td>${grievance.type}</td>
+                        <td>${formatDate(grievance.filedDate)}</td>
+                        <td><span class="badge-severity ${statusClass}">${grievance.status.toUpperCase()}</span></td>
+                        <td>${grievance.investigator}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-outline-primary btn-sm-custom" onclick="viewGrievance('${grievance.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm-custom" onclick="editGrievance('${grievance.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadMediationSessions() {
+            const timeline = document.getElementById('mediationTimeline');
+            timeline.innerHTML = '';
+
+            mediationSessions.forEach(session => {
+                const statusIcon = session.status === 'completed' ? 
+                    '<i class="fas fa-check-circle text-success"></i>' : 
+                    '<i class="fas fa-clock text-warning"></i>';
+                
+                const itemHtml = `
+                    <div class="timeline-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    ${statusIcon} Mediation Session #${session.id}
+                                </h6>
+                                <p class="mb-1">
+                                    <strong>Participants:</strong> ${session.participants.join(', ')}<br>
+                                    <strong>Mediator:</strong> ${session.mediator}<br>
+                                    <strong>Issue:</strong> ${session.issue}
+                                </p>
+                                <p class="text-muted mb-1">
+                                    <i class="fas fa-calendar me-1"></i>${formatDateTime(session.scheduledDate)}
+                                </p>
+                                ${session.outcome ? `<p class="text-success mb-1"><strong>Outcome:</strong> ${session.outcome}</p>` : ''}
+                                <span class="badge-severity ${getStatusClass(session.status)}">${session.status.toUpperCase()}</span>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-outline-primary btn-sm-custom" onclick="viewMediation(${session.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                timeline.innerHTML += itemHtml;
+            });
+        }
+
+        // Utility functions
+        function getStatusClass(status) {
+            switch(status.toLowerCase()) {
+                case 'open': return 'status-open';
+                case 'investigating': return 'status-investigating';
+                case 'resolved': case 'completed': return 'status-resolved';
+                case 'closed': return 'status-closed';
+                case 'active': return 'status-open';
+                case 'scheduled': return 'status-open';
+                default: return 'status-open';
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        function formatDateTime(dateTimeString) {
+            const date = new Date(dateTimeString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Action functions
+        function createCase() {
+            alert('New case created successfully!');
+            $('#newCaseModal').modal('hide');
+            // In real implementation, this would send data to the server
+        }
+
+        function viewCase(id) {
+            alert('Viewing case: ' + id);
+        }
+
+        function editCase(id) {
+            alert('Editing case: ' + id);
+        }
+
+        function viewDisciplinary(id) {
+            alert('Viewing disciplinary action: ' + id);
+        }
+
+        function editDisciplinary(id) {
+            alert('Editing disciplinary action: ' + id);
+        }
+
+        function viewGrievance(id) {
+            alert('Viewing grievance: ' + id);
+        }
+
+        function editGrievance(id) {
+            alert('Editing grievance: ' + id);
+        }
+
+        function viewMediation(id) {
+            alert('Viewing mediation session: ' + id);
+        }
+    </script>
+</body>
+</html>

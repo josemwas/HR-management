@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Succession Planning - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --info-color: #17a2b8;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+            --purple: #9b59b6;
+            --orange: #e67e22;
+            --teal: #1abc9c;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-text);
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .main-content {
+            margin-top: 2rem;
+            padding: 0 1rem;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--teal), var(--purple));
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-trend {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .trend-up { color: var(--success-color); }
+        .trend-down { color: var(--accent-color); }
+        .trend-stable { color: var(--warning-color); }
+
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            overflow: hidden;
+        }
+
+        .content-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        .nav-tabs {
+            border: none;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            background: transparent;
+            color: var(--dark-text);
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            margin: 0 0.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--secondary-color);
+            color: white;
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .tab-content {
+            padding: 2rem;
+        }
+
+        .table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .table thead th {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            border-color: #f1f3f4;
+            vertical-align: middle;
+        }
+
+        .badge-readiness {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .readiness-ready { background: #e8f5e8; color: #388e3c; }
+        .readiness-developing { background: #fff3e0; color: #f57c00; }
+        .readiness-emerging { background: #e3f2fd; color: #1976d2; }
+        .readiness-not-ready { background: #ffebee; color: #d32f2f; }
+
+        .btn-custom {
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .succession-chart {
+            background: linear-gradient(135deg, var(--teal), var(--secondary-color));
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .org-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .org-level {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+            width: 100%;
+        }
+
+        .org-position {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 0 0.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            min-width: 200px;
+            text-align: center;
+            position: relative;
+        }
+
+        .org-position.critical {
+            border: 2px solid var(--accent-color);
+        }
+
+        .org-position.covered {
+            border: 2px solid var(--success-color);
+        }
+
+        .org-position.developing {
+            border: 2px solid var(--warning-color);
+        }
+
+        .position-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .position-incumbent {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+
+        .position-successors {
+            font-size: 0.8rem;
+        }
+
+        .successor-item {
+            background: var(--light-bg);
+            border-radius: 15px;
+            padding: 0.3rem 0.8rem;
+            margin: 0.2rem;
+            display: inline-block;
+        }
+
+        .talent-pipeline {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .pipeline-stage {
+            background: var(--light-bg);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .readiness-meter {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+        }
+
+        .readiness-meter svg {
+            width: 120px;
+            height: 120px;
+            transform: rotate(-90deg);
+        }
+
+        .readiness-meter circle {
+            fill: transparent;
+            stroke-width: 8;
+        }
+
+        .readiness-meter .background {
+            stroke: #e0e0e0;
+        }
+
+        .readiness-meter .progress {
+            stroke: var(--teal);
+            stroke-dasharray: 314;
+            stroke-dashoffset: 314;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+
+        .readiness-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .development-plan {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 1rem;
+            border: 1px solid #e9ecef;
+        }
+
+        .development-plan:hover {
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        .risk-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .risk-high { background-color: var(--accent-color); }
+        .risk-medium { background-color: var(--warning-color); }
+        .risk-low { background-color: var(--success-color); }
+
+        .timeline-container {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--secondary-color);
+        }
+
+        .timeline-event {
+            position: relative;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .timeline-event::before {
+            content: '';
+            position: absolute;
+            left: -2.25rem;
+            top: 1.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--secondary-color);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 0.5rem;
+            }
+            
+            .tab-content {
+                padding: 1rem;
+            }
+            
+            .stats-number {
+                font-size: 2rem;
+            }
+
+            .org-level {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .org-position {
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-users-cog me-2"></i>HR Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/succession-planning">
+                            <i class="fas fa-sitemap me-1"></i>Succession Planning
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/login">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid main-content">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="content-card">
+                    <div class="content-header">
+                        <h1 class="mb-0">
+                            <i class="fas fa-sitemap me-3"></i>Succession Planning & Leadership Development
+                        </h1>
+                        <p class="mb-0 mt-2 opacity-75">Strategic succession planning, talent pipeline management, and leadership development programs</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-primary" id="keyPositions">24</div>
+                    <div class="stats-label">Key Positions</div>
+                    <div class="stats-trend trend-stable">
+                        <i class="fas fa-minus me-1"></i>No change from last quarter
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-success" id="readySuccessors">18</div>
+                    <div class="stats-label">Ready Successors</div>
+                    <div class="stats-trend trend-up">
+                        <i class="fas fa-arrow-up me-1"></i>+3 from last quarter
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-warning" id="developingTalent">35</div>
+                    <div class="stats-label">Developing Talent</div>
+                    <div class="stats-trend trend-up">
+                        <i class="fas fa-arrow-up me-1"></i>+8 in development programs
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-danger" id="criticalGaps">6</div>
+                    <div class="stats-label">Critical Gaps</div>
+                    <div class="stats-trend trend-down">
+                        <i class="fas fa-arrow-down me-1"></i>-2 gaps addressed
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Succession Overview -->
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <div class="succession-chart">
+                    <h4><i class="fas fa-chart-pie me-2"></i>Succession Readiness Overview</h4>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3>75%</h3>
+                                <small>Overall Readiness</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3>6</h3>
+                                <small>Critical Positions</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3>12</h3>
+                                <small>Months Avg Development</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3>$2.1M</h3>
+                                <small>Development Investment</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="stats-card">
+                    <h6>Succession Health Score</h6>
+                    <div class="readiness-meter">
+                        <svg>
+                            <circle class="background" cx="60" cy="60" r="50"></circle>
+                            <circle class="progress" cx="60" cy="60" r="50" style="stroke-dashoffset: 78;"></circle>
+                        </svg>
+                        <div class="readiness-text">75%<br><small>Ready</small></div>
+                    </div>
+                    <div class="text-center">
+                        <small class="text-muted">Based on 24 key positions</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Tabs -->
+        <div class="row">
+            <div class="col-12">
+                <div class="content-card">
+                    <ul class="nav nav-tabs" id="successionTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="org-chart-tab" data-bs-toggle="tab" data-bs-target="#org-chart" type="button" role="tab">
+                                <i class="fas fa-sitemap me-2"></i>Organization Chart
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="key-positions-tab" data-bs-toggle="tab" data-bs-target="#key-positions" type="button" role="tab">
+                                <i class="fas fa-crown me-2"></i>Key Positions
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="talent-pipeline-tab" data-bs-toggle="tab" data-bs-target="#talent-pipeline" type="button" role="tab">
+                                <i class="fas fa-users me-2"></i>Talent Pipeline
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="development-tab" data-bs-toggle="tab" data-bs-target="#development" type="button" role="tab">
+                                <i class="fas fa-graduation-cap me-2"></i>Development Plans
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">
+                                <i class="fas fa-chart-bar me-2"></i>Analytics
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="successionTabContent">
+                        <!-- Organization Chart Tab -->
+                        <div class="tab-pane fade show active" id="org-chart" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-sitemap text-primary me-2"></i>Succession Organization Chart</h4>
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="filterChart('all')">All Positions</button>
+                                    <button class="btn btn-outline-danger btn-sm" onclick="filterChart('critical')">Critical Only</button>
+                                    <button class="btn btn-outline-success btn-sm" onclick="filterChart('covered')">Well Covered</button>
+                                </div>
+                            </div>
+
+                            <!-- Organization Chart Structure -->
+                            <div class="org-chart">
+                                <!-- CEO Level -->
+                                <div class="org-level">
+                                    <div class="org-position critical">
+                                        <div class="risk-indicator risk-high"></div>
+                                        <div class="position-title">Chief Executive Officer</div>
+                                        <div class="position-incumbent">Robert Martinez (Retiring 2026)</div>
+                                        <div class="position-successors">
+                                            <div class="successor-item">Sarah Chen (Ready)</div>
+                                            <div class="successor-item">Michael Davis (Developing)</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- VP Level -->
+                                <div class="org-level">
+                                    <div class="org-position covered">
+                                        <div class="risk-indicator risk-low"></div>
+                                        <div class="position-title">VP Technology</div>
+                                        <div class="position-incumbent">Sarah Chen</div>
+                                        <div class="position-successors">
+                                            <div class="successor-item">Alex Kumar (Ready)</div>
+                                            <div class="successor-item">Lisa Wong (Ready)</div>
+                                        </div>
+                                    </div>
+                                    <div class="org-position developing">
+                                        <div class="risk-indicator risk-medium"></div>
+                                        <div class="position-title">VP Operations</div>
+                                        <div class="position-incumbent">Michael Davis</div>
+                                        <div class="position-successors">
+                                            <div class="successor-item">Tom Wilson (Developing)</div>
+                                            <div class="successor-item">Jennifer Lopez (Emerging)</div>
+                                        </div>
+                                    </div>
+                                    <div class="org-position covered">
+                                        <div class="risk-indicator risk-low"></div>
+                                        <div class="position-title">VP Finance</div>
+                                        <div class="position-incumbent">Emily Brown</div>
+                                        <div class="position-successors">
+                                            <div class="successor-item">David Kim (Ready)</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Director Level -->
+                                <div class="org-level">
+                                    <div class="org-position covered">
+                                        <div class="risk-indicator risk-low"></div>
+                                        <div class="position-title">Engineering Director</div>
+                                        <div class="position-incumbent">Alex Kumar</div>
+                                        <div class="position-successors">
+                                            <div class="successor-item">James Taylor (Ready)</div>
+                                            <div class="successor-item">Maria Garcia (Developing)</div>
+                                        </div>
+                                    </div>
+                                    <div class="org-position critical">
+                                        <div class="risk-indicator risk-high"></div>
+                                        <div class="position-title">Marketing Director</div>
+                                        <div class="position-incumbent">Jessica Adams</div>
+                                        <div class="position-successors">
+                                            <div class="successor-item">No identified successors</div>
+                                        </div>
+                                    </div>
+                                    <div class="org-position developing">
+                                        <div class="risk-indicator risk-medium"></div>
+                                        <div class="position-title">Finance Director</div>
+                                        <div class="position-incumbent">David Kim</div>
+                                        <div class="position-successors">
+                                            <div class="successor-item">Rachel Green (Developing)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col-md-4">
+                                    <div class="talent-pipeline">
+                                        <h6><i class="fas fa-exclamation-circle text-danger me-2"></i>Critical Risks</h6>
+                                        <ul class="list-unstyled">
+                                            <li class="mb-2">• CEO Retirement in 2026</li>
+                                            <li class="mb-2">• Marketing Director - No successors</li>
+                                            <li class="mb-2">• Regional Manager - Single point of failure</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="talent-pipeline">
+                                        <h6><i class="fas fa-clock text-warning me-2"></i>Development Timeline</h6>
+                                        <ul class="list-unstyled">
+                                            <li class="mb-2">• Q1 2026: Launch CEO transition plan</li>
+                                            <li class="mb-2">• Q2 2026: Marketing successor identification</li>
+                                            <li class="mb-2">• Q3 2026: Complete development programs</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="talent-pipeline">
+                                        <h6><i class="fas fa-trophy text-success me-2"></i>Success Stories</h6>
+                                        <ul class="list-unstyled">
+                                            <li class="mb-2">• VP Technology: Strong pipeline</li>
+                                            <li class="mb-2">• Engineering: Multiple ready candidates</li>
+                                            <li class="mb-2">• Finance: Solid succession plan</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Key Positions Tab -->
+                        <div class="tab-pane fade" id="key-positions" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-crown text-warning me-2"></i>Key Position Management</h4>
+                                <button class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#positionModal">
+                                    <i class="fas fa-plus me-2"></i>Add Key Position
+                                </button>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table" id="keyPositionsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Position</th>
+                                            <th>Current Incumbent</th>
+                                            <th>Department</th>
+                                            <th>Risk Level</th>
+                                            <th>Successors</th>
+                                            <th>Readiness</th>
+                                            <th>Development Time</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Talent Pipeline Tab -->
+                        <div class="tab-pane fade" id="talent-pipeline" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-users text-info me-2"></i>Talent Pipeline & Succession Candidates</h4>
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-primary btn-sm">All Candidates</button>
+                                    <button class="btn btn-outline-success btn-sm">Ready Now</button>
+                                    <button class="btn btn-outline-warning btn-sm">In Development</button>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-lg-4">
+                                    <div class="pipeline-stage">
+                                        <h6><i class="fas fa-star text-success me-2"></i>Ready Now (18)</h6>
+                                        <p class="text-muted mb-3">Candidates ready for immediate promotion</p>
+                                        <div class="progress mb-2" style="height: 25px;">
+                                            <div class="progress-bar bg-success" style="width: 75%;">75% Coverage</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="pipeline-stage">
+                                        <h6><i class="fas fa-graduation-cap text-warning me-2"></i>In Development (35)</h6>
+                                        <p class="text-muted mb-3">Candidates in active development programs</p>
+                                        <div class="progress mb-2" style="height: 25px;">
+                                            <div class="progress-bar bg-warning" style="width: 60%;">60% Progress</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="pipeline-stage">
+                                        <h6><i class="fas fa-seedling text-info me-2"></i>Emerging Talent (22)</h6>
+                                        <p class="text-muted mb-3">High-potential employees identified</p>
+                                        <div class="progress mb-2" style="height: 25px;">
+                                            <div class="progress-bar bg-info" style="width: 40%;">40% Identified</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table" id="pipelineTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Candidate</th>
+                                            <th>Current Role</th>
+                                            <th>Target Position</th>
+                                            <th>Readiness Level</th>
+                                            <th>Development Stage</th>
+                                            <th>Completion Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Development Plans Tab -->
+                        <div class="tab-pane fade" id="development" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-graduation-cap text-success me-2"></i>Leadership Development Programs</h4>
+                                <button class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#developmentModal">
+                                    <i class="fas fa-plus me-2"></i>Create Development Plan
+                                </button>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="development-plan">
+                                        <h6><i class="fas fa-trophy text-warning me-2"></i>Executive Leadership Program</h6>
+                                        <p class="text-muted">Comprehensive 18-month program for senior leadership development</p>
+                                        <div class="row mb-3">
+                                            <div class="col-md-3">
+                                                <strong>Duration:</strong><br>18 months
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong>Participants:</strong><br>12 executives
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong>Investment:</strong><br>$240,000
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong>ROI:</strong><br>3.2x projected
+                                            </div>
+                                        </div>
+                                        <div class="progress mb-2" style="height: 20px;">
+                                            <div class="progress-bar bg-warning" style="width: 65%;">65% Complete</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="development-plan">
+                                        <h6><i class="fas fa-users text-info me-2"></i>High Potential Leadership Track</h6>
+                                        <p class="text-muted">12-month accelerated program for emerging leaders</p>
+                                        <div class="row mb-3">
+                                            <div class="col-md-3">
+                                                <strong>Duration:</strong><br>12 months
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong>Participants:</strong><br>20 managers
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong>Investment:</strong><br>$180,000
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong>ROI:</strong><br>2.8x projected
+                                            </div>
+                                        </div>
+                                        <div class="progress mb-2" style="height: 20px;">
+                                            <div class="progress-bar bg-info" style="width: 40%;">40% Complete</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="development-plan">
+                                        <h6><i class="fas fa-seedling text-success me-2"></i>Future Leaders Initiative</h6>
+                                        <p class="text-muted">6-month program for identifying and developing emerging talent</p>
+                                        <div class="row mb-3">
+                                            <div class="col-md-3">
+                                                <strong>Duration:</strong><br>6 months
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong>Participants:</strong><br>35 employees
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong>Investment:</strong><br>$120,000
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong>ROI:</strong><br>2.5x projected
+                                            </div>
+                                        </div>
+                                        <div class="progress mb-2" style="height: 20px;">
+                                            <div class="progress-bar bg-success" style="width: 80%;">80% Complete</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="timeline-container">
+                                        <div class="timeline-event">
+                                            <h6>Q1 2026</h6>
+                                            <p class="mb-1">Executive Program Graduation</p>
+                                            <small class="text-muted">12 executives complete program</small>
+                                        </div>
+                                        <div class="timeline-event">
+                                            <h6>Q2 2026</h6>
+                                            <p class="mb-1">High Potential Track Launch</p>
+                                            <small class="text-muted">New cohort of 25 participants</small>
+                                        </div>
+                                        <div class="timeline-event">
+                                            <h6>Q3 2026</h6>
+                                            <p class="mb-1">Future Leaders Assessment</p>
+                                            <small class="text-muted">Comprehensive evaluation and graduation</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analytics Tab -->
+                        <div class="tab-pane fade" id="analytics" role="tabpanel">
+                            <h4><i class="fas fa-chart-bar text-primary me-2"></i>Succession Planning Analytics</h4>
+                            
+                            <div class="row mb-4">
+                                <div class="col-lg-6">
+                                    <div class="talent-pipeline">
+                                        <h6>Succession Readiness by Department</h6>
+                                        <canvas id="readinessChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="talent-pipeline">
+                                        <h6>Development Program Effectiveness</h6>
+                                        <canvas id="effectivenessChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-success">92%</div>
+                                        <div class="stats-label">Program Completion Rate</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-info">$540K</div>
+                                        <div class="stats-label">Total Development Investment</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-warning">14</div>
+                                        <div class="stats-label">Avg Development Months</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-purple">3.1x</div>
+                                        <div class="stats-label">ROI on Development</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sample data
+        const keyPositionsData = [
+            {
+                position: "Chief Executive Officer",
+                incumbent: "Robert Martinez",
+                department: "Executive",
+                risk_level: "high",
+                successors: 2,
+                readiness: "developing",
+                development_time: "18 months",
+                notes: "Retiring in 2026"
+            },
+            {
+                position: "VP Technology",
+                incumbent: "Sarah Chen",
+                department: "Technology",
+                risk_level: "low",
+                successors: 2,
+                readiness: "ready",
+                development_time: "0 months",
+                notes: "Strong pipeline"
+            },
+            {
+                position: "Marketing Director",
+                incumbent: "Jessica Adams",
+                department: "Marketing",
+                risk_level: "high",
+                successors: 0,
+                readiness: "not_ready",
+                development_time: "24 months",
+                notes: "No identified successors"
+            }
+        ];
+
+        const pipelineData = [
+            {
+                candidate: "Sarah Chen",
+                current_role: "VP Technology",
+                target_position: "Chief Executive Officer",
+                readiness: "ready",
+                development_stage: "Advanced Leadership",
+                completion_date: "Q1 2026"
+            },
+            {
+                candidate: "Alex Kumar",
+                current_role: "Engineering Director",
+                target_position: "VP Technology",
+                readiness: "ready",
+                development_stage: "Technical Leadership",
+                completion_date: "Q2 2026"
+            },
+            {
+                candidate: "Tom Wilson",
+                current_role: "Operations Manager",
+                target_position: "VP Operations",
+                readiness: "developing",
+                development_stage: "Management Excellence",
+                completion_date: "Q4 2026"
+            }
+        ];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadKeyPositionsData();
+            loadPipelineData();
+            initializeCharts();
+        });
+
+        function loadKeyPositionsData() {
+            const tbody = document.querySelector('#keyPositionsTable tbody');
+            tbody.innerHTML = '';
+
+            keyPositionsData.forEach(position => {
+                const riskClass = getRiskClass(position.risk_level);
+                const readinessClass = getReadinessClass(position.readiness);
+                const row = `
+                    <tr>
+                        <td><strong>${position.position}</strong></td>
+                        <td>${position.incumbent}</td>
+                        <td>${position.department}</td>
+                        <td><span class="badge-readiness ${riskClass}">${position.risk_level.toUpperCase()}</span></td>
+                        <td class="text-center">${position.successors}</td>
+                        <td><span class="badge-readiness ${readinessClass}">${position.readiness.toUpperCase()}</span></td>
+                        <td>${position.development_time}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="viewPosition('${position.position}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="editPosition('${position.position}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadPipelineData() {
+            const tbody = document.querySelector('#pipelineTable tbody');
+            tbody.innerHTML = '';
+
+            pipelineData.forEach(candidate => {
+                const readinessClass = getReadinessClass(candidate.readiness);
+                const row = `
+                    <tr>
+                        <td><strong>${candidate.candidate}</strong></td>
+                        <td>${candidate.current_role}</td>
+                        <td>${candidate.target_position}</td>
+                        <td><span class="badge-readiness ${readinessClass}">${candidate.readiness.toUpperCase()}</span></td>
+                        <td>${candidate.development_stage}</td>
+                        <td>${candidate.completion_date}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-info" onclick="viewDevelopmentPlan('${candidate.candidate}')">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </button>
+                                <button class="btn btn-outline-success" onclick="promoteCandidate('${candidate.candidate}')">
+                                    <i class="fas fa-arrow-up"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function initializeCharts() {
+            // Readiness Chart
+            const readinessCtx = document.getElementById('readinessChart').getContext('2d');
+            new Chart(readinessCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Technology', 'Marketing', 'Finance', 'Operations', 'HR'],
+                    datasets: [{
+                        label: 'Succession Readiness %',
+                        data: [85, 45, 75, 60, 70],
+                        backgroundColor: [
+                            'rgba(39, 174, 96, 0.8)',
+                            'rgba(231, 76, 60, 0.8)',
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(243, 156, 18, 0.8)',
+                            'rgba(155, 89, 182, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Effectiveness Chart
+            const effectivenessCtx = document.getElementById('effectivenessChart').getContext('2d');
+            new Chart(effectivenessCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025', 'Q1 2026'],
+                    datasets: [
+                        {
+                            label: 'Program Completion Rate',
+                            data: [88, 90, 92, 94, 92],
+                            borderColor: '#27ae60',
+                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                            fill: true
+                        },
+                        {
+                            label: 'Promotion Success Rate',
+                            data: [75, 78, 82, 85, 87],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Utility functions
+        function getRiskClass(risk) {
+            switch(risk.toLowerCase()) {
+                case 'high': return 'readiness-not-ready';
+                case 'medium': return 'readiness-developing';
+                case 'low': return 'readiness-ready';
+                default: return 'readiness-developing';
+            }
+        }
+
+        function getReadinessClass(readiness) {
+            switch(readiness.toLowerCase()) {
+                case 'ready': return 'readiness-ready';
+                case 'developing': return 'readiness-developing';
+                case 'emerging': return 'readiness-emerging';
+                case 'not_ready': return 'readiness-not-ready';
+                default: return 'readiness-developing';
+            }
+        }
+
+        function filterChart(filter) {
+            const positions = document.querySelectorAll('.org-position');
+            positions.forEach(position => {
+                if (filter === 'all') {
+                    position.style.display = 'block';
+                } else {
+                    if (position.classList.contains(filter)) {
+                        position.style.display = 'block';
+                    } else {
+                        position.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Action functions
+        function viewPosition(position) {
+            alert('Viewing details for: ' + position);
+        }
+
+        function editPosition(position) {
+            alert('Editing position: ' + position);
+        }
+
+        function viewDevelopmentPlan(candidate) {
+            alert('Viewing development plan for: ' + candidate);
+        }
+
+        function promoteCandidate(candidate) {
+            alert('Promoting candidate: ' + candidate);
+        }
+    </script>
+</body>
+</html>

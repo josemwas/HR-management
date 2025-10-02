@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exit Management - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-text);
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .main-content {
+            margin-top: 2rem;
+            padding: 0 1rem;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            overflow: hidden;
+        }
+
+        .content-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        .nav-tabs {
+            border: none;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            background: transparent;
+            color: var(--dark-text);
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            margin: 0 0.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--secondary-color);
+            color: white;
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .tab-content {
+            padding: 2rem;
+        }
+
+        .table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .table thead th {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            border-color: #f1f3f4;
+            vertical-align: middle;
+        }
+
+        .badge-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-initiated { background: #e3f2fd; color: #1976d2; }
+        .status-in-progress { background: #fff3e0; color: #f57c00; }
+        .status-completed { background: #e8f5e8; color: #388e3c; }
+        .status-cancelled { background: #ffebee; color: #d32f2f; }
+
+        .btn-custom {
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline:before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--secondary-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: -1.75rem;
+            top: 1.5rem;
+            width: 1rem;
+            height: 1rem;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--secondary-color);
+        }
+
+        .progress-custom {
+            height: 8px;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+
+        .progress-bar-custom {
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--success-color), var(--secondary-color));
+        }
+
+        .alert-custom {
+            border: none;
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm-custom {
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+            border-radius: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 0.5rem;
+            }
+            
+            .tab-content {
+                padding: 1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-users-cog me-2"></i>HR Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/exit-management">
+                            <i class="fas fa-sign-out-alt me-1"></i>Exit Management
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/login">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid main-content">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="content-card">
+                    <div class="content-header">
+                        <h1 class="mb-0">
+                            <i class="fas fa-sign-out-alt me-3"></i>Exit Management System
+                        </h1>
+                        <p class="mb-0 mt-2 opacity-75">Manage employee departures, exit interviews, and offboarding processes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Overview -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-danger" id="pendingExits">12</div>
+                    <div class="stats-label">Pending Exits</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-warning" id="inProgressExits">8</div>
+                    <div class="stats-label">In Progress</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-success" id="completedExits">45</div>
+                    <div class="stats-label">Completed This Month</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-info" id="avgExitTime">5.2</div>
+                    <div class="stats-label">Avg Days to Complete</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Tabs -->
+        <div class="row">
+            <div class="col-12">
+                <div class="content-card">
+                    <ul class="nav nav-tabs" id="exitTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="active-exits-tab" data-bs-toggle="tab" data-bs-target="#active-exits" type="button" role="tab">
+                                <i class="fas fa-list me-2"></i>Active Exits
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="exit-interviews-tab" data-bs-toggle="tab" data-bs-target="#exit-interviews" type="button" role="tab">
+                                <i class="fas fa-comments me-2"></i>Exit Interviews
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="offboarding-tab" data-bs-toggle="tab" data-bs-target="#offboarding" type="button" role="tab">
+                                <i class="fas fa-tasks me-2"></i>Offboarding Checklist
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">
+                                <i class="fas fa-chart-line me-2"></i>Exit Analytics
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="exitTabContent">
+                        <!-- Active Exits Tab -->
+                        <div class="tab-pane fade show active" id="active-exits" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-list text-primary me-2"></i>Active Exit Processes</h4>
+                                <button class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#initiateExitModal">
+                                    <i class="fas fa-plus me-2"></i>Initiate Exit Process
+                                </button>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table" id="activeExitsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Department</th>
+                                            <th>Exit Type</th>
+                                            <th>Last Working Day</th>
+                                            <th>Status</th>
+                                            <th>Progress</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Exit Interviews Tab -->
+                        <div class="tab-pane fade" id="exit-interviews" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-comments text-info me-2"></i>Exit Interviews</h4>
+                                <button class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#scheduleInterviewModal">
+                                    <i class="fas fa-calendar-plus me-2"></i>Schedule Interview
+                                </button>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="table-responsive">
+                                        <table class="table" id="exitInterviewsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Employee</th>
+                                                    <th>Scheduled Date</th>
+                                                    <th>Interviewer</th>
+                                                    <th>Status</th>
+                                                    <th>Feedback Score</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Data will be populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="alert alert-custom alert-info">
+                                        <h6><i class="fas fa-lightbulb me-2"></i>Interview Tips</h6>
+                                        <ul class="mb-0">
+                                            <li>Create a comfortable environment</li>
+                                            <li>Ask open-ended questions</li>
+                                            <li>Listen actively and take notes</li>
+                                            <li>Focus on constructive feedback</li>
+                                            <li>Maintain confidentiality</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Offboarding Checklist Tab -->
+                        <div class="tab-pane fade" id="offboarding" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-tasks text-warning me-2"></i>Offboarding Checklist</h4>
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-primary btn-custom btn-sm-custom" onclick="filterChecklist('all')">All</button>
+                                    <button class="btn btn-outline-primary btn-custom btn-sm-custom" onclick="filterChecklist('pending')">Pending</button>
+                                    <button class="btn btn-outline-primary btn-custom btn-sm-custom" onclick="filterChecklist('completed')">Completed</button>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div id="checklistContainer">
+                                        <!-- Checklist items will be populated by JavaScript -->
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="stats-card">
+                                        <h6>Checklist Progress</h6>
+                                        <div class="progress progress-custom mb-2">
+                                            <div class="progress-bar progress-bar-custom" style="width: 65%"></div>
+                                        </div>
+                                        <small class="text-muted">13 of 20 items completed</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Exit Analytics Tab -->
+                        <div class="tab-pane fade" id="analytics" role="tabpanel">
+                            <h4><i class="fas fa-chart-line text-success me-2"></i>Exit Analytics & Insights</h4>
+                            
+                            <div class="row mb-4">
+                                <div class="col-lg-6">
+                                    <div class="stats-card">
+                                        <h6>Turnover Rate by Department</h6>
+                                        <canvas id="turnoverChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="stats-card">
+                                        <h6>Exit Reasons Distribution</h6>
+                                        <canvas id="exitReasonsChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-danger">15.2%</div>
+                                        <div class="stats-label">Annual Turnover Rate</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-warning">$45,000</div>
+                                        <div class="stats-label">Avg Replacement Cost</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-info">4.2</div>
+                                        <div class="stats-label">Avg Rating (Exit Surveys)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initiate Exit Modal -->
+    <div class="modal fade" id="initiateExitModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-sign-out-alt me-2"></i>Initiate Exit Process</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="initiateExitForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Employee</label>
+                                <select class="form-select" required>
+                                    <option value="">Select Employee</option>
+                                    <option value="1">John Smith - IT</option>
+                                    <option value="2">Sarah Johnson - Marketing</option>
+                                    <option value="3">Mike Davis - Finance</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Exit Type</label>
+                                <select class="form-select" required>
+                                    <option value="">Select Type</option>
+                                    <option value="resignation">Resignation</option>
+                                    <option value="termination">Termination</option>
+                                    <option value="retirement">Retirement</option>
+                                    <option value="contract_end">Contract End</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Notice Date</label>
+                                <input type="date" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Working Day</label>
+                                <input type="date" class="form-control" required>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Reason for Leaving</label>
+                                <textarea class="form-control" rows="3" placeholder="Enter reason for leaving..."></textarea>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Immediate Supervisor</label>
+                                <select class="form-select" required>
+                                    <option value="">Select Supervisor</option>
+                                    <option value="1">David Wilson - IT Manager</option>
+                                    <option value="2">Lisa Brown - Marketing Director</option>
+                                    <option value="3">Tom Anderson - Finance Manager</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary-custom" onclick="initiateExit()">Initiate Exit Process</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Interview Modal -->
+    <div class="modal fade" id="scheduleInterviewModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-calendar-plus me-2"></i>Schedule Exit Interview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="scheduleInterviewForm">
+                        <div class="mb-3">
+                            <label class="form-label">Employee</label>
+                            <select class="form-select" required>
+                                <option value="">Select Employee</option>
+                                <option value="1">John Smith</option>
+                                <option value="2">Sarah Johnson</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Interview Date</label>
+                            <input type="datetime-local" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Interviewer</label>
+                            <select class="form-select" required>
+                                <option value="">Select Interviewer</option>
+                                <option value="1">HR Manager</option>
+                                <option value="2">Department Head</option>
+                                <option value="3">Senior HR Specialist</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Interview Type</label>
+                            <select class="form-select" required>
+                                <option value="in-person">In-Person</option>
+                                <option value="video-call">Video Call</option>
+                                <option value="phone">Phone</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" rows="2" placeholder="Additional notes or special instructions..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary-custom" onclick="scheduleInterview()">Schedule Interview</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sample data for active exits
+        const activeExits = [
+            {
+                id: 1,
+                employee: "John Smith",
+                department: "IT",
+                position: "Senior Developer",
+                exitType: "Resignation",
+                lastWorkingDay: "2025-10-15",
+                status: "In Progress",
+                progress: 65
+            },
+            {
+                id: 2,
+                employee: "Sarah Johnson",
+                department: "Marketing",
+                position: "Marketing Specialist",
+                exitType: "Contract End",
+                lastWorkingDay: "2025-10-20",
+                status: "Initiated",
+                progress: 25
+            },
+            {
+                id: 3,
+                employee: "Mike Davis",
+                department: "Finance",
+                position: "Financial Analyst",
+                exitType: "Termination",
+                lastWorkingDay: "2025-10-10",
+                status: "Completed",
+                progress: 100
+            }
+        ];
+
+        // Sample data for exit interviews
+        const exitInterviews = [
+            {
+                id: 1,
+                employee: "John Smith",
+                scheduledDate: "2025-10-12 14:00",
+                interviewer: "HR Manager",
+                status: "Scheduled",
+                feedbackScore: null
+            },
+            {
+                id: 2,
+                employee: "Alice Brown",
+                scheduledDate: "2025-10-08 10:00",
+                interviewer: "Department Head",
+                status: "Completed",
+                feedbackScore: 4.2
+            }
+        ];
+
+        // Sample offboarding checklist
+        const offboardingChecklist = [
+            { id: 1, task: "Return company laptop and equipment", department: "IT", status: "completed", assignee: "IT Support" },
+            { id: 2, task: "Revoke system access and accounts", department: "IT", status: "completed", assignee: "System Admin" },
+            { id: 3, task: "Collect company ID badge and keys", department: "Security", status: "pending", assignee: "Security Team" },
+            { id: 4, task: "Process final payroll and benefits", department: "HR", status: "in-progress", assignee: "Payroll Team" },
+            { id: 5, task: "Knowledge transfer session", department: "Department", status: "pending", assignee: "Team Lead" },
+            { id: 6, task: "Exit interview completion", department: "HR", status: "pending", assignee: "HR Manager" },
+            { id: 7, task: "Return confidential documents", department: "Legal", status: "completed", assignee: "Legal Team" },
+            { id: 8, task: "Update organizational chart", department: "HR", status: "pending", assignee: "HR Admin" }
+        ];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadActiveExits();
+            loadExitInterviews();
+            loadOffboardingChecklist();
+            initializeCharts();
+        });
+
+        function loadActiveExits() {
+            const tbody = document.querySelector('#activeExitsTable tbody');
+            tbody.innerHTML = '';
+
+            activeExits.forEach(exit => {
+                const statusClass = getStatusClass(exit.status);
+                const row = `
+                    <tr>
+                        <td>
+                            <div>
+                                <strong>${exit.employee}</strong>
+                                <br><small class="text-muted">${exit.position}</small>
+                            </div>
+                        </td>
+                        <td>${exit.department}</td>
+                        <td>${exit.exitType}</td>
+                        <td>${formatDate(exit.lastWorkingDay)}</td>
+                        <td><span class="badge-status ${statusClass}">${exit.status}</span></td>
+                        <td>
+                            <div class="progress progress-custom">
+                                <div class="progress-bar progress-bar-custom" style="width: ${exit.progress}%"></div>
+                            </div>
+                            <small class="text-muted">${exit.progress}% complete</small>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-outline-primary btn-sm-custom" onclick="viewExit(${exit.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm-custom" onclick="editExit(${exit.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadExitInterviews() {
+            const tbody = document.querySelector('#exitInterviewsTable tbody');
+            tbody.innerHTML = '';
+
+            exitInterviews.forEach(interview => {
+                const statusClass = getStatusClass(interview.status);
+                const scoreDisplay = interview.feedbackScore ? 
+                    `<span class="badge bg-success">${interview.feedbackScore}/5</span>` : 
+                    '<span class="text-muted">-</span>';
+                
+                const row = `
+                    <tr>
+                        <td><strong>${interview.employee}</strong></td>
+                        <td>${formatDateTime(interview.scheduledDate)}</td>
+                        <td>${interview.interviewer}</td>
+                        <td><span class="badge-status ${statusClass}">${interview.status}</span></td>
+                        <td>${scoreDisplay}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-outline-primary btn-sm-custom" onclick="viewInterview(${interview.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                ${interview.status === 'Scheduled' ? 
+                                    `<button class="btn btn-outline-success btn-sm-custom" onclick="conductInterview(${interview.id})">
+                                        <i class="fas fa-play"></i>
+                                    </button>` : ''
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadOffboardingChecklist() {
+            const container = document.getElementById('checklistContainer');
+            container.innerHTML = '';
+
+            offboardingChecklist.forEach(item => {
+                const statusIcon = getChecklistIcon(item.status);
+                const statusClass = getStatusClass(item.status);
+                
+                const itemHtml = `
+                    <div class="timeline-item checklist-item" data-status="${item.status}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    ${statusIcon} ${item.task}
+                                </h6>
+                                <p class="mb-1 text-muted">
+                                    <i class="fas fa-building me-1"></i>${item.department} • 
+                                    <i class="fas fa-user me-1"></i>${item.assignee}
+                                </p>
+                                <span class="badge-status ${statusClass}">${item.status.replace('-', ' ').toUpperCase()}</span>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-outline-primary btn-sm-custom" onclick="updateChecklistItem(${item.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                ${item.status === 'pending' ? 
+                                    `<button class="btn btn-outline-success btn-sm-custom" onclick="markCompleted(${item.id})">
+                                        <i class="fas fa-check"></i>
+                                    </button>` : ''
+                                }
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += itemHtml;
+            });
+        }
+
+        function initializeCharts() {
+            // Turnover Rate Chart
+            const turnoverCtx = document.getElementById('turnoverChart').getContext('2d');
+            new Chart(turnoverCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['IT', 'Marketing', 'Finance', 'HR', 'Operations'],
+                    datasets: [{
+                        label: 'Turnover Rate (%)',
+                        data: [12, 18, 8, 15, 22],
+                        backgroundColor: [
+                            'rgba(231, 76, 60, 0.8)',
+                            'rgba(243, 156, 18, 0.8)',
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(155, 89, 182, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 25
+                        }
+                    }
+                }
+            });
+
+            // Exit Reasons Chart
+            const reasonsCtx = document.getElementById('exitReasonsChart').getContext('2d');
+            new Chart(reasonsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Career Growth', 'Better Offer', 'Work-Life Balance', 'Management Issues', 'Other'],
+                    datasets: [{
+                        data: [35, 25, 20, 12, 8],
+                        backgroundColor: [
+                            '#3498db',
+                            '#e74c3c',
+                            '#f39c12',
+                            '#9b59b6',
+                            '#95a5a6'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Utility functions
+        function getStatusClass(status) {
+            switch(status.toLowerCase()) {
+                case 'initiated': return 'status-initiated';
+                case 'in progress': case 'in-progress': return 'status-in-progress';
+                case 'completed': return 'status-completed';
+                case 'scheduled': return 'status-initiated';
+                case 'cancelled': return 'status-cancelled';
+                case 'pending': return 'status-initiated';
+                default: return 'status-initiated';
+            }
+        }
+
+        function getChecklistIcon(status) {
+            switch(status.toLowerCase()) {
+                case 'completed': return '<i class="fas fa-check-circle text-success"></i>';
+                case 'in-progress': return '<i class="fas fa-clock text-warning"></i>';
+                case 'pending': return '<i class="fas fa-circle text-secondary"></i>';
+                default: return '<i class="fas fa-circle text-secondary"></i>';
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        function formatDateTime(dateTimeString) {
+            const date = new Date(dateTimeString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Action functions
+        function initiateExit() {
+            alert('Exit process initiated successfully!');
+            $('#initiateExitModal').modal('hide');
+            // In real implementation, this would send data to the server
+        }
+
+        function scheduleInterview() {
+            alert('Exit interview scheduled successfully!');
+            $('#scheduleInterviewModal').modal('hide');
+            // In real implementation, this would send data to the server
+        }
+
+        function filterChecklist(filter) {
+            const items = document.querySelectorAll('.checklist-item');
+            items.forEach(item => {
+                if (filter === 'all' || item.dataset.status === filter) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function viewExit(id) {
+            alert('Viewing exit details for ID: ' + id);
+        }
+
+        function editExit(id) {
+            alert('Editing exit for ID: ' + id);
+        }
+
+        function viewInterview(id) {
+            alert('Viewing interview details for ID: ' + id);
+        }
+
+        function conductInterview(id) {
+            alert('Starting interview for ID: ' + id);
+        }
+
+        function updateChecklistItem(id) {
+            alert('Updating checklist item ID: ' + id);
+        }
+
+        function markCompleted(id) {
+            alert('Marking item as completed: ' + id);
+            // Update the item status and reload the checklist
+            const item = offboardingChecklist.find(item => item.id === id);
+            if (item) {
+                item.status = 'completed';
+                loadOffboardingChecklist();
+            }
+        }
+    </script>
+</body>
+</html>

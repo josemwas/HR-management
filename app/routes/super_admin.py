@@ -144,6 +144,39 @@ def update_organization(org_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+@bp.route('/organizations/<int:org_id>/features', methods=['POST'])
+@jwt_required()
+@require_super_admin()
+def toggle_organization_feature(org_id):
+    """Toggle a specific feature for an organization"""
+    organization = Organization.query.get_or_404(org_id)
+    data = request.get_json()
+    
+    if not data or 'feature' not in data or 'enabled' not in data:
+        return jsonify({'error': 'Feature name and enabled status are required'}), 400
+    
+    feature_name = data['feature']
+    enabled = data['enabled']
+    
+    # Get current feature settings or initialize with defaults
+    current_features = organization.feature_settings if hasattr(organization, 'feature_settings') and organization.feature_settings else {}
+    
+    # Update the specific feature
+    current_features[feature_name] = enabled
+    
+    # Store updated settings
+    organization.feature_settings = current_features
+    organization.updated_at = datetime.utcnow()
+    
+    db.session.commit()
+    
+    return jsonify({
+        'message': f'Feature {feature_name} {"enabled" if enabled else "disabled"} successfully',
+        'organization': organization.to_dict(),
+        'feature': feature_name,
+        'enabled': enabled
+    }), 200
+
 @bp.route('/organizations/<int:org_id>/features', methods=['PUT'])
 @jwt_required()
 @require_super_admin()
@@ -313,6 +346,143 @@ def get_organization_usage(org_id):
     return jsonify({
         'organization': organization.to_dict(),
         'usage_stats': usage_stats
+    }), 200
+
+@bp.route('/stats', methods=['GET'])
+@jwt_required()
+@require_super_admin()
+def get_super_admin_stats():
+    """Get super admin dashboard statistics"""
+    total_organizations = Organization.query.count()
+    active_organizations = Organization.query.filter_by(is_active=True).count()
+    trial_organizations = Organization.query.filter_by(subscription_status='trial').count()
+    paid_organizations = Organization.query.filter_by(subscription_status='active').count()
+    
+    total_employees = Employee.query.count()
+    
+    # Calculate monthly revenue (mock data for now)
+    monthly_revenue = 50000  # This should come from actual billing data
+    
+    return jsonify({
+        'total_organizations': total_organizations,
+        'active_organizations': active_organizations,
+        'total_employees': total_employees,
+        'monthly_revenue': monthly_revenue
+    }), 200
+
+@bp.route('/system-info', methods=['GET'])
+@jwt_required()
+@require_super_admin()
+def get_system_info():
+    """Get system information for super admin"""
+    import psutil
+    import os
+    from datetime import datetime
+    
+    # Calculate database size (approximation)
+    db_size = "15.2 MB"  # This should be calculated from actual database
+    
+    # Get system metrics
+    memory = psutil.virtual_memory()
+    memory_usage = f"{memory.percent}% ({memory.used // (1024**3)}GB/{memory.total // (1024**3)}GB)"
+    
+    # Mock data for other metrics
+    api_calls_today = 2847
+    active_sessions = 142
+    
+    return jsonify({
+        'db_size': db_size,
+        'organization_count': Organization.query.count(),
+        'employee_count': Employee.query.count(),
+        'last_backup': 'October 1, 2025 23:00',
+        'uptime': '5 days, 12 hours',
+        'memory_usage': memory_usage,
+        'api_calls_today': api_calls_today,
+        'active_sessions': active_sessions
+    }), 200
+
+@bp.route('/organizations/<int:org_id>/features/enable-all', methods=['POST'])
+@jwt_required()
+@require_super_admin()
+def enable_all_features(org_id):
+    """Enable all features for an organization"""
+    organization = Organization.query.get_or_404(org_id)
+    
+    # All features enabled
+    all_features = {
+        'employee_management': True,
+        'department_management': True,
+        'attendance_tracking': True,
+        'leave_management': True,
+        'payroll_management': True,
+        'performance_reviews': True,
+        'recruitment_tools': True,
+        'analytics_reporting': True,
+        'api_access': True,
+        'mobile_app_access': True,
+        'integrations': True,
+        'custom_fields': True,
+        'audit_logs': True,
+        'advanced_security': True,
+        'backup_restore': True,
+        'bulk_operations': True,
+        'document_management': True,
+        'notification_system': True,
+        'calendar_integration': True,
+        'time_tracking': True
+    }
+    
+    organization.feature_settings = all_features
+    organization.updated_at = datetime.utcnow()
+    
+    db.session.commit()
+    
+    return jsonify({
+        'message': 'All features enabled successfully',
+        'organization': organization.to_dict(),
+        'features': all_features
+    }), 200
+
+@bp.route('/organizations/<int:org_id>/features/disable-all', methods=['POST'])
+@jwt_required()
+@require_super_admin()
+def disable_all_features(org_id):
+    """Disable all features for an organization"""
+    organization = Organization.query.get_or_404(org_id)
+    
+    # All features disabled (keep basic employee management)
+    minimal_features = {
+        'employee_management': True,  # Keep this as it's core functionality
+        'department_management': False,
+        'attendance_tracking': False,
+        'leave_management': False,
+        'payroll_management': False,
+        'performance_reviews': False,
+        'recruitment_tools': False,
+        'analytics_reporting': False,
+        'api_access': False,
+        'mobile_app_access': False,
+        'integrations': False,
+        'custom_fields': False,
+        'audit_logs': False,
+        'advanced_security': False,
+        'backup_restore': False,
+        'bulk_operations': False,
+        'document_management': False,
+        'notification_system': False,
+        'calendar_integration': False,
+        'time_tracking': False
+    }
+    
+    organization.feature_settings = minimal_features
+    organization.updated_at = datetime.utcnow()
+    
+    db.session.commit()
+    
+    return jsonify({
+        'message': 'All features disabled successfully (except basic employee management)',
+        'organization': organization.to_dict(),
+        'features': minimal_features
     }), 200
 
 @bp.route('/platform-stats', methods=['GET'])

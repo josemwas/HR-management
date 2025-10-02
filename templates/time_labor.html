@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Time & Labor Management - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-text);
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .main-content {
+            margin-top: 2rem;
+            padding: 0 1rem;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            overflow: hidden;
+        }
+
+        .content-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        .nav-tabs {
+            border: none;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            background: transparent;
+            color: var(--dark-text);
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            margin: 0 0.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--secondary-color);
+            color: white;
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .tab-content {
+            padding: 2rem;
+        }
+
+        .table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .table thead th {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            border-color: #f1f3f4;
+            vertical-align: middle;
+        }
+
+        .badge-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-present { background: #e8f5e8; color: #388e3c; }
+        .status-absent { background: #ffebee; color: #d32f2f; }
+        .status-late { background: #fff3e0; color: #f57c00; }
+        .status-early-leave { background: #e3f2fd; color: #1976d2; }
+        .status-overtime { background: #f3e5f5; color: #7b1fa2; }
+
+        .btn-custom {
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .time-clock-widget {
+            background: linear-gradient(135deg, var(--success-color), #2ecc71);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .current-time {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .clock-in-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            font-size: 1.2rem;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .clock-in-btn:hover {
+            background: white;
+            color: var(--success-color);
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .schedule-day {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .schedule-day:hover {
+            transform: translateY(-2px);
+        }
+
+        .schedule-day.today {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .day-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .day-date {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .shift-time {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .progress-ring {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
+
+        .progress-ring svg {
+            width: 120px;
+            height: 120px;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring circle {
+            fill: transparent;
+            stroke-width: 8;
+        }
+
+        .progress-ring .background {
+            stroke: #e0e0e0;
+        }
+
+        .progress-ring .progress {
+            stroke: var(--success-color);
+            stroke-dasharray: 314;
+            stroke-dashoffset: 314;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .overtime-alert {
+            background: linear-gradient(135deg, var(--warning-color), #e67e22);
+            color: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 0.5rem;
+            }
+            
+            .tab-content {
+                padding: 1rem;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .current-time {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-users-cog me-2"></i>HR Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/time-labor">
+                            <i class="fas fa-clock me-1"></i>Time & Labor
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/login">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid main-content">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="content-card">
+                    <div class="content-header">
+                        <h1 class="mb-0">
+                            <i class="fas fa-clock me-3"></i>Enhanced Time & Labor Management
+                        </h1>
+                        <p class="mb-0 mt-2 opacity-75">Advanced time tracking, scheduling, and labor analytics</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-success" id="totalHours">1,420</div>
+                    <div class="stats-label">Total Hours This Week</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-warning" id="overtimeHours">24</div>
+                    <div class="stats-label">Overtime Hours</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-info" id="employeesPresent">142</div>
+                    <div class="stats-label">Present Today</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number text-danger" id="lateArrivals">8</div>
+                    <div class="stats-label">Late Arrivals</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time Clock Widget -->
+        <div class="row mb-4">
+            <div class="col-lg-4">
+                <div class="time-clock-widget">
+                    <div class="current-time" id="currentTime">09:45:23 AM</div>
+                    <div class="mb-3">
+                        <small>Today, October 2, 2025</small>
+                    </div>
+                    <button class="btn clock-in-btn" id="clockButton" onclick="toggleClock()">
+                        <i class="fas fa-play me-2"></i>Clock In
+                    </button>
+                    <div class="mt-3">
+                        <small>Last action: Clock Out at 6:15 PM yesterday</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="stats-card text-center">
+                    <h6>Today's Progress</h6>
+                    <div class="progress-ring">
+                        <svg>
+                            <circle class="background" cx="60" cy="60" r="50"></circle>
+                            <circle class="progress" cx="60" cy="60" r="50" style="stroke-dashoffset: 157;"></circle>
+                        </svg>
+                        <div class="progress-text">6.5h<br><small>of 8h</small></div>
+                    </div>
+                    <p class="mt-3 mb-0 text-muted">1.5 hours remaining</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="overtime-alert">
+                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Overtime Alert</h6>
+                    <p class="mb-2">3 employees approaching overtime threshold</p>
+                    <button class="btn btn-light btn-sm">View Details</button>
+                </div>
+                <div class="stats-card">
+                    <h6>Quick Actions</h6>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm">View My Timesheet</button>
+                        <button class="btn btn-outline-secondary btn-sm">Request Time Off</button>
+                        <button class="btn btn-outline-info btn-sm">View Schedule</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Tabs -->
+        <div class="row">
+            <div class="col-12">
+                <div class="content-card">
+                    <ul class="nav nav-tabs" id="timeTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance" type="button" role="tab">
+                                <i class="fas fa-user-check me-2"></i>Daily Attendance
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="schedules-tab" data-bs-toggle="tab" data-bs-target="#schedules" type="button" role="tab">
+                                <i class="fas fa-calendar-week me-2"></i>Work Schedules
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="timesheets-tab" data-bs-toggle="tab" data-bs-target="#timesheets" type="button" role="tab">
+                                <i class="fas fa-file-invoice-dollar me-2"></i>Timesheets
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="overtime-tab" data-bs-toggle="tab" data-bs-target="#overtime" type="button" role="tab">
+                                <i class="fas fa-clock me-2"></i>Overtime Management
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">
+                                <i class="fas fa-chart-line me-2"></i>Labor Analytics
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="timeTabContent">
+                        <!-- Daily Attendance Tab -->
+                        <div class="tab-pane fade show active" id="attendance" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-user-check text-primary me-2"></i>Daily Attendance Overview</h4>
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="filterAttendance('present')">Present</button>
+                                    <button class="btn btn-outline-warning btn-sm" onclick="filterAttendance('late')">Late</button>
+                                    <button class="btn btn-outline-danger btn-sm" onclick="filterAttendance('absent')">Absent</button>
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="filterAttendance('all')">All</button>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table" id="attendanceTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Department</th>
+                                            <th>Scheduled In</th>
+                                            <th>Actual In</th>
+                                            <th>Scheduled Out</th>
+                                            <th>Actual Out</th>
+                                            <th>Hours Worked</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Work Schedules Tab -->
+                        <div class="tab-pane fade" id="schedules" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-calendar-week text-info me-2"></i>Work Schedules</h4>
+                                <button class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                                    <i class="fas fa-plus me-2"></i>Create Schedule
+                                </button>
+                            </div>
+
+                            <!-- Weekly Schedule Grid -->
+                            <div class="schedule-grid">
+                                <div class="schedule-day today">
+                                    <div class="day-name">Mon</div>
+                                    <div class="day-date">Oct 2</div>
+                                    <div class="shift-time">9:00 AM - 6:00 PM</div>
+                                </div>
+                                <div class="schedule-day">
+                                    <div class="day-name">Tue</div>
+                                    <div class="day-date">Oct 3</div>
+                                    <div class="shift-time">9:00 AM - 6:00 PM</div>
+                                </div>
+                                <div class="schedule-day">
+                                    <div class="day-name">Wed</div>
+                                    <div class="day-date">Oct 4</div>
+                                    <div class="shift-time">9:00 AM - 6:00 PM</div>
+                                </div>
+                                <div class="schedule-day">
+                                    <div class="day-name">Thu</div>
+                                    <div class="day-date">Oct 5</div>
+                                    <div class="shift-time">9:00 AM - 6:00 PM</div>
+                                </div>
+                                <div class="schedule-day">
+                                    <div class="day-name">Fri</div>
+                                    <div class="day-date">Oct 6</div>
+                                    <div class="shift-time">9:00 AM - 6:00 PM</div>
+                                </div>
+                                <div class="schedule-day">
+                                    <div class="day-name">Sat</div>
+                                    <div class="day-date">Oct 7</div>
+                                    <div class="shift-time">OFF</div>
+                                </div>
+                                <div class="schedule-day">
+                                    <div class="day-name">Sun</div>
+                                    <div class="day-date">Oct 8</div>
+                                    <div class="shift-time">OFF</div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Shift Pattern</th>
+                                            <th>Start Time</th>
+                                            <th>End Time</th>
+                                            <th>Break Duration</th>
+                                            <th>Weekly Hours</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="schedulesTableBody">
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Timesheets Tab -->
+                        <div class="tab-pane fade" id="timesheets" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-file-invoice-dollar text-success me-2"></i>Timesheets Management</h4>
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-primary btn-sm">Current Week</button>
+                                    <button class="btn btn-outline-secondary btn-sm">Previous Week</button>
+                                    <button class="btn btn-primary-custom btn-sm">Generate Report</button>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <select class="form-select">
+                                        <option>All Employees</option>
+                                        <option>John Smith</option>
+                                        <option>Sarah Johnson</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select">
+                                        <option>All Departments</option>
+                                        <option>IT</option>
+                                        <option>Marketing</option>
+                                        <option>Finance</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="week" class="form-control" value="2025-W40">
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-outline-primary w-100">Filter</button>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table" id="timesheetsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Week Ending</th>
+                                            <th>Regular Hours</th>
+                                            <th>Overtime Hours</th>
+                                            <th>Total Hours</th>
+                                            <th>Status</th>
+                                            <th>Submitted</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Overtime Management Tab -->
+                        <div class="tab-pane fade" id="overtime" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4><i class="fas fa-clock text-warning me-2"></i>Overtime Management</h4>
+                                <button class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#overtimeModal">
+                                    <i class="fas fa-plus me-2"></i>Pre-approve Overtime
+                                </button>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-lg-6">
+                                    <div class="stats-card">
+                                        <h6>Overtime Summary - This Week</h6>
+                                        <canvas id="overtimeChart" height="200"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="stats-card">
+                                        <h6>Department Overtime Breakdown</h6>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="text-center">
+                                                    <div class="h4 text-primary">32h</div>
+                                                    <small class="text-muted">IT Department</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="text-center">
+                                                    <div class="h4 text-warning">18h</div>
+                                                    <small class="text-muted">Operations</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="text-center">
+                                                    <div class="h4 text-success">12h</div>
+                                                    <small class="text-muted">Marketing</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="text-center">
+                                                    <div class="h4 text-info">8h</div>
+                                                    <small class="text-muted">Finance</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table" id="overtimeTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Date</th>
+                                            <th>Regular Hours</th>
+                                            <th>Overtime Hours</th>
+                                            <th>Reason</th>
+                                            <th>Approved By</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Labor Analytics Tab -->
+                        <div class="tab-pane fade" id="analytics" role="tabpanel">
+                            <h4><i class="fas fa-chart-line text-success me-2"></i>Labor Analytics & Insights</h4>
+                            
+                            <div class="row mb-4">
+                                <div class="col-lg-6">
+                                    <div class="stats-card">
+                                        <h6>Productivity Trends</h6>
+                                        <canvas id="productivityChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="stats-card">
+                                        <h6>Attendance Patterns</h6>
+                                        <canvas id="attendanceChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-primary">94.5%</div>
+                                        <div class="stats-label">Average Attendance</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-warning">12.3%</div>
+                                        <div class="stats-label">Overtime Rate</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-success">$125,000</div>
+                                        <div class="stats-label">Labor Cost Savings</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="stats-card text-center">
+                                        <div class="stats-number text-info">2.1</div>
+                                        <div class="stats-label">Avg Hours Variance</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sample data
+        const attendanceData = [
+            {
+                employee: "John Smith",
+                department: "IT",
+                scheduledIn: "09:00",
+                actualIn: "08:58",
+                scheduledOut: "18:00",
+                actualOut: "18:15",
+                hoursWorked: "9.25",
+                status: "present"
+            },
+            {
+                employee: "Sarah Johnson",
+                department: "Marketing",
+                scheduledIn: "09:00",
+                actualIn: "09:15",
+                scheduledOut: "18:00",
+                actualOut: "",
+                hoursWorked: "7.25",
+                status: "late"
+            },
+            {
+                employee: "Mike Davis",
+                department: "Finance",
+                scheduledIn: "08:30",
+                actualIn: "",
+                scheduledOut: "17:30",
+                actualOut: "",
+                hoursWorked: "0",
+                status: "absent"
+            }
+        ];
+
+        let clockedIn = false;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+            loadAttendanceData();
+            loadTimesheetsData();
+            loadOvertimeData();
+            initializeCharts();
+        });
+
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour12: true, 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        function toggleClock() {
+            const button = document.getElementById('clockButton');
+            clockedIn = !clockedIn;
+            
+            if (clockedIn) {
+                button.innerHTML = '<i class="fas fa-stop me-2"></i>Clock Out';
+                button.style.background = 'rgba(231, 76, 60, 0.8)';
+            } else {
+                button.innerHTML = '<i class="fas fa-play me-2"></i>Clock In';
+                button.style.background = 'rgba(255, 255, 255, 0.2)';
+            }
+        }
+
+        function loadAttendanceData() {
+            const tbody = document.querySelector('#attendanceTable tbody');
+            tbody.innerHTML = '';
+
+            attendanceData.forEach(record => {
+                const statusClass = getStatusClass(record.status);
+                const row = `
+                    <tr data-status="${record.status}">
+                        <td><strong>${record.employee}</strong></td>
+                        <td>${record.department}</td>
+                        <td>${record.scheduledIn}</td>
+                        <td>${record.actualIn || '<span class="text-muted">-</span>'}</td>
+                        <td>${record.scheduledOut}</td>
+                        <td>${record.actualOut || '<span class="text-muted">-</span>'}</td>
+                        <td>${record.hoursWorked}h</td>
+                        <td><span class="badge-status ${statusClass}">${record.status.toUpperCase()}</span></td>
+                        <td>
+                            <button class="btn btn-outline-primary btn-sm" onclick="viewDetails('${record.employee}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadTimesheetsData() {
+            const tbody = document.querySelector('#timesheetsTable tbody');
+            tbody.innerHTML = '';
+
+            const timesheetData = [
+                {
+                    employee: "John Smith",
+                    weekEnding: "Oct 6, 2025",
+                    regularHours: "40.0",
+                    overtimeHours: "4.5",
+                    totalHours: "44.5",
+                    status: "submitted",
+                    submitted: "Oct 5, 2025"
+                },
+                {
+                    employee: "Sarah Johnson",
+                    weekEnding: "Oct 6, 2025",
+                    regularHours: "38.5",
+                    overtimeHours: "0.0",
+                    totalHours: "38.5",
+                    status: "approved",
+                    submitted: "Oct 4, 2025"
+                }
+            ];
+
+            timesheetData.forEach(record => {
+                const statusClass = getStatusClass(record.status);
+                const row = `
+                    <tr>
+                        <td><strong>${record.employee}</strong></td>
+                        <td>${record.weekEnding}</td>
+                        <td>${record.regularHours}h</td>
+                        <td>${record.overtimeHours}h</td>
+                        <td>${record.totalHours}h</td>
+                        <td><span class="badge-status ${statusClass}">${record.status.toUpperCase()}</span></td>
+                        <td>${record.submitted}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="viewTimesheet('${record.employee}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="editTimesheet('${record.employee}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadOvertimeData() {
+            const tbody = document.querySelector('#overtimeTable tbody');
+            tbody.innerHTML = '';
+
+            const overtimeData = [
+                {
+                    employee: "John Smith",
+                    date: "Oct 1, 2025",
+                    regularHours: "8.0",
+                    overtimeHours: "2.5",
+                    reason: "Project deadline",
+                    approvedBy: "Manager",
+                    status: "approved"
+                },
+                {
+                    employee: "Mike Davis",
+                    date: "Oct 2, 2025",
+                    regularHours: "8.0",
+                    overtimeHours: "1.5",
+                    reason: "System maintenance",
+                    approvedBy: "IT Director",
+                    status: "pending"
+                }
+            ];
+
+            overtimeData.forEach(record => {
+                const statusClass = getStatusClass(record.status);
+                const row = `
+                    <tr>
+                        <td><strong>${record.employee}</strong></td>
+                        <td>${record.date}</td>
+                        <td>${record.regularHours}h</td>
+                        <td>${record.overtimeHours}h</td>
+                        <td>${record.reason}</td>
+                        <td>${record.approvedBy}</td>
+                        <td><span class="badge-status ${statusClass}">${record.status.toUpperCase()}</span></td>
+                        <td>
+                            <button class="btn btn-outline-success btn-sm" onclick="approveOvertime('${record.employee}')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function initializeCharts() {
+            // Overtime Chart
+            const overtimeCtx = document.getElementById('overtimeChart').getContext('2d');
+            new Chart(overtimeCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Overtime Hours',
+                        data: [8, 12, 5, 15, 10, 3, 1],
+                        backgroundColor: 'rgba(243, 156, 18, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Productivity Chart
+            const productivityCtx = document.getElementById('productivityChart').getContext('2d');
+            new Chart(productivityCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Productivity Score',
+                        data: [85, 88, 92, 89],
+                        borderColor: '#27ae60',
+                        backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Attendance Chart
+            const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+            new Chart(attendanceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Present', 'Late', 'Absent', 'Early Leave'],
+                    datasets: [{
+                        data: [85, 8, 4, 3],
+                        backgroundColor: ['#27ae60', '#f39c12', '#e74c3c', '#3498db']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Utility functions
+        function getStatusClass(status) {
+            switch(status.toLowerCase()) {
+                case 'present': case 'approved': case 'submitted': return 'status-present';
+                case 'absent': return 'status-absent';
+                case 'late': case 'pending': return 'status-late';
+                case 'early-leave': return 'status-early-leave';
+                case 'overtime': return 'status-overtime';
+                default: return 'status-present';
+            }
+        }
+
+        function filterAttendance(status) {
+            const rows = document.querySelectorAll('#attendanceTable tbody tr');
+            rows.forEach(row => {
+                if (status === 'all' || row.dataset.status === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Action functions
+        function viewDetails(employee) {
+            alert('Viewing details for: ' + employee);
+        }
+
+        function viewTimesheet(employee) {
+            alert('Viewing timesheet for: ' + employee);
+        }
+
+        function editTimesheet(employee) {
+            alert('Editing timesheet for: ' + employee);
+        }
+
+        function approveOvertime(employee) {
+            alert('Approving overtime for: ' + employee);
+        }
+    </script>
+</body>
+</html>
