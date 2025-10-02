@@ -87,7 +87,10 @@ def create_app(config_name='default'):
         compliance,
         
         # SaaS Administration
-        saas_admin, super_admin
+        saas_admin, super_admin,
+        
+        # AI Assistant
+        ai_assistant
     )
     
     # Register all blueprints systematically
@@ -133,6 +136,9 @@ def create_app(config_name='default'):
         
         # Compliance
         (compliance.compliance, 'Compliance Management'),
+        
+        # AI & Intelligence
+        (ai_assistant.ai_assistant_bp, 'AI Assistant'),
         
         # SaaS Platform
         (saas_admin.bp, 'SaaS Administration'),
@@ -271,6 +277,10 @@ def create_app(config_name='default'):
     def compliance_page():
         return render_template('compliance.html')
     
+    @app.route('/ai-assistant')
+    def ai_assistant_page():
+        return render_template('ai_assistant.html')
+    
     # ================================================================
     # ADMINISTRATIVE ROUTES
     # ================================================================
@@ -366,7 +376,11 @@ def create_app(config_name='default'):
                 'Self-service portal',
                 'Document management',
                 'Compliance tracking',
-                'Real-time analytics'
+                'Real-time analytics',
+                'AI-powered insights and recommendations',
+                'Intelligent chatbot assistance',
+                'Predictive attrition analysis',
+                'Automated succession planning'
             ],
             'module_count': len(blueprint_registry),
             'endpoints': {
@@ -389,6 +403,7 @@ def create_app(config_name='default'):
                 'analytics': '/api/analytics',
                 'self_service': '/api/self-service',
                 'compliance': '/api/compliance',
+                'ai_assistant': '/api/ai',
                 'saas_admin': '/api/saas-admin',
                 'super_admin': '/api/super-admin'
             },
