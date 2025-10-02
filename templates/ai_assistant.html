@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .ai-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 1200px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .ai-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .ai-header h1 {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .ai-feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .ai-feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-ai {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 10px 30px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-ai:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .demo-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .insight-card {
+            background: white;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .severity-high {
+            border-left-color: #dc3545;
+        }
+
+        .severity-medium {
+            border-left-color: #ffc107;
+        }
+
+        .severity-low {
+            border-left-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="ai-container">
+        <div class="ai-header">
+            <h1><i class="fas fa-robot"></i> AI HR Assistant</h1>
+            <p class="lead">Intelligent insights and recommendations powered by AI</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <div class="ai-feature-card">
+                    <h3><i class="fas fa-comment-dots"></i> Interactive AI Chatbot</h3>
+                    <p>Ask questions about HR policies, leave requests, payroll, training, and more. Get instant, intelligent responses.</p>
+                    <button class="btn-ai" onclick="showAIChatBot()">
+                        <i class="fas fa-comments"></i> Start Chat
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="ai-feature-card text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4>Performance Analysis</h4>
+                    <p>AI-powered employee performance insights with personalized recommendations for growth.</p>
+                    <button class="btn btn-outline-primary" onclick="showPerformanceAnalysis()">
+                        View Analysis
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="ai-feature-card text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h4>Training Recommendations</h4>
+                    <p>Smart training program suggestions based on skills gaps and career goals.</p>
+                    <button class="btn btn-outline-primary" onclick="showTrainingRecommendations()">
+                        Get Recommendations
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="ai-feature-card text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <h4>Attrition Risk Prediction</h4>
+                    <p>Identify employees at risk of leaving with predictive analytics and retention strategies.</p>
+                    <button class="btn btn-outline-primary" onclick="showAttritionRisk()">
+                        Check Risk
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="ai-feature-card text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-sitemap"></i>
+                    </div>
+                    <h4>Succession Planning</h4>
+                    <p>AI-driven candidate recommendations for key positions and succession strategies.</p>
+                    <button class="btn btn-outline-primary" onclick="showSuccessionPlanning()">
+                        View Recommendations
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="ai-feature-card text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h4>Recruitment Forecast</h4>
+                    <p>Predict future hiring needs based on workforce trends and business growth.</p>
+                    <button class="btn btn-outline-primary" onclick="showRecruitmentForecast()">
+                        View Forecast
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="ai-feature-card text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h4>Natural Language Queries</h4>
+                    <p>Ask complex questions in plain English and get instant data-driven answers.</p>
+                    <button class="btn btn-outline-primary" onclick="showNLQuery()">
+                        Ask Question
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3><i class="fas fa-magic"></i> AI Insights Dashboard</h3>
+            <p>Here are some AI-generated insights based on your HR data:</p>
+            
+            <div id="aiInsights">
+                <div class="insight-card severity-high">
+                    <h5><i class="fas fa-exclamation-triangle text-danger"></i> High Attrition Risk Detected</h5>
+                    <p>5 employees showing high attrition risk indicators</p>
+                    <small class="text-muted">Action: Review retention strategies</small>
+                </div>
+
+                <div class="insight-card severity-medium">
+                    <h5><i class="fas fa-info-circle text-warning"></i> Training Gaps Identified</h5>
+                    <p>AI/ML skills gap affecting 15 employees in Engineering</p>
+                    <small class="text-muted">Action: Launch upskilling program</small>
+                </div>
+
+                <div class="insight-card severity-medium">
+                    <h5><i class="fas fa-users text-info"></i> Succession Planning Alert</h5>
+                    <p>3 key positions lack ready successors</p>
+                    <small class="text-muted">Action: Develop succession pipeline</small>
+                </div>
+            </div>
+
+            <button class="btn-ai mt-3" onclick="loadLiveInsights()">
+                <i class="fas fa-sync-alt"></i> Load Live Insights
+            </button>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/dashboard" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load AI Assistant JS
+        const baseURL = 'http://127.0.0.1:5000';
+        const accessToken = localStorage.getItem('accessToken');
+
+        function getHeaders() {
+            return {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        async function showPerformanceAnalysis() {
+            const employeeId = prompt('Enter Employee ID:');
+            if (!employeeId) return;
+
+            try {
+                const response = await fetch(`${baseURL}/api/ai/performance-analysis/${employeeId}`, {
+                    headers: getHeaders()
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showResultModal('Performance Analysis', JSON.stringify(data.analysis, null, 2));
+                } else {
+                    alert('Failed to load analysis. Please ensure you are logged in.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error loading performance analysis');
+            }
+        }
+
+        async function showTrainingRecommendations() {
+            const employeeId = prompt('Enter Employee ID:');
+            if (!employeeId) return;
+
+            try {
+                const response = await fetch(`${baseURL}/api/ai/training-recommendations/${employeeId}`, {
+                    headers: getHeaders()
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showResultModal('Training Recommendations', JSON.stringify(data.recommendations, null, 2));
+                } else {
+                    alert('Failed to load recommendations. Please ensure you are logged in.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error loading training recommendations');
+            }
+        }
+
+        async function showAttritionRisk() {
+            const employeeId = prompt('Enter Employee ID:');
+            if (!employeeId) return;
+
+            try {
+                const response = await fetch(`${baseURL}/api/ai/attrition-risk/${employeeId}`, {
+                    headers: getHeaders()
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showResultModal('Attrition Risk Analysis', JSON.stringify(data.risk_analysis, null, 2));
+                } else {
+                    alert('Failed to load risk analysis. Please ensure you are logged in.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error loading attrition risk');
+            }
+        }
+
+        async function showSuccessionPlanning() {
+            try {
+                const response = await fetch(`${baseURL}/api/ai/succession-recommendations`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ position: { title: 'VP Engineering' } })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showResultModal('Succession Planning', JSON.stringify(data.recommendations, null, 2));
+                } else {
+                    alert('Failed to load succession recommendations. Please ensure you are logged in.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error loading succession planning');
+            }
+        }
+
+        async function showRecruitmentForecast() {
+            try {
+                const response = await fetch(`${baseURL}/api/ai/recruitment-forecast`, {
+                    headers: getHeaders()
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showResultModal('Recruitment Forecast', JSON.stringify(data.forecast, null, 2));
+                } else {
+                    alert('Failed to load forecast. Please ensure you are logged in.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error loading recruitment forecast');
+            }
+        }
+
+        async function showNLQuery() {
+            const query = prompt('Ask your question:');
+            if (!query) return;
+
+            try {
+                const response = await fetch(`${baseURL}/api/ai/ask`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ query: query })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showResultModal('Query Result', JSON.stringify(data.response, null, 2));
+                } else {
+                    alert('Failed to process query. Please ensure you are logged in.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error processing query');
+            }
+        }
+
+        async function loadLiveInsights() {
+            try {
+                const response = await fetch(`${baseURL}/api/ai/insights/dashboard`, {
+                    headers: getHeaders()
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const insights = data.insights.key_insights;
+                    
+                    let html = '';
+                    insights.forEach(insight => {
+                        const severityClass = insight.severity === 'high' ? 'severity-high' : 
+                                             insight.severity === 'medium' ? 'severity-medium' : 'severity-low';
+                        html += `
+                            <div class="insight-card ${severityClass}">
+                                <h5><i class="fas fa-lightbulb"></i> ${insight.title}</h5>
+                                <p>${insight.description}</p>
+                                <small class="text-muted">Action: ${insight.action}</small>
+                            </div>
+                        `;
+                    });
+                    
+                    document.getElementById('aiInsights').innerHTML = html;
+                    alert('Live insights loaded successfully!');
+                } else {
+                    alert('Failed to load insights. Please ensure you are logged in.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error loading insights');
+            }
+        }
+
+        function showResultModal(title, content) {
+            alert(`${title}\n\n${content}`);
+        }
+
+        // Load app.js for AI chatbot functionality
+        const script = document.createElement('script');
+        script.src = '/static/js/app.js';
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>
