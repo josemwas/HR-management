@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goals Management - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-users-cog"></i> HR Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/employees">Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/goals">Goals</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-12">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2><i class="fas fa-bullseye"></i> Goals Management</h2>
+                        <p class="text-muted">Set, track, and manage employee goals and objectives</p>
+                    </div>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createGoalModal">
+                        <i class="fas fa-plus"></i> Create Goal
+                    </button>
+                </div>
+
+                <!-- Goals Overview -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Total Goals</h6>
+                                        <h3>142</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-bullseye fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Completed</h6>
+                                        <h3>89</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-check-circle fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">In Progress</h6>
+                                        <h3>38</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-hourglass-half fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-danger text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Overdue</h6>
+                                        <h3>15</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter and Search -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <input type="text" class="form-control" id="searchGoals" placeholder="Search goals...">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="overdue">Overdue</option>
+                                    <option value="draft">Draft</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="departmentFilter">
+                                    <option value="">All Departments</option>
+                                    <option value="engineering">Engineering</option>
+                                    <option value="marketing">Marketing</option>
+                                    <option value="sales">Sales</option>
+                                    <option value="hr">HR</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="typeFilter">
+                                    <option value="">All Types</option>
+                                    <option value="individual">Individual</option>
+                                    <option value="team">Team</option>
+                                    <option value="company">Company</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="priorityFilter">
+                                    <option value="">All Priorities</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goals Management Tabs -->
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="goalsTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="all-goals-tab" data-bs-toggle="tab" data-bs-target="#all-goals" type="button" role="tab">
+                                    <i class="fas fa-list"></i> All Goals
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="my-goals-tab" data-bs-toggle="tab" data-bs-target="#my-goals" type="button" role="tab">
+                                    <i class="fas fa-user"></i> My Goals
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="team-goals-tab" data-bs-toggle="tab" data-bs-target="#team-goals" type="button" role="tab">
+                                    <i class="fas fa-users"></i> Team Goals
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">
+                                    <i class="fas fa-chart-bar"></i> Analytics
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="goalsTabContent">
+                            <!-- All Goals Tab -->
+                            <div class="tab-pane fade show active" id="all-goals" role="tabpanel">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Goal</th>
+                                                <th>Assignee</th>
+                                                <th>Type</th>
+                                                <th>Priority</th>
+                                                <th>Progress</th>
+                                                <th>Due Date</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div>
+                                                        <div class="fw-bold">Increase Sales Revenue by 25%</div>
+                                                        <small class="text-muted">Q4 2024 sales target achievement</small>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="https://via.placeholder.com/32" class="rounded-circle me-2" alt="Avatar">
+                                                        <div>
+                                                            <div class="fw-bold">Sarah Johnson</div>
+                                                            <small class="text-muted">Sales Manager</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><span class="badge bg-info">Individual</span></td>
+                                                <td><span class="badge bg-danger">High</span></td>
+                                                <td>
+                                                    <div class="progress" style="height: 20px;">
+                                                        <div class="progress-bar bg-success" role="progressbar" style="width: 78%">78%</div>
+                                                    </div>
+                                                </td>
+                                                <td>Dec 31, 2024</td>
+                                                <td><span class="badge bg-warning">In Progress</span></td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm me-1" onclick="viewGoal(1)">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-secondary btn-sm" onclick="editGoal(1)">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div>
+                                                        <div class="fw-bold">Complete React Migration Project</div>
+                                                        <small class="text-muted">Migrate legacy frontend to React</small>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="https://via.placeholder.com/32" class="rounded-circle me-2" alt="Avatar">
+                                                        <div>
+                                                            <div class="fw-bold">Mike Chen</div>
+                                                            <small class="text-muted">Senior Developer</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><span class="badge bg-success">Team</span></td>
+                                                <td><span class="badge bg-warning">Medium</span></td>
+                                                <td>
+                                                    <div class="progress" style="height: 20px;">
+                                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 45%">45%</div>
+                                                    </div>
+                                                </td>
+                                                <td>Jan 15, 2025</td>
+                                                <td><span class="badge bg-warning">In Progress</span></td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm me-1" onclick="viewGoal(2)">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-secondary btn-sm" onclick="editGoal(2)">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div>
+                                                        <div class="fw-bold">Improve Employee Satisfaction Score</div>
+                                                        <small class="text-muted">Achieve 4.5/5 satisfaction rating</small>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="https://via.placeholder.com/32" class="rounded-circle me-2" alt="Avatar">
+                                                        <div>
+                                                            <div class="fw-bold">Lisa Wong</div>
+                                                            <small class="text-muted">HR Director</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><span class="badge bg-primary">Company</span></td>
+                                                <td><span class="badge bg-danger">High</span></td>
+                                                <td>
+                                                    <div class="progress" style="height: 20px;">
+                                                        <div class="progress-bar bg-success" role="progressbar" style="width: 92%">92%</div>
+                                                    </div>
+                                                </td>
+                                                <td>Dec 20, 2024</td>
+                                                <td><span class="badge bg-success">Completed</span></td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm me-1" onclick="viewGoal(3)">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-info btn-sm" onclick="markComplete(3)">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- My Goals Tab -->
+                            <div class="tab-pane fade" id="my-goals" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                                    <h6 class="card-title">Complete Professional Certification</h6>
+                                                    <span class="badge bg-warning">In Progress</span>
+                                                </div>
+                                                <p class="card-text text-muted">Obtain AWS Solutions Architect certification by Q1 2025</p>
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Progress</small>
+                                                        <strong>65%</strong>
+                                                    </div>
+                                                    <div class="progress mt-1">
+                                                        <div class="progress-bar bg-primary" style="width: 65%"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">Due: Mar 31, 2025</small>
+                                                    <div>
+                                                        <button class="btn btn-outline-primary btn-sm" onclick="updateProgress(1)">
+                                                            <i class="fas fa-edit"></i> Update
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                                    <h6 class="card-title">Mentor Junior Developers</h6>
+                                                    <span class="badge bg-success">On Track</span>
+                                                </div>
+                                                <p class="card-text text-muted">Provide mentorship to 2 junior developers throughout the year</p>
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Progress</small>
+                                                        <strong>80%</strong>
+                                                    </div>
+                                                    <div class="progress mt-1">
+                                                        <div class="progress-bar bg-success" style="width: 80%"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">Due: Dec 31, 2024</small>
+                                                    <div>
+                                                        <button class="btn btn-outline-primary btn-sm" onclick="updateProgress(2)">
+                                                            <i class="fas fa-edit"></i> Update
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Team Goals Tab -->
+                            <div class="tab-pane fade" id="team-goals" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h6><i class="fas fa-code"></i> Engineering Team</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Active Goals</small>
+                                                        <strong>8</strong>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Completed</small>
+                                                        <strong>12</strong>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Team Progress</small>
+                                                        <strong>72%</strong>
+                                                    </div>
+                                                </div>
+                                                <div class="progress mb-3">
+                                                    <div class="progress-bar bg-primary" style="width: 72%"></div>
+                                                </div>
+                                                <button class="btn btn-outline-primary btn-sm w-100" onclick="viewTeamGoals('engineering')">
+                                                    View Team Goals
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h6><i class="fas fa-chart-line"></i> Sales Team</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Active Goals</small>
+                                                        <strong>6</strong>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Completed</small>
+                                                        <strong>15</strong>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Team Progress</small>
+                                                        <strong>85%</strong>
+                                                    </div>
+                                                </div>
+                                                <div class="progress mb-3">
+                                                    <div class="progress-bar bg-success" style="width: 85%"></div>
+                                                </div>
+                                                <button class="btn btn-outline-primary btn-sm w-100" onclick="viewTeamGoals('sales')">
+                                                    View Team Goals
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h6><i class="fas fa-bullhorn"></i> Marketing Team</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Active Goals</small>
+                                                        <strong>5</strong>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Completed</small>
+                                                        <strong>9</strong>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Team Progress</small>
+                                                        <strong>68%</strong>
+                                                    </div>
+                                                </div>
+                                                <div class="progress mb-3">
+                                                    <div class="progress-bar bg-warning" style="width: 68%"></div>
+                                                </div>
+                                                <button class="btn btn-outline-primary btn-sm w-100" onclick="viewTeamGoals('marketing')">
+                                                    View Team Goals
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Analytics Tab -->
+                            <div class="tab-pane fade" id="analytics" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h6><i class="fas fa-chart-pie"></i> Goal Completion by Department</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <canvas id="departmentGoalsChart" height="200"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h6><i class="fas fa-chart-line"></i> Goal Progress Trends</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <canvas id="progressTrendsChart" height="200"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-md-3 text-center">
+                                        <h4 class="text-success">89</h4>
+                                        <p class="text-muted">Goals Completed</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h4 class="text-warning">38</h4>
+                                        <p class="text-muted">In Progress</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h4 class="text-danger">15</h4>
+                                        <p class="text-muted">Overdue</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h4 class="text-primary">74%</h4>
+                                        <p class="text-muted">Avg. Completion Rate</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Goal Modal -->
+    <div class="modal fade" id="createGoalModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus"></i> Create New Goal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createGoalForm">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="goalTitle" class="form-label">Goal Title</label>
+                                    <input type="text" class="form-control" id="goalTitle" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="goalType" class="form-label">Goal Type</label>
+                                    <select class="form-select" id="goalType" required>
+                                        <option value="">Select type</option>
+                                        <option value="individual">Individual</option>
+                                        <option value="team">Team</option>
+                                        <option value="company">Company</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="goalDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="goalDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="assignee" class="form-label">Assignee</label>
+                                    <select class="form-select" id="assignee" required>
+                                        <option value="">Select assignee</option>
+                                        <option value="1">John Smith</option>
+                                        <option value="2">Sarah Johnson</option>
+                                        <option value="3">Mike Chen</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="goalPriority" class="form-label">Priority</label>
+                                    <select class="form-select" id="goalPriority" required>
+                                        <option value="">Select priority</option>
+                                        <option value="high">High</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="low">Low</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="startDate" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="startDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="dueDate" class="form-label">Due Date</label>
+                                    <input type="date" class="form-control" id="dueDate" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="milestones" class="form-label">Key Milestones</label>
+                            <textarea class="form-control" id="milestones" rows="3" placeholder="Enter key milestones, one per line"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" form="createGoalForm">Create Goal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        // Goals management functionality
+        function viewGoal(id) {
+            alert(`View goal ${id} - Feature to be implemented`);
+        }
+
+        function editGoal(id) {
+            alert(`Edit goal ${id} - Feature to be implemented`);
+        }
+
+        function markComplete(id) {
+            if (confirm('Mark this goal as complete?')) {
+                alert(`Mark goal ${id} complete - Feature to be implemented`);
+            }
+        }
+
+        function updateProgress(id) {
+            alert(`Update progress for goal ${id} - Feature to be implemented`);
+        }
+
+        function viewTeamGoals(team) {
+            alert(`View ${team} team goals - Feature to be implemented`);
+        }
+
+        function clearFilters() {
+            document.getElementById('searchGoals').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('departmentFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('priorityFilter').value = '';
+        }
+
+        document.getElementById('createGoalForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Create goal functionality to be implemented');
+        });
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('access_token');
+                window.location.href = '/login';
+            }
+        }
+    </script>
+</body>
+</html>

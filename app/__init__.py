@@ -25,7 +25,10 @@ def create_app(config_name='default'):
     CORS(app)
     
     # Register blueprints
-    from app.routes import auth, employees, attendance, leaves, payroll, recruitment, performance, training, organizations, saas_admin, super_admin, rbac
+    from app.routes import (auth, employees, attendance, leaves, payroll, recruitment, performance, 
+                           training, organizations, saas_admin, super_admin, rbac, benefits, 
+                           onboarding, announcements, documents, timesheets, analytics, 
+                           self_service, compliance, compensation)
     
     app.register_blueprint(auth.bp)
     app.register_blueprint(employees.bp)
@@ -39,6 +42,15 @@ def create_app(config_name='default'):
     app.register_blueprint(saas_admin.bp)
     app.register_blueprint(super_admin.bp)
     app.register_blueprint(rbac.rbac_bp)
+    app.register_blueprint(benefits.bp)
+    app.register_blueprint(onboarding.bp)
+    app.register_blueprint(announcements.bp)
+    app.register_blueprint(documents.documents)
+    app.register_blueprint(timesheets.timesheets)
+    app.register_blueprint(analytics.analytics)
+    app.register_blueprint(self_service.self_service)
+    app.register_blueprint(compliance.compliance)
+    app.register_blueprint(compensation.compensation)
     
     # Register frontend routes
     from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
@@ -178,6 +190,19 @@ def create_app(config_name='default'):
     @app.route('/organizations')
     def organizations_page():
         return render_template('organizations.html')
+    
+    # Critical New Feature Routes
+    @app.route('/self-service')
+    def self_service_page():
+        return render_template('self_service.html')
+    
+    @app.route('/compliance')
+    def compliance_page():
+        return render_template('compliance.html')
+    
+    @app.route('/compensation')
+    def compensation_page():
+        return render_template('compensation.html')
     
     @app.route('/api')
     def api_info():

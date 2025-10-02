@@ -153,7 +153,15 @@
         }
         
         function loadDebugLoginPage() {
-            document.body.innerHTML = `
+            window.location.href = '/debug-login';
+        }
+        
+        function loadRbacGuidePage() {
+            window.location.href = '/rbac-guide';
+        }
+        
+        function loadDebugLoginContent() {
+            document.body.innerHTML = '
                 <!DOCTYPE html>
                 <html lang="en">
                 <head>

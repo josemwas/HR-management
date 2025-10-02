@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Surveys - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-users-cog"></i> HR Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/employees">Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/surveys">Surveys</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-12">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2><i class="fas fa-poll"></i> Employee Surveys</h2>
+                        <p class="text-muted">Create, manage, and analyze employee surveys and feedback</p>
+                    </div>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createSurveyModal">
+                        <i class="fas fa-plus"></i> Create Survey
+                    </button>
+                </div>
+
+                <!-- Survey Statistics -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Active Surveys</h6>
+                                        <h3>8</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-poll fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Response Rate</h6>
+                                        <h3>87%</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-percentage fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Avg. Satisfaction</h6>
+                                        <h3>4.2/5</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-smile fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Total Responses</h6>
+                                        <h3>1,247</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-chart-bar fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Survey Management Tabs -->
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="surveyTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="active-surveys-tab" data-bs-toggle="tab" data-bs-target="#active-surveys" type="button" role="tab">
+                                    <i class="fas fa-play"></i> Active Surveys
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="results-tab" data-bs-toggle="tab" data-bs-target="#results" type="button" role="tab">
+                                    <i class="fas fa-chart-line"></i> Results & Analytics
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="templates-tab" data-bs-toggle="tab" data-bs-target="#templates" type="button" role="tab">
+                                    <i class="fas fa-file-alt"></i> Templates
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="archived-tab" data-bs-toggle="tab" data-bs-target="#archived" type="button" role="tab">
+                                    <i class="fas fa-archive"></i> Archived
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="surveyTabContent">
+                            <!-- Active Surveys Tab -->
+                            <div class="tab-pane fade show active" id="active-surveys" role="tabpanel">
+                                <div class="row">
+                                    <!-- Employee Satisfaction Survey -->
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                                    <h6 class="card-title">Employee Satisfaction Survey</h6>
+                                                    <span class="badge bg-success">Active</span>
+                                                </div>
+                                                <p class="card-text text-muted">Annual employee satisfaction and engagement survey</p>
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Responses</small>
+                                                        <strong>156/180 (87%)</strong>
+                                                    </div>
+                                                    <div class="progress mt-1">
+                                                        <div class="progress-bar bg-success" style="width: 87%"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <small class="text-muted">Deadline: Dec 20, 2024</small>
+                                                </div>
+                                                <div>
+                                                    <button class="btn btn-outline-primary btn-sm me-2" onclick="viewSurvey(1)">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </button>
+                                                    <button class="btn btn-outline-success btn-sm" onclick="viewResults(1)">
+                                                        <i class="fas fa-chart-bar"></i> Results
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Manager Feedback Survey -->
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                                    <h6 class="card-title">Manager Feedback Survey</h6>
+                                                    <span class="badge bg-warning">Active</span>
+                                                </div>
+                                                <p class="card-text text-muted">360-degree feedback for management evaluation</p>
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Responses</small>
+                                                        <strong>24/45 (53%)</strong>
+                                                    </div>
+                                                    <div class="progress mt-1">
+                                                        <div class="progress-bar bg-warning" style="width: 53%"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <small class="text-muted">Deadline: Dec 15, 2024</small>
+                                                </div>
+                                                <div>
+                                                    <button class="btn btn-outline-primary btn-sm me-2" onclick="viewSurvey(2)">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </button>
+                                                    <button class="btn btn-outline-info btn-sm" onclick="sendReminder(2)">
+                                                        <i class="fas fa-bell"></i> Reminder
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Remote Work Survey -->
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                                    <h6 class="card-title">Remote Work Experience</h6>
+                                                    <span class="badge bg-primary">Active</span>
+                                                </div>
+                                                <p class="card-text text-muted">Feedback on remote work policies and tools</p>
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between">
+                                                        <small>Responses</small>
+                                                        <strong>89/120 (74%)</strong>
+                                                    </div>
+                                                    <div class="progress mt-1">
+                                                        <div class="progress-bar bg-primary" style="width: 74%"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <small class="text-muted">Deadline: Dec 18, 2024</small>
+                                                </div>
+                                                <div>
+                                                    <button class="btn btn-outline-primary btn-sm me-2" onclick="viewSurvey(3)">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </button>
+                                                    <button class="btn btn-outline-success btn-sm" onclick="viewResults(3)">
+                                                        <i class="fas fa-chart-bar"></i> Results
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Results & Analytics Tab -->
+                            <div class="tab-pane fade" id="results" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h6><i class="fas fa-chart-pie"></i> Satisfaction Breakdown</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <canvas id="satisfactionChart" height="200"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h6><i class="fas fa-chart-line"></i> Response Trends</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <canvas id="trendsChart" height="200"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h6><i class="fas fa-comments"></i> Recent Feedback</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="list-group list-group-flush">
+                                                    <div class="list-group-item">
+                                                        <div class="d-flex justify-content-between">
+                                                            <div>
+                                                                <h6 class="mb-1">Great work environment</h6>
+                                                                <p class="mb-1">"I really appreciate the collaborative culture and supportive management. The team dynamics are excellent."</p>
+                                                                <small class="text-muted">Employee Satisfaction Survey • Anonymous</small>
+                                                            </div>
+                                                            <div class="text-warning">
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="list-group-item">
+                                                        <div class="d-flex justify-content-between">
+                                                            <div>
+                                                                <h6 class="mb-1">Need better communication tools</h6>
+                                                                <p class="mb-1">"Remote work is good but we need better video conferencing and project management tools."</p>
+                                                                <small class="text-muted">Remote Work Survey • Anonymous</small>
+                                                            </div>
+                                                            <div class="text-warning">
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="far fa-star"></i>
+                                                                <i class="far fa-star"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Templates Tab -->
+                            <div class="tab-pane fade" id="templates" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h6 class="card-title">
+                                                    <i class="fas fa-smile text-primary"></i>
+                                                    Employee Satisfaction
+                                                </h6>
+                                                <p class="card-text text-muted">Standard employee satisfaction and engagement survey template</p>
+                                                <div class="mb-3">
+                                                    <small class="text-muted">Questions: 25 • Duration: 10 min</small>
+                                                </div>
+                                                <button class="btn btn-outline-primary btn-sm" onclick="useTemplate(1)">
+                                                    <i class="fas fa-plus"></i> Use Template
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h6 class="card-title">
+                                                    <i class="fas fa-sync-alt text-success"></i>
+                                                    360 Degree Feedback
+                                                </h6>
+                                                <p class="card-text text-muted">Comprehensive 360-degree feedback survey for performance reviews</p>
+                                                <div class="mb-3">
+                                                    <small class="text-muted">Questions: 35 • Duration: 15 min</small>
+                                                </div>
+                                                <button class="btn btn-outline-primary btn-sm" onclick="useTemplate(2)">
+                                                    <i class="fas fa-plus"></i> Use Template
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h6 class="card-title">
+                                                    <i class="fas fa-door-open text-warning"></i>
+                                                    Exit Interview
+                                                </h6>
+                                                <p class="card-text text-muted">Exit interview survey to gather feedback from departing employees</p>
+                                                <div class="mb-3">
+                                                    <small class="text-muted">Questions: 20 • Duration: 12 min</small>
+                                                </div>
+                                                <button class="btn btn-outline-primary btn-sm" onclick="useTemplate(3)">
+                                                    <i class="fas fa-plus"></i> Use Template
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Archived Tab -->
+                            <div class="tab-pane fade" id="archived" role="tabpanel">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Survey Name</th>
+                                                <th>Type</th>
+                                                <th>Responses</th>
+                                                <th>Completion Rate</th>
+                                                <th>Date Completed</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Q3 Employee Satisfaction</td>
+                                                <td>Satisfaction</td>
+                                                <td>167</td>
+                                                <td>92%</td>
+                                                <td>Sep 30, 2024</td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm me-1" onclick="viewArchivedResults(1)">
+                                                        <i class="fas fa-chart-bar"></i> Results
+                                                    </button>
+                                                    <button class="btn btn-outline-secondary btn-sm" onclick="downloadReport(1)">
+                                                        <i class="fas fa-download"></i> Report
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Annual Benefits Survey</td>
+                                                <td>Benefits</td>
+                                                <td>198</td>
+                                                <td>87%</td>
+                                                <td>Aug 15, 2024</td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm me-1" onclick="viewArchivedResults(2)">
+                                                        <i class="fas fa-chart-bar"></i> Results
+                                                    </button>
+                                                    <button class="btn btn-outline-secondary btn-sm" onclick="downloadReport(2)">
+                                                        <i class="fas fa-download"></i> Report
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Survey Modal -->
+    <div class="modal fade" id="createSurveyModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus"></i> Create New Survey</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createSurveyForm">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="surveyTitle" class="form-label">Survey Title</label>
+                                    <input type="text" class="form-control" id="surveyTitle" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="surveyType" class="form-label">Survey Type</label>
+                                    <select class="form-select" id="surveyType" required>
+                                        <option value="">Select type</option>
+                                        <option value="satisfaction">Employee Satisfaction</option>
+                                        <option value="feedback">Feedback</option>
+                                        <option value="exit">Exit Interview</option>
+                                        <option value="training">Training Evaluation</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="surveyDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="surveyDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="targetAudience" class="form-label">Target Audience</label>
+                                    <select class="form-select" id="targetAudience" required>
+                                        <option value="all">All Employees</option>
+                                        <option value="department">Specific Department</option>
+                                        <option value="role">Specific Role</option>
+                                        <option value="manager">Managers Only</option>
+                                        <option value="custom">Custom Selection</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="surveyDeadline" class="form-label">Deadline</label>
+                                    <input type="date" class="form-control" id="surveyDeadline" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="anonymousResponses" checked>
+                                    <label class="form-check-label" for="anonymousResponses">
+                                        Anonymous responses
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="sendReminders">
+                                    <label class="form-check-label" for="sendReminders">
+                                        Send automatic reminders
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="saveDraft()">Save as Draft</button>
+                    <button type="submit" class="btn btn-primary" form="createSurveyForm">Create Survey</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        // Survey management functionality
+        function viewSurvey(id) {
+            alert(`View survey ${id} - Feature to be implemented`);
+        }
+
+        function viewResults(id) {
+            alert(`View results for survey ${id} - Feature to be implemented`);
+        }
+
+        function sendReminder(id) {
+            if (confirm('Send reminder to all pending respondents?')) {
+                alert(`Send reminder for survey ${id} - Feature to be implemented`);
+            }
+        }
+
+        function useTemplate(templateId) {
+            alert(`Use template ${templateId} - Feature to be implemented`);
+        }
+
+        function viewArchivedResults(id) {
+            alert(`View archived results ${id} - Feature to be implemented`);
+        }
+
+        function downloadReport(id) {
+            alert(`Download report ${id} - Feature to be implemented`);
+        }
+
+        function saveDraft() {
+            alert('Save survey as draft functionality to be implemented');
+        }
+
+        document.getElementById('createSurveyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Create survey functionality to be implemented');
+        });
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('access_token');
+                window.location.href = '/login';
+            }
+        }
+    </script>
+</body>
+</html>

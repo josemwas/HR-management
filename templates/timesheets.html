@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timesheet Management - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-users-cog"></i> HR Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/employees">Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/timesheets">Timesheets</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-12">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2><i class="fas fa-clock"></i> Timesheet Management</h2>
+                        <p class="text-muted">Track employee hours, overtime, and project time allocation</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-primary me-2" onclick="bulkApprove()">
+                            <i class="fas fa-check-double"></i> Bulk Approve
+                        </button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTimesheetModal">
+                            <i class="fas fa-plus"></i> Add Timesheet
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Timesheet Overview -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">This Week's Hours</h6>
+                                        <h3>1,847</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-clock fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Pending Approval</h6>
+                                        <h3>23</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-hourglass-half fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-danger text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Overtime Hours</h6>
+                                        <h3>156</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Completed</h6>
+                                        <h3>189</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-check-circle fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter and Search -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <input type="text" class="form-control" id="searchTimesheets" placeholder="Search timesheets...">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="draft">Draft</option>
+                                    <option value="submitted">Submitted</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="departmentFilter">
+                                    <option value="">All Departments</option>
+                                    <option value="engineering">Engineering</option>
+                                    <option value="marketing">Marketing</option>
+                                    <option value="sales">Sales</option>
+                                    <option value="hr">HR</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="date" class="form-control" id="dateFilter" value="2024-12-10">
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="projectFilter">
+                                    <option value="">All Projects</option>
+                                    <option value="project-a">Project Alpha</option>
+                                    <option value="project-b">Project Beta</option>
+                                    <option value="admin">Administrative</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timesheet Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5><i class="fas fa-table"></i> Timesheets</h5>
+                            <div>
+                                <button class="btn btn-outline-secondary btn-sm me-2" onclick="exportTimesheets()">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="refreshTimesheets()">
+                                    <i class="fas fa-sync"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" class="form-check-input" id="selectAll" onchange="toggleSelectAll()">
+                                        </th>
+                                        <th>Employee</th>
+                                        <th>Week Ending</th>
+                                        <th>Total Hours</th>
+                                        <th>Regular</th>
+                                        <th>Overtime</th>
+                                        <th>Project</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="timesheetsTableBody">
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input timesheet-checkbox" value="1">
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="https://via.placeholder.com/32" class="rounded-circle me-2" alt="Avatar">
+                                                <div>
+                                                    <div class="fw-bold">John Smith</div>
+                                                    <small class="text-muted">Engineering</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Dec 8, 2024</td>
+                                        <td class="fw-bold">42.5</td>
+                                        <td>40.0</td>
+                                        <td class="text-warning">2.5</td>
+                                        <td>Project Alpha</td>
+                                        <td><span class="badge bg-warning">Pending</span></td>
+                                        <td>
+                                            <button class="btn btn-outline-success btn-sm me-1" onclick="approveTimesheet(1)">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary btn-sm me-1" onclick="viewTimesheet(1)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary btn-sm" onclick="editTimesheet(1)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input timesheet-checkbox" value="2">
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="https://via.placeholder.com/32" class="rounded-circle me-2" alt="Avatar">
+                                                <div>
+                                                    <div class="fw-bold">Sarah Johnson</div>
+                                                    <small class="text-muted">Marketing</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Dec 8, 2024</td>
+                                        <td class="fw-bold">40.0</td>
+                                        <td>40.0</td>
+                                        <td>0.0</td>
+                                        <td>Marketing Campaign</td>
+                                        <td><span class="badge bg-success">Approved</span></td>
+                                        <td>
+                                            <button class="btn btn-outline-primary btn-sm me-1" onclick="viewTimesheet(2)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info btn-sm" onclick="downloadTimesheet(2)">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input timesheet-checkbox" value="3">
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="https://via.placeholder.com/32" class="rounded-circle me-2" alt="Avatar">
+                                                <div>
+                                                    <div class="fw-bold">Mike Chen</div>
+                                                    <small class="text-muted">Engineering</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Dec 8, 2024</td>
+                                        <td class="fw-bold">45.0</td>
+                                        <td>40.0</td>
+                                        <td class="text-warning">5.0</td>
+                                        <td>Project Beta</td>
+                                        <td><span class="badge bg-warning">Pending</span></td>
+                                        <td>
+                                            <button class="btn btn-outline-success btn-sm me-1" onclick="approveTimesheet(3)">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary btn-sm me-1" onclick="viewTimesheet(3)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary btn-sm" onclick="editTimesheet(3)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input timesheet-checkbox" value="4">
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="https://via.placeholder.com/32" class="rounded-circle me-2" alt="Avatar">
+                                                <div>
+                                                    <div class="fw-bold">Lisa Wong</div>
+                                                    <small class="text-muted">Sales</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Dec 8, 2024</td>
+                                        <td class="fw-bold">38.5</td>
+                                        <td>38.5</td>
+                                        <td>0.0</td>
+                                        <td>Client Meetings</td>
+                                        <td><span class="badge bg-danger">Rejected</span></td>
+                                        <td>
+                                            <button class="btn btn-outline-primary btn-sm me-1" onclick="viewTimesheet(4)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning btn-sm" onclick="requestRevision(4)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Summary Cards -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-line"></i> Weekly Hours Trend</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="weeklyHoursChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-pie"></i> Time Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="timeDistributionChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Timesheet Modal -->
+    <div class="modal fade" id="addTimesheetModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus"></i> Add Timesheet Entry</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addTimesheetForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="employeeSelect" class="form-label">Employee</label>
+                                    <select class="form-select" id="employeeSelect" required>
+                                        <option value="">Select employee</option>
+                                        <option value="1">John Smith</option>
+                                        <option value="2">Sarah Johnson</option>
+                                        <option value="3">Mike Chen</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="weekEnding" class="form-label">Week Ending</label>
+                                    <input type="date" class="form-control" id="weekEnding" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="projectSelect" class="form-label">Project</label>
+                                    <select class="form-select" id="projectSelect" required>
+                                        <option value="">Select project</option>
+                                        <option value="project-a">Project Alpha</option>
+                                        <option value="project-b">Project Beta</option>
+                                        <option value="admin">Administrative</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="taskDescription" class="form-label">Task Description</label>
+                                    <input type="text" class="form-control" id="taskDescription" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Daily Hours Input -->
+                        <div class="mb-3">
+                            <label class="form-label">Daily Hours</label>
+                            <div class="row">
+                                <div class="col">
+                                    <label class="form-label small">Monday</label>
+                                    <input type="number" class="form-control" id="monday" step="0.5" min="0" max="24">
+                                </div>
+                                <div class="col">
+                                    <label class="form-label small">Tuesday</label>
+                                    <input type="number" class="form-control" id="tuesday" step="0.5" min="0" max="24">
+                                </div>
+                                <div class="col">
+                                    <label class="form-label small">Wednesday</label>
+                                    <input type="number" class="form-control" id="wednesday" step="0.5" min="0" max="24">
+                                </div>
+                                <div class="col">
+                                    <label class="form-label small">Thursday</label>
+                                    <input type="number" class="form-control" id="thursday" step="0.5" min="0" max="24">
+                                </div>
+                                <div class="col">
+                                    <label class="form-label small">Friday</label>
+                                    <input type="number" class="form-control" id="friday" step="0.5" min="0" max="24">
+                                </div>
+                                <div class="col">
+                                    <label class="form-label small">Saturday</label>
+                                    <input type="number" class="form-control" id="saturday" step="0.5" min="0" max="24">
+                                </div>
+                                <div class="col">
+                                    <label class="form-label small">Sunday</label>
+                                    <input type="number" class="form-control" id="sunday" step="0.5" min="0" max="24">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Total Hours</label>
+                                    <input type="number" class="form-control" id="totalHours" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Regular Hours</label>
+                                    <input type="number" class="form-control" id="regularHours" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Overtime Hours</label>
+                                    <input type="number" class="form-control" id="overtimeHours" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="notes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="saveDraft()">Save as Draft</button>
+                    <button type="submit" class="btn btn-primary" form="addTimesheetForm">Submit Timesheet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        // Timesheet management functionality
+        function approveTimesheet(id) {
+            if (confirm('Approve this timesheet?')) {
+                alert(`Approve timesheet ${id} - Feature to be implemented`);
+            }
+        }
+
+        function viewTimesheet(id) {
+            alert(`View timesheet ${id} - Feature to be implemented`);
+        }
+
+        function editTimesheet(id) {
+            alert(`Edit timesheet ${id} - Feature to be implemented`);
+        }
+
+        function downloadTimesheet(id) {
+            alert(`Download timesheet ${id} - Feature to be implemented`);
+        }
+
+        function requestRevision(id) {
+            alert(`Request revision for timesheet ${id} - Feature to be implemented`);
+        }
+
+        function bulkApprove() {
+            const selected = document.querySelectorAll('.timesheet-checkbox:checked');
+            if (selected.length === 0) {
+                alert('Please select timesheets to approve');
+                return;
+            }
+            if (confirm(`Approve ${selected.length} selected timesheets?`)) {
+                alert('Bulk approve functionality to be implemented');
+            }
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.timesheet-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+        }
+
+        function clearFilters() {
+            document.getElementById('searchTimesheets').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('departmentFilter').value = '';
+            document.getElementById('projectFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+        }
+
+        function exportTimesheets() {
+            alert('Export timesheets functionality to be implemented');
+        }
+
+        function refreshTimesheets() {
+            alert('Refresh timesheets functionality to be implemented');
+        }
+
+        function saveDraft() {
+            alert('Save as draft functionality to be implemented');
+        }
+
+        // Calculate total hours when daily hours change
+        document.addEventListener('DOMContentLoaded', function() {
+            const dayInputs = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            
+            dayInputs.forEach(day => {
+                document.getElementById(day).addEventListener('input', calculateTotalHours);
+            });
+        });
+
+        function calculateTotalHours() {
+            const dayInputs = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            let total = 0;
+            
+            dayInputs.forEach(day => {
+                const value = parseFloat(document.getElementById(day).value) || 0;
+                total += value;
+            });
+            
+            document.getElementById('totalHours').value = total;
+            document.getElementById('regularHours').value = Math.min(total, 40);
+            document.getElementById('overtimeHours').value = Math.max(total - 40, 0);
+        }
+
+        document.getElementById('addTimesheetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Add timesheet functionality to be implemented');
+        });
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('access_token');
+                window.location.href = '/login';
+            }
+        }
+    </script>
+</body>
+</html>

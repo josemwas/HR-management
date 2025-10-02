@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-users-cog"></i> HR Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/employees">Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/analytics">Analytics</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-12">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2><i class="fas fa-chart-bar"></i> HR Analytics Dashboard</h2>
+                        <p class="text-muted">Comprehensive insights and data analysis for HR operations</p>
+                    </div>
+                    <div>
+                        <select class="form-select me-2" id="dateRange" style="width: auto; display: inline-block;">
+                            <option value="last-30-days">Last 30 Days</option>
+                            <option value="last-quarter">Last Quarter</option>
+                            <option value="last-year">Last Year</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                        <button class="btn btn-outline-primary" onclick="exportReport()">
+                            <i class="fas fa-download"></i> Export Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Overview -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Total Employees</h6>
+                                        <h3>247</h3>
+                                        <small><i class="fas fa-arrow-up"></i> +12 this month</small>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-users fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Retention Rate</h6>
+                                        <h3>94.2%</h3>
+                                        <small><i class="fas fa-arrow-up"></i> +2.1% vs last year</small>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-heart fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Avg. Performance</h6>
+                                        <h3>4.6/5</h3>
+                                        <small><i class="fas fa-arrow-up"></i> +0.3 improvement</small>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-star fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Training Hours</h6>
+                                        <h3>1,248</h3>
+                                        <small><i class="fas fa-arrow-up"></i> +156 this quarter</small>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-graduation-cap fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 1 -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-line"></i> Employee Growth Trend</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="employeeGrowthChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-pie"></i> Department Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="departmentChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 2 -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h6><i class="fas fa-calendar-check"></i> Attendance Trends</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="attendanceChart" height="200"></canvas>
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-between">
+                                        <small>Average Attendance</small>
+                                        <strong>96.8%</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <small>On-time Rate</small>
+                                        <strong>92.4%</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h6><i class="fas fa-plane"></i> Leave Analysis</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="leaveChart" height="200"></canvas>
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-between">
+                                        <small>Avg. Days Taken</small>
+                                        <strong>18.5 days</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <small>Pending Requests</small>
+                                        <strong>7</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h6><i class="fas fa-user-plus"></i> Recruitment Metrics</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="recruitmentChart" height="200"></canvas>
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-between">
+                                        <small>Time to Hire</small>
+                                        <strong>23 days</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <small>Offer Acceptance</small>
+                                        <strong>89%</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Analytics -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-trophy"></i> Performance Analytics</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="performanceChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-award"></i> Top Performers</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center p-2">
+                                        <div>
+                                            <div class="fw-bold">Sarah Johnson</div>
+                                            <small class="text-muted">Marketing Manager</small>
+                                        </div>
+                                        <span class="badge bg-success">4.9</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center p-2">
+                                        <div>
+                                            <div class="fw-bold">Mike Chen</div>
+                                            <small class="text-muted">Senior Developer</small>
+                                        </div>
+                                        <span class="badge bg-success">4.8</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center p-2">
+                                        <div>
+                                            <div class="fw-bold">Lisa Wong</div>
+                                            <small class="text-muted">Sales Director</small>
+                                        </div>
+                                        <span class="badge bg-success">4.7</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center p-2">
+                                        <div>
+                                            <div class="fw-bold">John Smith</div>
+                                            <small class="text-muted">Product Manager</small>
+                                        </div>
+                                        <span class="badge bg-primary">4.6</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Analytics Tables -->
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="analyticsTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="salary-tab" data-bs-toggle="tab" data-bs-target="#salary" type="button" role="tab">
+                                    <i class="fas fa-dollar-sign"></i> Salary Analytics
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="diversity-tab" data-bs-toggle="tab" data-bs-target="#diversity" type="button" role="tab">
+                                    <i class="fas fa-users"></i> Diversity & Inclusion
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="engagement-tab" data-bs-toggle="tab" data-bs-target="#engagement" type="button" role="tab">
+                                    <i class="fas fa-heart"></i> Employee Engagement
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="costs-tab" data-bs-toggle="tab" data-bs-target="#costs" type="button" role="tab">
+                                    <i class="fas fa-chart-line"></i> Cost Analysis
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="analyticsTabContent">
+                            <!-- Salary Analytics -->
+                            <div class="tab-pane fade show active" id="salary" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <canvas id="salaryDistributionChart" height="200"></canvas>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6>Salary Insights</h6>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">Average Salary</small>
+                                                    <div class="fw-bold">$68,500</div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">Median Salary</small>
+                                                    <div class="fw-bold">$65,000</div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">Pay Equity Score</small>
+                                                    <div class="fw-bold text-success">92%</div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">Budget Utilization</small>
+                                                    <div class="fw-bold">84%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Diversity & Inclusion -->
+                            <div class="tab-pane fade" id="diversity" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <canvas id="genderChart" height="200"></canvas>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <canvas id="ageChart" height="200"></canvas>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-3 text-center">
+                                        <h5 class="text-primary">52%</h5>
+                                        <p class="text-muted">Female Employees</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h5 class="text-success">34%</h5>
+                                        <p class="text-muted">Leadership Diversity</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h5 class="text-warning">28</h5>
+                                        <p class="text-muted">Average Age</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h5 class="text-info">23%</h5>
+                                        <p class="text-muted">International Staff</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Employee Engagement -->
+                            <div class="tab-pane fade" id="engagement" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <canvas id="engagementChart" height="200"></canvas>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6>Engagement Metrics</h6>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">Overall Score</small>
+                                                    <div class="fw-bold text-success">4.2/5</div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">Response Rate</small>
+                                                    <div class="fw-bold">87%</div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">eNPS Score</small>
+                                                    <div class="fw-bold text-primary">+42</div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">Satisfaction</small>
+                                                    <div class="fw-bold">89%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cost Analysis -->
+                            <div class="tab-pane fade" id="costs" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <canvas id="costChart" height="200"></canvas>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6>Cost Breakdown</h6>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">Total HR Costs</small>
+                                                    <div class="fw-bold">$2.4M</div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">Cost per Employee</small>
+                                                    <div class="fw-bold">$9,716</div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">Recruitment Cost</small>
+                                                    <div class="fw-bold">$156K</div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">Training Investment</small>
+                                                    <div class="fw-bold">$89K</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+        });
+
+        function initializeCharts() {
+            // Employee Growth Chart
+            const growthCtx = document.getElementById('employeeGrowthChart').getContext('2d');
+            new Chart(growthCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Employees',
+                        data: [210, 215, 225, 230, 235, 238, 242, 245, 247, 247, 249, 247],
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Department Distribution Chart
+            const deptCtx = document.getElementById('departmentChart').getContext('2d');
+            new Chart(deptCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Engineering', 'Sales', 'Marketing', 'HR', 'Finance', 'Operations'],
+                    datasets: [{
+                        data: [89, 45, 32, 12, 28, 41],
+                        backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1', '#20c997']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Performance Chart
+            const perfCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(perfCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [{
+                        label: 'Average Performance',
+                        data: [4.2, 4.4, 4.5, 4.6],
+                        backgroundColor: '#198754'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5
+                        }
+                    }
+                }
+            });
+
+            // Salary Distribution Chart
+            const salaryCtx = document.getElementById('salaryDistributionChart').getContext('2d');
+            new Chart(salaryCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['$30-40K', '$40-50K', '$50-60K', '$60-70K', '$70-80K', '$80-90K', '$90K+'],
+                    datasets: [{
+                        label: 'Number of Employees',
+                        data: [12, 28, 45, 67, 52, 32, 11],
+                        backgroundColor: '#0d6efd'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function exportReport() {
+            alert('Export report functionality to be implemented');
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('access_token');
+                window.location.href = '/login';
+            }
+        }
+    </script>
+</body>
+</html>

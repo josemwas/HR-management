@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Self-Service - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            margin: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .quick-action-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: white;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: 8px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-approved { background: #d4edda; color: #155724; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+
+        .document-item {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        .document-item:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1><i class="fas fa-user-circle text-primary"></i> Employee Self-Service</h1>
+                <p class="text-muted">Manage your profile, requests, and access personal information</p>
+            </div>
+            <div>
+                <button class="btn btn-outline-secondary" onclick="window.location.href='/'">
+                    <i class="fas fa-home"></i> Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dashboard-card">
+            <h4><i class="fas fa-bolt text-warning"></i> Quick Actions</h4>
+            <div class="row">
+                <div class="col-md-3">
+                    <button class="btn quick-action-btn w-100" onclick="requestLeave()">
+                        <i class="fas fa-calendar-plus"></i><br>Request Leave
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn quick-action-btn w-100" onclick="viewPayStubs()">
+                        <i class="fas fa-file-invoice-dollar"></i><br>Pay Stubs
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn quick-action-btn w-100" onclick="updateProfile()">
+                        <i class="fas fa-user-edit"></i><br>Update Profile
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn quick-action-btn w-100" onclick="viewBenefits()">
+                        <i class="fas fa-gift"></i><br>Benefits
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Tabs -->
+        <ul class="nav nav-tabs" id="selfServiceTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">
+                    <i class="fas fa-user"></i> My Profile
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="requests-tab" data-bs-toggle="tab" data-bs-target="#requests" type="button" role="tab">
+                    <i class="fas fa-clipboard-list"></i> My Requests
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="payroll-tab" data-bs-toggle="tab" data-bs-target="#payroll" type="button" role="tab">
+                    <i class="fas fa-money-bill-wave"></i> Payroll
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab">
+                    <i class="fas fa-folder"></i> Documents
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="benefits-tab" data-bs-toggle="tab" data-bs-target="#benefits" type="button" role="tab">
+                    <i class="fas fa-heart"></i> Benefits
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="selfServiceTabContent">
+            <!-- Profile Tab -->
+            <div class="tab-pane fade show active" id="profile" role="tabpanel">
+                <div class="dashboard-card">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="profile-avatar mx-auto" id="profileAvatar">JD</div>
+                            <h5 class="mt-3" id="employeeName">John Doe</h5>
+                            <p class="text-muted" id="employeeRole">Software Engineer</p>
+                        </div>
+                        <div class="col-md-9">
+                            <form id="profileForm">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">First Name</label>
+                                            <input type="text" class="form-control" id="firstName" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Last Name</label>
+                                            <input type="text" class="form-control" id="lastName" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="email">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Phone</label>
+                                            <input type="tel" class="form-control" id="phone">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Address</label>
+                                            <textarea class="form-control" id="address" rows="2"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Emergency Contact Name</label>
+                                            <input type="text" class="form-control" id="emergencyName">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Emergency Contact Phone</label>
+                                            <input type="tel" class="form-control" id="emergencyPhone">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary" onclick="updatePersonalInfo()">
+                                    <i class="fas fa-save"></i> Update Information
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employment Information -->
+                <div class="dashboard-card">
+                    <h5><i class="fas fa-briefcase text-primary"></i> Employment Information</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="info-card">
+                                <h6>Employee ID</h6>
+                                <span id="employeeId">EMP001</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="info-card">
+                                <h6>Department</h6>
+                                <span id="department">Engineering</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="info-card">
+                                <h6>Hire Date</h6>
+                                <span id="hireDate">Jan 15, 2023</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="info-card">
+                                <h6>Employment Status</h6>
+                                <span id="employmentStatus" class="status-badge status-approved">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Requests Tab -->
+            <div class="tab-pane fade" id="requests" role="tabpanel">
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5><i class="fas fa-clipboard-list text-primary"></i> My Requests</h5>
+                        <button class="btn btn-primary" onclick="showNewRequestModal()">
+                            <i class="fas fa-plus"></i> New Request
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Date Submitted</th>
+                                    <th>Period</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requestsTable">
+                                <!-- Dynamic content will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payroll Tab -->
+            <div class="tab-pane fade" id="payroll" role="tabpanel">
+                <div class="dashboard-card">
+                    <h5><i class="fas fa-money-bill-wave text-primary"></i> Payroll Information</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <h6>Current Salary</h6>
+                                <h4 class="text-primary">$5,500/month</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <h6>YTD Earnings</h6>
+                                <h4 class="text-success">$49,500</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card">
+                                <h6>YTD Deductions</h6>
+                                <h4 class="text-warning">$8,250</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h5><i class="fas fa-file-invoice text-primary"></i> Pay Stubs</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Pay Period</th>
+                                    <th>Gross Pay</th>
+                                    <th>Deductions</th>
+                                    <th>Net Pay</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payStubsTable">
+                                <!-- Dynamic content will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Tab -->
+            <div class="tab-pane fade" id="documents" role="tabpanel">
+                <div class="dashboard-card">
+                    <h5><i class="fas fa-folder text-primary"></i> My Documents</h5>
+                    <div id="documentsContainer">
+                        <!-- Dynamic content will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benefits Tab -->
+            <div class="tab-pane fade" id="benefits" role="tabpanel">
+                <div class="dashboard-card">
+                    <h5><i class="fas fa-heart text-primary"></i> Benefits Overview</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <h6><i class="fas fa-user-md"></i> Health Insurance</h6>
+                                <p>Premium Plan - Company pays 80%</p>
+                                <small class="text-muted">Coverage: Medical, Dental, Vision</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <h6><i class="fas fa-piggy-bank"></i> 401(k) Plan</h6>
+                                <p>Contributing 6% - Company matches 50%</p>
+                                <small class="text-muted">Current Balance: $12,500</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <h6><i class="fas fa-calendar-check"></i> Paid Time Off</h6>
+                                <p>Available: 15 days | Used: 5 days</p>
+                                <small class="text-muted">Accrual: 1.25 days/month</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <h6><i class="fas fa-graduation-cap"></i> Training Budget</h6>
+                                <p>Annual Budget: $2,000</p>
+                                <small class="text-muted">Used: $800 | Remaining: $1,200</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Request Modal -->
+    <div class="modal fade" id="newRequestModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Request</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newRequestForm">
+                        <div class="mb-3">
+                            <label class="form-label">Request Type</label>
+                            <select class="form-select" id="requestType" required>
+                                <option value="">Select request type</option>
+                                <option value="leave">Leave Request</option>
+                                <option value="info_change">Personal Information Change</option>
+                                <option value="document">Document Request</option>
+                                <option value="benefit">Benefits Change</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="requestDescription" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3" id="leaveDetails" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="leaveStartDate">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="leaveEndDate">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitRequest()">Submit Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load employee data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEmployeeProfile();
+            loadRequests();
+            loadPayStubs();
+            loadDocuments();
+        });
+
+        // Request type change handler
+        document.getElementById('requestType').addEventListener('change', function() {
+            const leaveDetails = document.getElementById('leaveDetails');
+            if (this.value === 'leave') {
+                leaveDetails.style.display = 'block';
+            } else {
+                leaveDetails.style.display = 'none';
+            }
+        });
+
+        async function loadEmployeeProfile() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const employee = data.employee;
+                    
+                    // Update profile information
+                    document.getElementById('employeeName').textContent = `${employee.first_name} ${employee.last_name}`;
+                    document.getElementById('employeeRole').textContent = employee.position || employee.role;
+                    document.getElementById('firstName').value = employee.first_name;
+                    document.getElementById('lastName').value = employee.last_name;
+                    document.getElementById('email').value = employee.email;
+                    document.getElementById('phone').value = employee.phone || '';
+                    document.getElementById('employeeId').textContent = `EMP${employee.id.toString().padStart(3, '0')}`;
+                    document.getElementById('department').textContent = employee.department || 'Not Assigned';
+                    
+                    // Update profile avatar
+                    const initials = `${employee.first_name[0]}${employee.last_name[0]}`;
+                    document.getElementById('profileAvatar').textContent = initials;
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        async function loadRequests() {
+            // Mock data for demonstration
+            const requests = [
+                { id: 1, type: 'Leave', date: '2024-10-01', period: 'Oct 15-17, 2024', status: 'Pending' },
+                { id: 2, type: 'Info Change', date: '2024-09-25', period: 'N/A', status: 'Approved' },
+                { id: 3, type: 'Document', date: '2024-09-20', period: 'N/A', status: 'Completed' }
+            ];
+
+            const tbody = document.getElementById('requestsTable');
+            tbody.innerHTML = requests.map(request => `
+                <tr>
+                    <td>${request.type}</td>
+                    <td>${request.date}</td>
+                    <td>${request.period}</td>
+                    <td><span class="status-badge status-${request.status.toLowerCase()}">${request.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewRequest(${request.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadPayStubs() {
+            // Mock data for demonstration
+            const payStubs = [
+                { period: 'September 2024', gross: '$5,500', deductions: '$825', net: '$4,675' },
+                { period: 'August 2024', gross: '$5,500', deductions: '$825', net: '$4,675' },
+                { period: 'July 2024', gross: '$5,500', deductions: '$825', net: '$4,675' }
+            ];
+
+            const tbody = document.getElementById('payStubsTable');
+            tbody.innerHTML = payStubs.map(stub => `
+                <tr>
+                    <td>${stub.period}</td>
+                    <td>${stub.gross}</td>
+                    <td>${stub.deductions}</td>
+                    <td><strong>${stub.net}</strong></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="downloadPayStub('${stub.period}')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadDocuments() {
+            // Mock data for demonstration
+            const documents = [
+                { name: 'Employment Contract', type: 'Contract', date: '2023-01-15' },
+                { name: 'Tax Forms (W-2)', type: 'Tax', date: '2024-01-31' },
+                { name: 'Benefits Enrollment', type: 'Benefits', date: '2023-01-20' },
+                { name: 'Policy Handbook', type: 'Policy', date: '2023-01-15' }
+            ];
+
+            const container = document.getElementById('documentsContainer');
+            container.innerHTML = documents.map(doc => `
+                <div class="document-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6><i class="fas fa-file-alt text-primary"></i> ${doc.name}</h6>
+                            <small class="text-muted">Type: ${doc.type} | Date: ${doc.date}</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary" onclick="downloadDocument('${doc.name}')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showNewRequestModal() {
+            const modal = new bootstrap.Modal(document.getElementById('newRequestModal'));
+            modal.show();
+        }
+
+        async function submitRequest() {
+            const type = document.getElementById('requestType').value;
+            const description = document.getElementById('requestDescription').value;
+            
+            if (!type || !description) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const requestData = {
+                    type: type,
+                    description: description
+                };
+
+                if (type === 'leave') {
+                    requestData.start_date = document.getElementById('leaveStartDate').value;
+                    requestData.end_date = document.getElementById('leaveEndDate').value;
+                }
+
+                // In a real implementation, this would call the API
+                console.log('Submitting request:', requestData);
+                
+                alert('Request submitted successfully!');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('newRequestModal'));
+                modal.hide();
+                loadRequests(); // Reload requests
+            } catch (error) {
+                console.error('Error submitting request:', error);
+                alert('Error submitting request. Please try again.');
+            }
+        }
+
+        async function updatePersonalInfo() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const updateData = {
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    address: document.getElementById('address').value,
+                    emergency_contact_name: document.getElementById('emergencyName').value,
+                    emergency_contact_phone: document.getElementById('emergencyPhone').value
+                };
+
+                // In a real implementation, this would call the API
+                console.log('Updating profile:', updateData);
+                
+                alert('Profile updated successfully!');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Error updating profile. Please try again.');
+            }
+        }
+
+        function requestLeave() {
+            document.getElementById('requestType').value = 'leave';
+            document.getElementById('leaveDetails').style.display = 'block';
+            showNewRequestModal();
+        }
+
+        function viewPayStubs() {
+            const payrollTab = new bootstrap.Tab(document.getElementById('payroll-tab'));
+            payrollTab.show();
+        }
+
+        function updateProfile() {
+            const profileTab = new bootstrap.Tab(document.getElementById('profile-tab'));
+            profileTab.show();
+        }
+
+        function viewBenefits() {
+            const benefitsTab = new bootstrap.Tab(document.getElementById('benefits-tab'));
+            benefitsTab.show();
+        }
+
+        function viewRequest(id) {
+            alert(`Viewing request ${id} - Full implementation would show request details`);
+        }
+
+        function downloadPayStub(period) {
+            alert(`Downloading pay stub for ${period} - Full implementation would generate PDF`);
+        }
+
+        function downloadDocument(name) {
+            alert(`Downloading ${name} - Full implementation would serve actual file`);
+        }
+    </script>
+</body>
+</html>

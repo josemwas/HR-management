@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Announcements - HR Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-users-cog"></i> HR Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/employees">Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/announcements">Announcements</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-12">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2><i class="fas fa-bullhorn"></i> Company Announcements</h2>
+                        <p class="text-muted">Manage company-wide communications and announcements</p>
+                    </div>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAnnouncementModal">
+                        <i class="fas fa-plus"></i> Create Announcement
+                    </button>
+                </div>
+
+                <!-- Announcement Statistics -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Total Announcements</h6>
+                                        <h3 id="totalAnnouncements">24</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-bullhorn fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Active</h6>
+                                        <h3 id="activeAnnouncements">8</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-check-circle fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Scheduled</h6>
+                                        <h3 id="scheduledAnnouncements">3</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-clock fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Avg. Read Rate</h6>
+                                        <h3 id="avgReadRate">87%</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-eye fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter and Search -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <input type="text" class="form-control" id="searchAnnouncements" placeholder="Search announcements...">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="categoryFilter">
+                                    <option value="">All Categories</option>
+                                    <option value="general">General</option>
+                                    <option value="hr">HR Updates</option>
+                                    <option value="events">Events</option>
+                                    <option value="policy">Policy Changes</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="scheduled">Scheduled</option>
+                                    <option value="draft">Draft</option>
+                                    <option value="expired">Expired</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="departmentFilter">
+                                    <option value="">All Departments</option>
+                                    <option value="all">Company-wide</option>
+                                    <option value="engineering">Engineering</option>
+                                    <option value="marketing">Marketing</option>
+                                    <option value="sales">Sales</option>
+                                    <option value="hr">HR</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                    <i class="fas fa-times"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Announcements List -->
+                <div class="row" id="announcementsList">
+                    <!-- High Priority Announcement -->
+                    <div class="col-12 mb-3">
+                        <div class="card announcement-card border-danger">
+                            <div class="card-header bg-danger text-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <strong>URGENT: Emergency System Maintenance</strong>
+                                        <span class="badge bg-light text-dark ms-2">Urgent</span>
+                                    </div>
+                                    <div class="text-end">
+                                        <small>Posted: Dec 10, 2024</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Emergency system maintenance scheduled for tonight from 10 PM to 2 AM. All systems will be temporarily unavailable during this period. Please save your work before 10 PM.</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <small class="text-muted">
+                                            <i class="fas fa-user"></i> IT Department •
+                                            <i class="fas fa-users"></i> Company-wide •
+                                            <i class="fas fa-eye"></i> 124 views
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-outline-primary btn-sm me-2" onclick="editAnnouncement(1)">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn btn-outline-info btn-sm" onclick="viewAnalytics(1)">
+                                            <i class="fas fa-chart-bar"></i> Analytics
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Regular Announcement -->
+                    <div class="col-12 mb-3">
+                        <div class="card announcement-card">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-calendar-alt text-primary"></i>
+                                        <strong>Holiday Party 2024</strong>
+                                        <span class="badge bg-success ms-2">Events</span>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted">Posted: Dec 8, 2024</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Join us for our annual holiday party on December 20th at 6 PM in the main conference room. Food, drinks, and prizes will be provided. Please RSVP by December 15th.</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <small class="text-muted">
+                                            <i class="fas fa-user"></i> HR Team •
+                                            <i class="fas fa-users"></i> Company-wide •
+                                            <i class="fas fa-eye"></i> 89 views
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-outline-primary btn-sm me-2" onclick="editAnnouncement(2)">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn btn-outline-info btn-sm" onclick="viewAnalytics(2)">
+                                            <i class="fas fa-chart-bar"></i> Analytics
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Policy Announcement -->
+                    <div class="col-12 mb-3">
+                        <div class="card announcement-card">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-file-alt text-warning"></i>
+                                        <strong>Updated Remote Work Policy</strong>
+                                        <span class="badge bg-warning ms-2">Policy</span>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted">Posted: Dec 5, 2024</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">We've updated our remote work policy to provide more flexibility. Employees can now work from home up to 3 days per week with manager approval. Please review the updated policy document.</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <small class="text-muted">
+                                            <i class="fas fa-user"></i> Leadership Team •
+                                            <i class="fas fa-users"></i> All Employees •
+                                            <i class="fas fa-eye"></i> 156 views
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-outline-primary btn-sm me-2" onclick="editAnnouncement(3)">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn btn-outline-info btn-sm" onclick="viewAnalytics(3)">
+                                            <i class="fas fa-chart-bar"></i> Analytics
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scheduled Announcement -->
+                    <div class="col-12 mb-3">
+                        <div class="card announcement-card border-warning">
+                            <div class="card-header bg-light">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-clock text-warning"></i>
+                                        <strong>Q1 2025 All-Hands Meeting</strong>
+                                        <span class="badge bg-info ms-2">Scheduled</span>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted">Scheduled: Dec 15, 2024</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Mark your calendars for our Q1 2025 all-hands meeting where we'll discuss company goals, achievements, and upcoming projects. Meeting details will be sent closer to the date.</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <small class="text-muted">
+                                            <i class="fas fa-user"></i> CEO Office •
+                                            <i class="fas fa-users"></i> Company-wide •
+                                            <i class="fas fa-clock"></i> Scheduled for release
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-outline-primary btn-sm me-2" onclick="editAnnouncement(4)">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn btn-outline-warning btn-sm" onclick="publishNow(4)">
+                                            <i class="fas fa-paper-plane"></i> Publish Now
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Announcement Modal -->
+    <div class="modal fade" id="createAnnouncementModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus"></i> Create New Announcement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createAnnouncementForm">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="announcementTitle" class="form-label">Title</label>
+                                    <input type="text" class="form-control" id="announcementTitle" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="announcementCategory" class="form-label">Category</label>
+                                    <select class="form-select" id="announcementCategory" required>
+                                        <option value="">Select category</option>
+                                        <option value="general">General</option>
+                                        <option value="hr">HR Updates</option>
+                                        <option value="events">Events</option>
+                                        <option value="policy">Policy Changes</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="announcementContent" class="form-label">Content</label>
+                            <textarea class="form-control" id="announcementContent" rows="5" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="targetAudience" class="form-label">Target Audience</label>
+                                    <select class="form-select" id="targetAudience" required>
+                                        <option value="all">All Employees</option>
+                                        <option value="engineering">Engineering</option>
+                                        <option value="marketing">Marketing</option>
+                                        <option value="sales">Sales</option>
+                                        <option value="hr">HR</option>
+                                        <option value="management">Management</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="priority" class="form-label">Priority</label>
+                                    <select class="form-select" id="priority" required>
+                                        <option value="normal">Normal</option>
+                                        <option value="high">High</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="publishDate" class="form-label">Publish Date</label>
+                                    <input type="datetime-local" class="form-control" id="publishDate">
+                                    <small class="text-muted">Leave empty to publish immediately</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="expiryDate" class="form-label">Expiry Date (Optional)</label>
+                                    <input type="date" class="form-control" id="expiryDate">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="emailNotification">
+                                    <label class="form-check-label" for="emailNotification">
+                                        Send email notification
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="saveDraft()">Save as Draft</button>
+                    <button type="submit" class="btn btn-primary" form="createAnnouncementForm">Publish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        // Announcements management functionality
+        function editAnnouncement(id) {
+            alert(`Edit announcement ${id} - Feature to be implemented`);
+        }
+
+        function viewAnalytics(id) {
+            alert(`View analytics for announcement ${id} - Feature to be implemented`);
+        }
+
+        function publishNow(id) {
+            if (confirm('Publish this announcement immediately?')) {
+                alert(`Publishing announcement ${id} - Feature to be implemented`);
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('searchAnnouncements').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('departmentFilter').value = '';
+        }
+
+        function saveDraft() {
+            alert('Save as draft functionality to be implemented');
+        }
+
+        document.getElementById('createAnnouncementForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Create announcement functionality
+            alert('Create announcement functionality to be implemented');
+        });
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('access_token');
+                window.location.href = '/login';
+            }
+        }
+    </script>
+</body>
+</html>
