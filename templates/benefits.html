@@ -500,15 +500,146 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script>
+        // Mock enrollment data
+        const enrollmentData = {
+            1: { employee: 'John Smith', benefit: 'Health Insurance', plan: 'Premium PPO', coverage: 'Family', status: 'Active', enrollmentDate: '2024-01-15', premium: '$450/month', deductible: '$2,000', copay: '$25' },
+            2: { employee: 'Sarah Johnson', benefit: 'Dental Insurance', plan: 'Standard HMO', coverage: 'Individual', status: 'Active', enrollmentDate: '2024-02-01', premium: '$75/month', deductible: '$500', copay: '$15' },
+            3: { employee: 'Mike Wilson', benefit: '401(k) Plan', plan: 'Traditional 401(k)', coverage: 'Individual', status: 'Active', enrollmentDate: '2024-01-01', premium: '6% contribution', deductible: 'N/A', copay: 'N/A' },
+            4: { employee: 'Emily Davis', benefit: 'Vision Insurance', plan: 'Premium Vision', coverage: 'Family', status: 'Pending', enrollmentDate: '2024-11-15', premium: '$40/month', deductible: '$100', copay: '$10' }
+        };
+
         // Benefits management functionality
         function editEnrollment(id) {
-            alert(`Edit enrollment ${id} - Feature to be implemented`);
+            const enrollment = enrollmentData[id] || { employee: '', benefit: '', plan: '', coverage: 'Individual', status: 'Active', enrollmentDate: '', premium: '', deductible: '', copay: '' };
+            
+            const modalHtml = `
+                <div class="modal" id="editEnrollmentModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-lg" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Enrollment</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('editEnrollmentModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editEnrollmentForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Employee</label>
+                                        <input type="text" class="form-control" value="${enrollment.employee}" id="enrollmentEmployee" readonly>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Benefit Type</label>
+                                                <select class="form-select" id="enrollmentBenefit">
+                                                    <option ${enrollment.benefit === 'Health Insurance' ? 'selected' : ''}>Health Insurance</option>
+                                                    <option ${enrollment.benefit === 'Dental Insurance' ? 'selected' : ''}>Dental Insurance</option>
+                                                    <option ${enrollment.benefit === 'Vision Insurance' ? 'selected' : ''}>Vision Insurance</option>
+                                                    <option ${enrollment.benefit === '401(k) Plan' ? 'selected' : ''}>401(k) Plan</option>
+                                                    <option ${enrollment.benefit === 'Life Insurance' ? 'selected' : ''}>Life Insurance</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Plan</label>
+                                                <select class="form-select" id="enrollmentPlan">
+                                                    <option ${enrollment.plan === 'Premium PPO' ? 'selected' : ''}>Premium PPO</option>
+                                                    <option ${enrollment.plan === 'Standard HMO' ? 'selected' : ''}>Standard HMO</option>
+                                                    <option ${enrollment.plan === 'Basic Plan' ? 'selected' : ''}>Basic Plan</option>
+                                                    <option ${enrollment.plan === 'Traditional 401(k)' ? 'selected' : ''}>Traditional 401(k)</option>
+                                                    <option ${enrollment.plan === 'Roth 401(k)' ? 'selected' : ''}>Roth 401(k)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Coverage</label>
+                                                <select class="form-select" id="enrollmentCoverage">
+                                                    <option ${enrollment.coverage === 'Individual' ? 'selected' : ''}>Individual</option>
+                                                    <option ${enrollment.coverage === 'Employee + Spouse' ? 'selected' : ''}>Employee + Spouse</option>
+                                                    <option ${enrollment.coverage === 'Family' ? 'selected' : ''}>Family</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Status</label>
+                                                <select class="form-select" id="enrollmentStatus">
+                                                    <option ${enrollment.status === 'Active' ? 'selected' : ''}>Active</option>
+                                                    <option ${enrollment.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                                    <option ${enrollment.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Premium</label>
+                                                <input type="text" class="form-control" value="${enrollment.premium}" id="enrollmentPremium">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Deductible</label>
+                                                <input type="text" class="form-control" value="${enrollment.deductible}" id="enrollmentDeductible">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Copay</label>
+                                                <input type="text" class="form-control" value="${enrollment.copay}" id="enrollmentCopay">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Enrollment Date</label>
+                                        <input type="date" class="form-control" value="${enrollment.enrollmentDate}" id="enrollmentDate">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('editEnrollmentModal').remove()">Cancel</button>
+                                <button type="button" class="btn btn-primary" onclick="saveEnrollment(${id})">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function saveEnrollment(id) {
+            document.getElementById('editEnrollmentModal').remove();
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-check-circle"></i> Enrollment updated successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
         }
 
         document.getElementById('addBenefitForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            // Add benefit package functionality
-            alert('Add benefit package functionality to be implemented');
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-check-circle"></i> Benefit package added successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addBenefitModal'));
+            if (modal) modal.hide();
         });
 
         function logout() {

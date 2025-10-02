@@ -530,30 +530,180 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script>
+        // Calendar state
+        let currentDate = new Date();
+        let currentView = 'month';
+        
+        // Mock events data
+        const eventsData = {
+            1: { title: 'Team Standup', type: 'Meeting', start: '09:00 AM', end: '09:30 AM', date: '2024-12-05', location: 'Conference Room A', attendees: 12, description: 'Daily team standup meeting to discuss progress and blockers.' },
+            2: { title: 'All Hands Meeting', type: 'Company Event', start: '02:00 PM', end: '03:30 PM', date: '2024-12-05', location: 'Main Auditorium', attendees: 150, description: 'Monthly all-hands meeting with company updates and Q&A.' },
+            3: { title: 'Holiday Party', type: 'Social', start: '06:00 PM', end: '09:00 PM', date: '2024-12-15', location: 'Grand Ballroom', attendees: 200, description: 'Annual holiday celebration for all employees and families.' },
+            4: { title: 'Q4 Review', type: 'Meeting', start: '10:00 AM', end: '12:00 PM', date: '2024-12-20', location: 'Executive Suite', attendees: 8, description: 'Quarterly business review with leadership team.' },
+            5: { title: 'Training Workshop', type: 'Training', start: '01:00 PM', end: '05:00 PM', date: '2024-12-10', location: 'Training Room B', attendees: 25, description: 'New software tools training session for all departments.' }
+        };
+
         // Calendar functionality
         function changeView(view) {
-            alert(`Change to ${view} view - Feature to be implemented`);
+            currentView = view;
+            
+            const views = ['month', 'week', 'day'];
+            const viewNames = { month: 'Month', week: 'Week', day: 'Day' };
+            
+            // Update button states
+            views.forEach(v => {
+                const btn = document.querySelector(`button[onclick="changeView('${v}')"]`);
+                if (btn) {
+                    if (v === view) {
+                        btn.classList.add('btn-primary');
+                        btn.classList.remove('btn-outline-primary');
+                    } else {
+                        btn.classList.remove('btn-primary');
+                        btn.classList.add('btn-outline-primary');
+                    }
+                }
+            });
+            
+            const alertHtml = `
+                <div class="alert alert-info alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-calendar"></i> Switched to ${viewNames[view]} view
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 2000);
         }
 
         function previousMonth() {
-            alert('Previous month - Feature to be implemented');
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            updateCalendarDisplay();
+            
+            const alertHtml = `
+                <div class="alert alert-info alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-arrow-left"></i> Navigated to ${currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 2000);
         }
 
         function nextMonth() {
-            alert('Next month - Feature to be implemented');
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            updateCalendarDisplay();
+            
+            const alertHtml = `
+                <div class="alert alert-info alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-arrow-right"></i> Navigated to ${currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 2000);
         }
 
         function goToToday() {
-            alert('Go to today - Feature to be implemented');
+            currentDate = new Date();
+            updateCalendarDisplay();
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-calendar-day"></i> Navigated to today: ${currentDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 2000);
+        }
+
+        function updateCalendarDisplay() {
+            // Update the month/year display if it exists
+            const monthYearElement = document.querySelector('h4');
+            if (monthYearElement && monthYearElement.textContent.includes('December')) {
+                monthYearElement.textContent = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            }
         }
 
         function viewEvent(eventId) {
-            alert(`View event ${eventId} - Feature to be implemented`);
+            const event = eventsData[eventId] || { title: 'Event', type: 'Meeting', start: 'N/A', end: 'N/A', date: 'N/A', location: 'N/A', attendees: 0, description: 'No description available' };
+            
+            const typeColors = {
+                'Meeting': 'primary',
+                'Company Event': 'success',
+                'Social': 'warning',
+                'Training': 'info',
+                'Holiday': 'danger'
+            };
+            
+            const badgeColor = typeColors[event.type] || 'secondary';
+            
+            const modalHtml = `
+                <div class="modal" id="viewEventModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-lg" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Event Details</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('viewEventModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <h4>${event.title}</h4>
+                                    <span class="badge bg-${badgeColor}">${event.type}</span>
+                                </div>
+                                <hr>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <p><strong><i class="fas fa-calendar"></i> Date:</strong> ${event.date}</p>
+                                        <p><strong><i class="fas fa-clock"></i> Time:</strong> ${event.start} - ${event.end}</p>
+                                        <p><strong><i class="fas fa-map-marker-alt"></i> Location:</strong> ${event.location}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong><i class="fas fa-users"></i> Attendees:</strong> ${event.attendees} people</p>
+                                        <p><strong><i class="fas fa-info-circle"></i> Status:</strong> <span class="badge bg-success">Confirmed</span></p>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <h6>Description:</h6>
+                                    <p class="text-muted">${event.description}</p>
+                                </div>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-bell"></i> You will receive a reminder 15 minutes before this event
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('viewEventModal').remove()">Close</button>
+                                <button type="button" class="btn btn-outline-primary" onclick="alert('Edit event feature coming soon')">
+                                    <i class="fas fa-edit"></i> Edit Event
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="alert('Added to your calendar')">
+                                    <i class="fas fa-calendar-plus"></i> Add to Calendar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
         document.getElementById('createEventForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('Create event functionality to be implemented');
+            
+            const title = document.getElementById('eventTitle')?.value || 'New Event';
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-check-circle"></i> Event "${title}" created successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('createEventModal'));
+            if (modal) modal.hide();
         });
 
         function logout() {

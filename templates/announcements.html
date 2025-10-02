@@ -427,18 +427,215 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script>
+        // Mock announcements data
+        const announcementsData = {
+            1: { title: 'Year-End Holiday Schedule', category: 'Important', priority: 'High', content: 'Please note our office closure schedule for the upcoming holidays. Offices will be closed from December 24-26 and December 31-January 1. Emergency contact information will be provided to all employees.', audience: 'All Employees', publishedDate: '2024-12-01', author: 'HR Department', views: 245, reactions: 32 },
+            2: { title: 'New Employee Benefits Program', category: 'Benefits', priority: 'Normal', content: 'We are excited to announce expanded employee benefits starting January 1st, including enhanced health coverage, wellness programs, and education assistance. Details and enrollment information will be sent via email.', audience: 'All Employees', publishedDate: '2024-11-28', author: 'Benefits Team', views: 189, reactions: 28 },
+            3: { title: 'Q4 Town Hall Meeting', category: 'Event', priority: 'Normal', content: 'Join us for our Q4 Town Hall meeting on December 15th at 2 PM in the main auditorium. Leadership will share company updates, Q4 achievements, and 2025 goals. Q&A session will follow the presentation.', audience: 'All Employees', publishedDate: '2024-11-25', author: 'Executive Team', views: 312, reactions: 45 },
+            4: { title: 'Updated Remote Work Policy', category: 'Policy', priority: 'High', content: 'Our remote work policy has been updated to provide more flexibility. Employees can now work remotely up to 3 days per week with manager approval. Full details available in the employee portal.', audience: 'All Employees', publishedDate: '2024-11-20', author: 'HR Department', views: 421, reactions: 67 }
+        };
+
         // Announcements management functionality
         function editAnnouncement(id) {
-            alert(`Edit announcement ${id} - Feature to be implemented`);
+            const announcement = announcementsData[id] || { title: '', content: '', category: 'General', priority: 'Normal', audience: 'All Employees' };
+            
+            const modalHtml = `
+                <div class="modal" id="editAnnouncementModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-lg" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Announcement</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('editAnnouncementModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editAnnouncementForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control" value="${announcement.title}" id="announcementTitle" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Content</label>
+                                        <textarea class="form-control" rows="5" id="announcementContent" required>${announcement.content}</textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Category</label>
+                                                <select class="form-select" id="announcementCategory">
+                                                    <option ${announcement.category === 'Important' ? 'selected' : ''}>Important</option>
+                                                    <option ${announcement.category === 'General' ? 'selected' : ''}>General</option>
+                                                    <option ${announcement.category === 'Benefits' ? 'selected' : ''}>Benefits</option>
+                                                    <option ${announcement.category === 'Event' ? 'selected' : ''}>Event</option>
+                                                    <option ${announcement.category === 'Policy' ? 'selected' : ''}>Policy</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Priority</label>
+                                                <select class="form-select" id="announcementPriority">
+                                                    <option ${announcement.priority === 'High' ? 'selected' : ''}>High</option>
+                                                    <option ${announcement.priority === 'Normal' ? 'selected' : ''}>Normal</option>
+                                                    <option ${announcement.priority === 'Low' ? 'selected' : ''}>Low</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Audience</label>
+                                                <select class="form-select" id="announcementAudience">
+                                                    <option ${announcement.audience === 'All Employees' ? 'selected' : ''}>All Employees</option>
+                                                    <option ${announcement.audience === 'Engineering' ? 'selected' : ''}>Engineering</option>
+                                                    <option ${announcement.audience === 'Sales' ? 'selected' : ''}>Sales</option>
+                                                    <option ${announcement.audience === 'Management' ? 'selected' : ''}>Management</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('editAnnouncementModal').remove()">Cancel</button>
+                                <button type="button" class="btn btn-outline-primary" onclick="saveDraft(); document.getElementById('editAnnouncementModal').remove();">Save as Draft</button>
+                                <button type="button" class="btn btn-primary" onclick="saveAnnouncement(${id})">Save & Publish</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function saveAnnouncement(id) {
+            document.getElementById('editAnnouncementModal').remove();
+            
+            const alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                    <i class="fas fa-check-circle"></i> Announcement updated and published successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
         }
 
         function viewAnalytics(id) {
-            alert(`View analytics for announcement ${id} - Feature to be implemented`);
+            const announcement = announcementsData[id] || { title: 'Announcement', views: 0, reactions: 0 };
+            
+            const modalHtml = `
+                <div class="modal" id="analyticsModal" style="display: flex; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                    <div class="modal-dialog modal-xl" style="margin: auto;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Analytics: ${announcement.title}</h5>
+                                <button type="button" class="btn-close" onclick="document.getElementById('analyticsModal').remove()"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-3">
+                                        <div class="card text-center bg-primary text-white">
+                                            <div class="card-body">
+                                                <h2>${announcement.views}</h2>
+                                                <p class="mb-0">Total Views</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-center bg-success text-white">
+                                            <div class="card-body">
+                                                <h2>${announcement.reactions}</h2>
+                                                <p class="mb-0">Reactions</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-center bg-info text-white">
+                                            <div class="card-body">
+                                                <h2>${Math.round((announcement.views / 500) * 100)}%</h2>
+                                                <p class="mb-0">Reach Rate</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-center bg-warning text-white">
+                                            <div class="card-body">
+                                                <h2>${Math.round((announcement.reactions / announcement.views) * 100)}%</h2>
+                                                <p class="mb-0">Engagement Rate</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h6>Views Over Time:</h6>
+                                <div class="mb-3">
+                                    <div class="progress mb-2" style="height: 30px;">
+                                        <div class="progress-bar bg-primary" style="width: 100%" title="Total views">${announcement.views} views</div>
+                                    </div>
+                                </div>
+                                
+                                <h6>Engagement Breakdown:</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-group">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                👍 Likes
+                                                <span class="badge bg-primary rounded-pill">${Math.round(announcement.reactions * 0.6)}</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                ❤️ Hearts
+                                                <span class="badge bg-primary rounded-pill">${Math.round(announcement.reactions * 0.25)}</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                🎉 Celebrations
+                                                <span class="badge bg-primary rounded-pill">${Math.round(announcement.reactions * 0.15)}</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul class="list-group">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Department Reach
+                                                <span class="badge bg-success rounded-pill">8/10</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Average Read Time
+                                                <span class="badge bg-info rounded-pill">2m 15s</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Comments
+                                                <span class="badge bg-warning rounded-pill">12</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('analyticsModal').remove()">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="alert('Downloading analytics report...')">
+                                    <i class="fas fa-download"></i> Export Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
         function publishNow(id) {
             if (confirm('Publish this announcement immediately?')) {
-                alert(`Publishing announcement ${id} - Feature to be implemented`);
+                const announcement = announcementsData[id] || { title: 'Announcement' };
+                
+                const alertHtml = `
+                    <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 10000;" role="alert">
+                        <i class="fas fa-paper-plane"></i> "${announcement.title}" published successfully!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', alertHtml);
+                setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
             }
         }
 
