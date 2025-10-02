@@ -256,11 +256,11 @@ def initialize_default_permissions():
     """Initialize default system permissions"""
     default_permissions = [
         # Employee management
-        {'name': 'employees.create', 'display_name': 'Create Employees', 'module': 'employees', 'action': 'create', 'description': 'Create new employee records'},
-        {'name': 'employees.read', 'display_name': 'View Employees', 'module': 'employees', 'action': 'read', 'description': 'View employee information'},
-        {'name': 'employees.update', 'display_name': 'Update Employees', 'module': 'employees', 'action': 'update', 'description': 'Update employee information'},
-        {'name': 'employees.delete', 'display_name': 'Delete Employees', 'module': 'employees', 'action': 'delete', 'description': 'Delete employee records'},
-        {'name': 'employees.manage', 'display_name': 'Manage Employees', 'module': 'employees', 'action': 'manage', 'description': 'Full employee management access'},
+        {'name': 'view_employees', 'display_name': 'View Employees', 'module': 'employees', 'action': 'read', 'description': 'View employee information'},
+        {'name': 'create_employees', 'display_name': 'Create Employees', 'module': 'employees', 'action': 'create', 'description': 'Create new employees'},
+        {'name': 'edit_employees', 'display_name': 'Edit Employees', 'module': 'employees', 'action': 'update', 'description': 'Edit employee information'},
+        {'name': 'delete_employees', 'display_name': 'Delete Employees', 'module': 'employees', 'action': 'delete', 'description': 'Delete employees'},
+        {'name': 'manage_employee_roles', 'display_name': 'Manage Employee Roles', 'module': 'employees', 'action': 'manage', 'description': 'Assign roles to employees'},
         
         # Attendance management
         {'name': 'attendance.create', 'display_name': 'Create Attendance', 'module': 'attendance', 'action': 'create', 'description': 'Create attendance records'},
@@ -306,16 +306,12 @@ def initialize_default_permissions():
         {'name': 'departments.manage', 'display_name': 'Manage Departments', 'module': 'departments', 'action': 'manage', 'description': 'Full department management access'},
         
         # Role and permission management
-        {'name': 'roles.create', 'display_name': 'Create Roles', 'module': 'roles', 'action': 'create', 'description': 'Create new roles'},
-        {'name': 'roles.read', 'display_name': 'View Roles', 'module': 'roles', 'action': 'read', 'description': 'View roles and permissions'},
-        {'name': 'roles.update', 'display_name': 'Update Roles', 'module': 'roles', 'action': 'update', 'description': 'Update roles and permissions'},
-        {'name': 'roles.delete', 'display_name': 'Delete Roles', 'module': 'roles', 'action': 'delete', 'description': 'Delete custom roles'},
-        {'name': 'roles.manage', 'display_name': 'Manage Roles', 'module': 'roles', 'action': 'manage', 'description': 'Full role and permission management'},
+        {'name': 'view_roles_permissions', 'display_name': 'View Roles & Permissions', 'module': 'admin', 'action': 'read', 'description': 'View roles and permissions'},
+        {'name': 'manage_roles_permissions', 'display_name': 'Manage Roles & Permissions', 'module': 'admin', 'action': 'manage', 'description': 'Manage roles and permissions'},
         
         # Organization settings
-        {'name': 'settings.read', 'display_name': 'View Settings', 'module': 'settings', 'action': 'read', 'description': 'View organization settings'},
-        {'name': 'settings.update', 'display_name': 'Update Settings', 'module': 'settings', 'action': 'update', 'description': 'Update organization settings'},
-        {'name': 'settings.manage', 'display_name': 'Manage Settings', 'module': 'settings', 'action': 'manage', 'description': 'Full settings management access'},
+        {'name': 'view_organization_settings', 'display_name': 'View Organization Settings', 'module': 'admin', 'action': 'read', 'description': 'View organization settings'},
+        {'name': 'manage_organization_settings', 'display_name': 'Manage Organization Settings', 'module': 'admin', 'action': 'manage', 'description': 'Modify organization settings'},
         
         # Reports and analytics
         {'name': 'reports.read', 'display_name': 'View Reports', 'module': 'reports', 'action': 'read', 'description': 'View reports and analytics'},
@@ -323,8 +319,8 @@ def initialize_default_permissions():
         {'name': 'reports.manage', 'display_name': 'Manage Reports', 'module': 'reports', 'action': 'manage', 'description': 'Full reports management access'},
         
         # System administration
-        {'name': 'system.manage', 'display_name': 'System Administration', 'module': 'system', 'action': 'manage', 'description': 'Full system administration access'},
-        {'name': 'audit.read', 'display_name': 'View Audit Logs', 'module': 'audit', 'action': 'read', 'description': 'View system audit logs'},
+        {'name': 'view_audit_logs', 'display_name': 'View Audit Logs', 'module': 'admin', 'action': 'read', 'description': 'View system audit logs'},
+        {'name': 'manage_departments', 'display_name': 'Manage Departments', 'module': 'admin', 'action': 'manage', 'description': 'Manage organizational departments'},
     ]
     
     try:
